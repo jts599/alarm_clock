@@ -5,8 +5,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "3000:80"
+    network_mode: "host"
     environment:
       - REACT_APP_API_URL=http://localhost:5000
       - REACT_APP_ENV=production
@@ -17,12 +16,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
+    network_mode: "host"
     volumes:
       - ./shared:/app/shared
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
 
 networks:
   default:

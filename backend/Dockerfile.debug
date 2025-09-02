@@ -1,7 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS debug
 
-# Install debugger
-RUN apt-get update && apt-get install -y procps
+# Install debugger and network utilities
+RUN apt-get update && apt-get install -y \
+    procps \
+    iproute2 \
+    wireless-tools \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

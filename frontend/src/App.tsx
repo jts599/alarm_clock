@@ -16,23 +16,23 @@ const App: React.FC = () => {
         const apiUrl = process.env.REACT_APP_API_URL || '/api';
         const endpoint = `${apiUrl}/wifi/ip_address`;
         console.log('Fetching network info from:', endpoint);
-        
+
         const response = await fetch(endpoint);
         console.log('Response status:', response.status);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log('Network info received:', data);
         setNetworkInfo(data);
       } catch (error) {
         console.error('Failed to fetch network info:', error);
-        setNetworkInfo({ 
-          ipAddress: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 
-          interfaceName: 'unknown', 
-          success: false 
+        setNetworkInfo({
+          ipAddress: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          interfaceName: 'unknown',
+          success: false
         });
       } finally {
         setLoading(false);
@@ -44,10 +44,10 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
         fontFamily: 'Arial, sans-serif'
       }}>
@@ -57,8 +57,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
+    <div style={{
+      padding: '20px',
       fontFamily: 'Arial, sans-serif',
       maxWidth: '800px',
       margin: '0 auto'
@@ -92,10 +92,10 @@ const App: React.FC = () => {
 
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         <p>Connect to WiFi network: <strong>{networkInfo?.ipAddress || 'Loading...'}</strong></p>
-        <button 
-          onClick={() => window.location.reload()} 
-          style={{ 
-            padding: '10px 20px', 
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            padding: '10px 20px',
             margin: '10px',
             backgroundColor: '#007bff',
             color: 'white',
@@ -106,7 +106,7 @@ const App: React.FC = () => {
         >
           Refresh Network Info
         </button>
-        <button 
+        <button
           onClick={async () => {
             try {
               const apiUrl = process.env.REACT_APP_API_URL || '/api';
@@ -117,9 +117,9 @@ const App: React.FC = () => {
             } catch (error) {
               alert(`Manual test failed: ${error}`);
             }
-          }} 
-          style={{ 
-            padding: '10px 20px', 
+          }}
+          style={{
+            padding: '10px 20px',
             margin: '10px',
             backgroundColor: '#28a745',
             color: 'white',

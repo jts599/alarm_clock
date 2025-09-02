@@ -79,6 +79,8 @@ namespace Backend.Controllers
                 // Ensure client is initialized
                 await GetOrCreateClientAsync();
 
+                _logger.LogInformation($"Current number of bulbs (from client): {_client.Devices.Count()}");
+
                 var bulbCount = _bulbs.Count;
                 _logger.LogInformation($"Current number of bulbs: {bulbCount}");
 

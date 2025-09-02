@@ -1,0 +1,16 @@
+[Unit]
+Description=Alarm Clock Auto-Start Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=forking
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/alarm_clock
+ExecStart=/home/pi/alarm_clock/raspberry-pi/auto-start.sh
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

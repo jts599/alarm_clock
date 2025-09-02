@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS debug
+
+# Install debugger
+RUN apt-get update && apt-get install -y procps
+
+WORKDIR /app
+
+# Copy csproj and restore dependencies
+COPY backend.csproj ./
+RUN dotnet restore
+
+# Copy everything else
+COPY . ./
+
+# Expose ports for the application and debugger
+EXPOSE 5000
+EXPOSE 5001
+
+# Set environment variables for debugging
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV ASPNETCORE_URLS=http://+:5000
+
+# Build in debug mode
+RUN dotnet build -c Debug
+
+# Run the application with file watching for hot reload
+CMD ["dotnet", "run", "--project", ".", "--configuration", "Debug"]

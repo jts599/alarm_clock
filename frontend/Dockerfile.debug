@@ -19,6 +19,10 @@ EXPOSE 3000
 ENV REACT_APP_ENV=development
 ENV CHOKIDAR_USEPOLLING=true
 ENV WATCHPACK_POLLING=true
+ENV HOST=0.0.0.0
+ENV PORT=3000
+ENV WDS_SOCKET_HOST=0.0.0.0
+ENV WDS_SOCKET_PORT=3000
 
 # Command to run the application in development mode with hot reload
 CMD ["npm", "start"]

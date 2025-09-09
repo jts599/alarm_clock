@@ -22,3 +22,24 @@ export const postData = async (endpoint: string, data: any): Promise<any> => {
         throw error;
     }
 };
+
+// WiFi related API calls
+export const getIpAddress = async (): Promise<any> => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/api/wifi/ip_address`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+        throw error;
+    }
+};
+
+export const getWifiStatus = async (): Promise<any> => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/api/wifi/status`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching WiFi status:', error);
+        throw error;
+    }
+};

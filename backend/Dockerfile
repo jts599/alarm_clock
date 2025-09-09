@@ -2,6 +2,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 5000
 
+# Install network utilities for WiFi management
+RUN apt-get update && apt-get install -y \
+    iproute2 \
+    wireless-tools \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["backend.csproj", "./"]
@@ -15,4 +22,4 @@ RUN dotnet publish "backend.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "backend.dll"]
+ENTRYPOINT ["dotnet", "Backend.dll"]

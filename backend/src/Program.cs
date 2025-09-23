@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register custom services
-builder.Services.AddScoped<ILifxService, LifxService>();
+builder.Services.AddSingleton<ILifxService, LifxService>();
 builder.Services.AddHostedService<LightToggleService>();
 
 // Add CORS policy for development

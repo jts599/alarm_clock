@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,7 +9,7 @@ namespace MyFullstackApp.Services
     public class LightToggleService : BackgroundService, ILightToggleService
     {
         private readonly ILogger<LightToggleService> _logger;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ILifxService _lifxService;
         private bool _isRunning = false;
         private bool _lightState = false; // false = off, true = on
         private const int ToggleIntervalMilliseconds = 5000; // 5000ms = 5 seconds
@@ -19,16 +18,19 @@ namespace MyFullstackApp.Services
 
         public LightToggleService(
             ILogger<LightToggleService> logger,
-            IServiceScopeFactory serviceScopeFactory)
+            ILifxService lifxService)
         {
             _logger = logger;
-            _serviceScopeFactory = serviceScopeFactory;
+            _lifxService = lifxService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Light Toggle Service started");
             _isRunning = true;
+
+            // Initialize the LIFX service
+            await _lifxService.InitializeAsync();
 
             using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(ToggleIntervalMilliseconds));
 
@@ -58,13 +60,10 @@ namespace MyFullstackApp.Services
         {
             try
             {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var lifxService = scope.ServiceProvider.GetRequiredService<ILifxService>();
-
                 // Toggle the light state
                 _lightState = !_lightState;
 
-                await lifxService.SetAllBulbsPowerAsync(_lightState);
+                await _lifxService.SetAllBulbsPowerAsync(_lightState);
 
                 var action = _lightState ? "on" : "off";
                 _logger.LogInformation($"Toggled all lights {action}");

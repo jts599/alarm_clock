@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Net.NetworkInformation;
+using System.Net;
 
 namespace MyFullstackApp.Services
 {
@@ -28,7 +30,34 @@ namespace MyFullstackApp.Services
 
         public async Task InitializeAsync()
         {
+            // Log network interfaces for debugging
+            LogNetworkInterfaces();
             await GetOrCreateClientAsync();
+        }
+
+        private void LogNetworkInterfaces()
+        {
+            try
+            {
+                _logger.LogInformation("Available network interfaces:");
+                var interfaces = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(ni => ni.OperationalStatus == OperationalStatus.Up)
+                    .Where(ni => ni.NetworkInterfaceType != NetworkInterfaceType.Loopback);
+
+                foreach (var ni in interfaces)
+                {
+                    var ipProps = ni.GetIPProperties();
+                    var ipv4Addresses = ipProps.UnicastAddresses
+                        .Where(addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        .Select(addr => addr.Address.ToString());
+
+                    _logger.LogInformation($"  {ni.Name} ({ni.NetworkInterfaceType}): {string.Join(", ", ipv4Addresses)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to enumerate network interfaces");
+            }
         }
 
         private async Task<LifxClient> GetOrCreateClientAsync()
@@ -40,6 +69,21 @@ namespace MyFullstackApp.Services
                 {
                     if (_client == null)
                     {
+                        _logger.LogInformation("Creating LifxClient...");
+                        
+                        // Try to create client bound to the 192.168.0.x network interface
+                        var homeNetworkInterface = NetworkInterface.GetAllNetworkInterfaces()
+                            .Where(ni => ni.OperationalStatus == OperationalStatus.Up)
+                            .FirstOrDefault(ni => ni.GetIPProperties().UnicastAddresses
+                                .Any(addr => addr.Address.ToString().StartsWith("192.168.0")));
+
+                        if (homeNetworkInterface != null)
+                        {
+                            var homeNetworkIp = homeNetworkInterface.GetIPProperties().UnicastAddresses
+                                .FirstOrDefault(addr => addr.Address.ToString().StartsWith("192.168.0"))?.Address;
+                            _logger.LogInformation($"Found home network interface: {homeNetworkInterface.Name} with IP {homeNetworkIp}");
+                        }
+                        
                         _client = await LifxClient.CreateAsync();
                         _client.DeviceDiscovered += OnDeviceDiscovered;
                         _client.DeviceLost += OnDeviceLost;
@@ -47,7 +91,11 @@ namespace MyFullstackApp.Services
                         _logger.LogInformation("LifxClient created and discovery started");
 
                         // Give some time for initial discovery
+                        _logger.LogInformation($"Waiting {DiscoveryDelayMilliseconds}ms for initial device discovery...");
                         await Task.Delay(DiscoveryDelayMilliseconds);
+
+                        var discoveredCount = Bulbs?.Count() ?? 0;
+                        _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices");
                     }
                 }
                 finally

@@ -12,12 +12,14 @@ namespace MyFullstackApp.Services
     public class LifxService : ILifxService
     {
         private readonly ILogger<LifxService> _logger;
-        private static LifxClient _client = null;
-        private static readonly SemaphoreSlim _clientLock = new(1, 1);
+        private LifxClient _client = null;
+        private readonly SemaphoreSlim _clientLock = new(1, 1);
 
-        private static int NumberOfBulbs => Bulbs?.Count() ?? 0;
-        private static IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
-        private static readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
+        private int NumberOfBulbs => Bulbs?.Count() ?? 0;
+        private IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
+        private readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
+
+        private const int DiscoveryDelayMilliseconds = 2000;
 
         public LifxService(ILogger<LifxService> logger)
         {
@@ -45,7 +47,7 @@ namespace MyFullstackApp.Services
                         _logger.LogInformation("LifxClient created and discovery started");
 
                         // Give some time for initial discovery
-                        await Task.Delay(2000);
+                        await Task.Delay(DiscoveryDelayMilliseconds);
                     }
                 }
                 finally

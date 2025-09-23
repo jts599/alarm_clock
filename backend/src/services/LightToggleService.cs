@@ -13,8 +13,7 @@ namespace MyFullstackApp.Services
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private bool _isRunning = false;
         private bool _lightState = false; // false = off, true = on
-        private int _secondsCounter = 0;
-        private CancellationTokenSource _cancellationTokenSource;
+        private const int ToggleIntervalMilliseconds = 5000; // 5000ms = 5 seconds
 
         public bool IsRunning => _isRunning;
 
@@ -24,7 +23,6 @@ namespace MyFullstackApp.Services
         {
             _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
-            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -32,21 +30,13 @@ namespace MyFullstackApp.Services
             _logger.LogInformation("Light Toggle Service started");
             _isRunning = true;
 
+            using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(ToggleIntervalMilliseconds));
+
             try
             {
-                while (!stoppingToken.IsCancellationRequested)
+                while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
-                    _secondsCounter++;
-
-                    // Toggle lights every 5 seconds
-                    if (_secondsCounter >= 5)
-                    {
-                        await ToggleLightsAsync();
-                        _secondsCounter = 0;
-                    }
-
-                    // Wait 1 second before next iteration
-                    await Task.Delay(1000, stoppingToken);
+                    await ToggleLightsAsync();
                 }
             }
             catch (OperationCanceledException)
@@ -85,28 +75,8 @@ namespace MyFullstackApp.Services
             }
         }
 
-        public async Task StartAsync()
-        {
-            if (!_isRunning)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-                await StartAsync(_cancellationTokenSource.Token);
-            }
-        }
-
-        public async Task StopAsync()
-        {
-            if (_isRunning)
-            {
-                _cancellationTokenSource.Cancel();
-                await Task.Delay(100); // Give it a moment to stop gracefully
-            }
-        }
-
         public override void Dispose()
         {
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
             base.Dispose();
         }
     }

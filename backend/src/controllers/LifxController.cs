@@ -125,7 +125,7 @@ namespace Backend.Controllers
 
                 await Task.WhenAll(tasks);
 
-                var action = request.On ? "turned o n" : "turned off";
+                var action = request.On ? "turned on" : "turned off";
                 _logger.LogInformation($"All {Bulbs.Count()} bulbs {action}");
 
                 return Ok(new

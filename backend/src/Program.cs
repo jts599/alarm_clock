@@ -13,7 +13,6 @@ builder.Services.AddSwaggerGen();
 
 // Register custom services
 builder.Services.AddScoped<ILifxService, LifxService>();
-builder.Services.AddSingleton<ILightToggleService, LightToggleService>();
 builder.Services.AddHostedService<LightToggleService>();
 
 // Add CORS policy for development

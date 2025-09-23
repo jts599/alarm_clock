@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using MyFullstackApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register custom services
+builder.Services.AddScoped<ILifxService, LifxService>();
+builder.Services.AddSingleton<ILightToggleService, LightToggleService>();
+builder.Services.AddHostedService<LightToggleService>();
 
 // Add CORS policy for development
 builder.Services.AddCors(options =>

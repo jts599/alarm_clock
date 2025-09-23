@@ -1,0 +1,29 @@
+{
+    "name": "Alarm Clock Dev Container",
+    "dockerComposeFile": [
+        "../docker-compose.debug.yml"
+    ],
+    "service": "backend", // Change to your main service name if different
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csharp",
+                "ms-vscode.js-debug-nightly",
+                "dbaeumer.vscode-eslint"
+            ],
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            }
+        }
+    },
+    "forwardPorts": [
+        5000,
+        3000
+    ], // Add ports as needed
+    "remoteUser": "root",
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ]
+}

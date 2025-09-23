@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using LifxNet;
 using System;
@@ -8,24 +7,26 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Backend.Controllers
+namespace MyFullstackApp.Services
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class LifxController : ControllerBase
+    public class LifxService : ILifxService
     {
-        private readonly ILogger<LifxController> _logger;
+        private readonly ILogger<LifxService> _logger;
         private static LifxClient _client = null;
-
-        private static int NumberOfBulbs => Bulbs?.Count() ?? 0;
-
-        private static IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
-        private static readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
         private static readonly SemaphoreSlim _clientLock = new(1, 1);
 
-        public LifxController(ILogger<LifxController> logger)
+        private static int NumberOfBulbs => Bulbs?.Count() ?? 0;
+        private static IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
+        private static readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
+
+        public LifxService(ILogger<LifxService> logger)
         {
             _logger = logger;
+        }
+
+        public async Task InitializeAsync()
+        {
+            await GetOrCreateClientAsync();
         }
 
         private async Task<LifxClient> GetOrCreateClientAsync()
@@ -73,37 +74,23 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpGet("getNumberOfBulbs")]
-        public async Task<IActionResult> GetNumberOfBulbs()
+        public async Task<int> GetNumberOfBulbsAsync()
         {
             try
             {
-                // Ensure client is initialized
                 await GetOrCreateClientAsync();
-
                 var bulbCount = NumberOfBulbs;
                 _logger.LogInformation($"Current number of bulbs: {bulbCount}");
-
-                return Ok(new
-                {
-                    numberOfBulbs = bulbCount,
-                    success = true
-                });
+                return bulbCount;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting number of bulbs");
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = "Failed to get number of bulbs",
-                    message = ex.Message
-                });
+                throw;
             }
         }
 
-        [HttpPost("setAllBulbsPower")]
-        public async Task<IActionResult> SetAllBulbsPower([FromBody] SetPowerRequest request)
+        public async Task<bool> SetAllBulbsPowerAsync(bool powerOn)
         {
             try
             {
@@ -111,46 +98,26 @@ namespace Backend.Controllers
 
                 if (Bulbs.Count() == 0)
                 {
-                    return Ok(new
-                    {
-                        success = true,
-                        message = "No bulbs found to control",
-                        bulbsAffected = 0
-                    });
+                    _logger.LogInformation("No bulbs found to control");
+                    return true;
                 }
 
                 var tasks = Bulbs.Select(bulb =>
-                    client.SetDevicePowerStateAsync(bulb, request.On)
+                    client.SetDevicePowerStateAsync(bulb, powerOn)
                 );
 
                 await Task.WhenAll(tasks);
 
-                var action = request.On ? "turned o n" : "turned off";
+                var action = powerOn ? "turned on" : "turned off";
                 _logger.LogInformation($"All {Bulbs.Count()} bulbs {action}");
 
-                return Ok(new
-                {
-                    success = true,
-                    message = $"All bulbs {action}",
-                    bulbsAffected = Bulbs.Count(),
-                    powerState = request.On
-                });
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error setting power for all bulbs");
-                return StatusCode(500, new
-                {
-                    success = false,
-                    error = "Failed to set power for all bulbs",
-                    message = ex.Message
-                });
+                throw;
             }
         }
-    }
-
-    public class SetPowerRequest
-    {
-        public bool On { get; set; }
     }
 }

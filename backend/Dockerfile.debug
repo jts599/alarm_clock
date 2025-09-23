@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS debug
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS debug
 
 # Install debugger and network utilities
 RUN apt-get update && apt-get install -y \
@@ -30,4 +30,4 @@ ENV ASPNETCORE_URLS=http://+:5000
 RUN dotnet build -c Debug
 
 # Run the application with file watching for hot reload
-CMD ["dotnet", "run", "--project", ".", "--configuration", "Debug"]
+CMD ["dotnet", "run", "--project", "/app/backend.csproj", "--configuration", "Debug"]

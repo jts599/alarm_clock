@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build:
@@ -7,6 +5,7 @@ services:
       dockerfile: Dockerfile.debug
     network_mode: "host"
     volumes:
+      - .:/app
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
       - /app/node_modules
@@ -17,13 +16,17 @@ services:
       - backend
 
   backend:
+    command: [ "/bin/sh", "-c", "while sleep 1000; do :; done" ]
     build:
       context: ./backend
       dockerfile: Dockerfile.debug
+    working_dir: /workspace
     network_mode: "host"
     volumes:
+      - .:/workspace
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
       - ./shared:/app/shared
-      - ./backend/src:/app/src
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000

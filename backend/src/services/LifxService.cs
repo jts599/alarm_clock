@@ -21,7 +21,7 @@ namespace MyFullstackApp.Services
         private IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
         private readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
 
-        private const int DiscoveryDelayMilliseconds = 10000; // Increased from 2000 to 10000
+        private const int DiscoveryDelayMilliseconds = 2000;
 
         public LifxService(ILogger<LifxService> logger)
         {
@@ -73,10 +73,10 @@ namespace MyFullstackApp.Services
 
                         _client = await LifxClient.CreateAsync();
                         _logger.LogInformation("LifxClient created successfully");
-                        
+
                         _client.DeviceDiscovered += OnDeviceDiscovered;
                         _client.DeviceLost += OnDeviceLost;
-                        
+
                         _logger.LogInformation("Starting device discovery...");
                         _client.StartDeviceDiscovery();
                         _logger.LogInformation("LifxClient created and discovery started");

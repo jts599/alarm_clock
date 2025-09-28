@@ -21,7 +21,7 @@ namespace MyFullstackApp.Services
         private IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
         private readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
 
-        private const int DiscoveryDelayMilliseconds = 2000;
+        private const int DiscoveryDelayMilliseconds = 10000; // Increased from 2000 to 10000
 
         public LifxService(ILogger<LifxService> logger)
         {
@@ -70,29 +70,21 @@ namespace MyFullstackApp.Services
                     if (_client == null)
                     {
                         _logger.LogInformation("Creating LifxClient...");
-                        
-                        // Try to create client bound to the 192.168.0.x network interface
-                        var homeNetworkInterface = NetworkInterface.GetAllNetworkInterfaces()
-                            .Where(ni => ni.OperationalStatus == OperationalStatus.Up)
-                            .FirstOrDefault(ni => ni.GetIPProperties().UnicastAddresses
-                                .Any(addr => addr.Address.ToString().StartsWith("192.168.0")));
 
-                        if (homeNetworkInterface != null)
-                        {
-                            var homeNetworkIp = homeNetworkInterface.GetIPProperties().UnicastAddresses
-                                .FirstOrDefault(addr => addr.Address.ToString().StartsWith("192.168.0"))?.Address;
-                            _logger.LogInformation($"Found home network interface: {homeNetworkInterface.Name} with IP {homeNetworkIp}");
-                        }
-                        
                         _client = await LifxClient.CreateAsync();
+                        _logger.LogInformation("LifxClient created successfully");
+                        
                         _client.DeviceDiscovered += OnDeviceDiscovered;
                         _client.DeviceLost += OnDeviceLost;
+                        
+                        _logger.LogInformation("Starting device discovery...");
                         _client.StartDeviceDiscovery();
                         _logger.LogInformation("LifxClient created and discovery started");
 
                         // Give some time for initial discovery
                         _logger.LogInformation($"Waiting {DiscoveryDelayMilliseconds}ms for initial device discovery...");
                         await Task.Delay(DiscoveryDelayMilliseconds);
+                        _client.StopDeviceDiscovery();
 
                         var discoveredCount = Bulbs?.Count() ?? 0;
                         _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices");

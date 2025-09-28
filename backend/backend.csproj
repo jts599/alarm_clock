@@ -5,6 +5,21 @@
     <RootNamespace>Backend</RootNamespace>
     <AssemblyName>Backend</AssemblyName>
     <OutputType>Exe</OutputType>
+    <!-- Enable debugging into external libraries -->
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <!-- Enable source link and embedded symbols -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <!-- Include source packages -->
+    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Enable source link debugging -->
+    <EnableSourceLink>true</EnableSourceLink>
+    <EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +33,15 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
-    <PackageReference Include="LifxNet" Version="2.0.0" />
+    <!-- <PackageReference Include="LifxNet" Version="2.2.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>none</PrivateAssets>
+    </PackageReference> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference local LifxNet source for debugging -->
+    <ProjectReference Include="..\LifxNet-Source\src\LifxNet\LifxNet.csproj" />
   </ItemGroup>
 
 </Project>

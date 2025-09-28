@@ -24,7 +24,11 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
-            }
+            },
+            // Enable debugging into external libraries
+            "justMyCode": false,
+            "enableStepFiltering": false,
+            "suppressJITOptimizations": true
         },
         {
             "name": ".NET Core Attach",

@@ -12,7 +12,7 @@ namespace MyFullstackApp.Services
         private readonly ILifxService _lifxService;
         private bool _isRunning = false;
         private bool _lightState = false; // false = off, true = on
-        private const int ToggleIntervalMilliseconds = 5000; // 5000ms = 5 seconds
+        private const int ToggleIntervalMilliseconds = 1000; // 1000ms = 1 second
 
         public bool IsRunning => _isRunning;
 

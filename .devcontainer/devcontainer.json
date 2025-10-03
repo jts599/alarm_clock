@@ -1,11 +1,14 @@
 {
     "name": "Alarm Clock Dev Container",
-    "dockerComposeFile": [
-        "../docker-compose.debug.yml"
-    ],
-    "service": "backend", // Change to your main service name if different
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
     "workspaceFolder": "/workspace",
-    "shutdownAction": "stopCompose",
+    "runArgs": [
+        "--network=host",
+        "--privileged"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
@@ -14,16 +17,18 @@
                 "dbaeumer.vscode-eslint"
             ],
             "settings": {
-                "terminal.integrated.shell.linux": "/bin/bash"
+                "terminal.integrated.defaultProfile.linux": "bash"
             }
         }
     },
-    "forwardPorts": [
-        5000,
-        3000
-    ], // Add ports as needed
     "remoteUser": "root",
     "mounts": [
-        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-    ]
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+        "source=${localWorkspaceFolder},target=/workspace,type=bind"
+    ],
+    "containerEnv": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:5000"
+    },
+    "postCreateCommand": "dotnet restore /workspace/backend/backend.csproj"
 }

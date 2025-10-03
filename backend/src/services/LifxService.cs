@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Net.NetworkInformation;
 using System.Net;
+using Humanizer;
 
 namespace MyFullstackApp.Services
 {
@@ -158,6 +159,32 @@ namespace MyFullstackApp.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error setting power for all bulbs");
+                throw;
+            }
+        }
+
+
+        public async Task<bool> SetColorAllAsync(LifxNet.Color color, ushort kelvin)
+        {
+
+            try
+            {
+                var client = await GetOrCreateClientAsync();
+                if (Bulbs.Count() == 0)
+                {
+                    _logger.LogInformation("No bulbs found to control");
+                    return true;
+                }
+                Bulbs.ToList().ForEach(bulb =>
+                {
+                    _logger.LogInformation($"Setting color of bulb {bulb.ToString()} to {color}");
+                    client.SetColorAsync(bulb, color, kelvin).Wait();
+                });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error setting color for all bulbs");
                 throw;
             }
         }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using LifxNet;
 
 namespace MyFullstackApp.Services
 {
@@ -6,6 +7,7 @@ namespace MyFullstackApp.Services
     {
         Task<int> GetNumberOfBulbsAsync();
         Task<bool> SetAllBulbsPowerAsync(bool powerOn);
+        Task<bool> SetColorAllAsync(Color color, ushort kelvin);
         Task InitializeAsync();
     }
 }

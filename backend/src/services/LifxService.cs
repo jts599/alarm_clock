@@ -89,6 +89,7 @@ namespace MyFullstackApp.Services
 
                         var discoveredCount = Bulbs?.Count() ?? 0;
                         _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices");
+                        await FlashFoundBulbs();
                     }
                 }
                 finally
@@ -97,6 +98,30 @@ namespace MyFullstackApp.Services
                 }
             }
             return _client;
+        }
+
+
+        private async Task FlashFoundBulbs()
+        {
+            var client = _client;
+            if (client == null || Bulbs.Count() == 0)
+            {
+                _logger.LogInformation("No bulbs found to flash");
+                return;
+            }
+
+            foreach (var bulb in Bulbs)
+            {
+                await client.SetLightPowerAsync(bulb, TimeSpan.Zero, true);
+                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0xFF, G = 0, B = 0x0 }, 3500, TimeSpan.FromMilliseconds(1000));
+                await Task.Delay(1000);
+                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0, G = 0xFF, B = 0x0 }, 3500, TimeSpan.FromMilliseconds(1000));
+                await Task.Delay(1000);
+                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0x0, G = 0x0, B = 0xFF }, 3500, TimeSpan.FromMilliseconds(1000));
+                await Task.Delay(1000);
+                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0, G = 0, B = 0 }, 3500, TimeSpan.Zero);
+                await client.SetLightPowerAsync(bulb, TimeSpan.Zero, false);
+            }
         }
 
         private void OnDeviceDiscovered(object sender, LifxClient.DeviceDiscoveryEventArgs e)

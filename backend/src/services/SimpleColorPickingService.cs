@@ -5,6 +5,8 @@ namespace MyFullstackApp.Services
 {
     public class SimpleColorPickingService : IColorPickingService
     {
+        private const int MaxKelvin = 4500;
+        private const int MinKelvin = 1500;
         public bool IsLightOnAtTime(DateTime time)
         {
             int minutesSinceMidnight = GetMinutesSinceMidnight(time);
@@ -18,7 +20,7 @@ namespace MyFullstackApp.Services
             if (minutesSinceMidnight < SixAMInMinutes)
             {
                 // Before 6 AM: Off
-                return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, 1500);
+                return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MinKelvin);
             }
             else if (minutesSinceMidnight >= SixAMInMinutes && minutesSinceMidnight <= EightAMInMinutes)
             {
@@ -29,10 +31,15 @@ namespace MyFullstackApp.Services
 
                 return ColorFromLightPercentage(percentage);
             }
+            else if (minutesSinceMidnight > EightAMInMinutes && minutesSinceMidnight <= NineAMInMinutes)
+            {
+                // Between 8 AM and 9 AM: Steady bright white light
+                return new AlarmClockColor(new LifxNet.Color { R = 0xFF, G = 0xFF, B = 0xFF }, MaxKelvin);
+            }
             else
             {
-                // After 8 AM: Full brightness and cool white
-                return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, 6500);
+                // After 9 AM: Off
+                return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MaxKelvin);
             }
         }
 
@@ -45,13 +52,14 @@ namespace MyFullstackApp.Services
 
         private static int SixAMInMinutes = 6 * 60;
         private static int EightAMInMinutes = 8 * 60;
+        private static int NineAMInMinutes = 9 * 60;
 
 
         private static AlarmClockColor ColorFromLightPercentage(int percentage)
         {
             // Map percentage (0-100) to a color and kelvin value
             byte brightness = BrightnessFromPercentage(percentage);  // Scale 0-100 to 0-255
-            ushort kelvin = (ushort)(1500 + (percentage * 75)); // Scale to 1500-9000K
+            ushort kelvin = KelvinFromPercentage(percentage);      // Scale 0-100 to 1500-6500K
 
             return new AlarmClockColor(new LifxNet.Color { R = brightness, G = brightness, B = brightness }, kelvin);
         }
@@ -60,17 +68,17 @@ namespace MyFullstackApp.Services
         {
             if (percentage < 0) return (byte)0x0;
             if (percentage > 50) return (byte)0xFF;
-            return (byte)(percentage * 2);
+            return (byte)(percentage / 100.0 * 2 * 0xFF);
         }
 
         private static ushort KelvinFromPercentage(int percentage)
         {
-            if (percentage < 50) return 1500;
-            if (percentage > 100) return 6500;
-            const ushort range = 6500 - 1500;
+            if (percentage < 50) return MinKelvin;
+            if (percentage > 100) return MaxKelvin;
+            const ushort range = MaxKelvin - MinKelvin;
             double multiplier = 2 * (percentage - 50) / 100.0;
             ushort addition = (ushort)(multiplier * range);
-            return (ushort)(1500 + addition);
+            return (ushort)(MinKelvin + addition);
         }
     }
 }

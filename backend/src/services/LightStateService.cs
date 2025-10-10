@@ -31,21 +31,24 @@ namespace MyFullstackApp.Services
             ILogger<LightStateService> logger,
             ILifxService lifxService,
             IColorPickingService colorPicker,
-            int secondsStepInterval = 3600
+            int secondsStepInterval = 1,
+            DateTime? startTime = null
             )
         {
             _logger = logger;
             _lifxService = lifxService;
             _colorPicker = colorPicker;
             _secondsStepInterval = secondsStepInterval;
+            _startTime = startTime ?? DefaultStartTime;
+            _trueStartTime = DateTime.Now;
         }
 
-
+        private DateTime _trueStartTime;
+        private DateTime DefaultStartTime => DateTime.Now;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Light State Service started");
-            _startTime = DateTime.Now;
 
             // Initialize the LIFX service
             await _lifxService.InitializeAsync();
@@ -56,7 +59,7 @@ namespace MyFullstackApp.Services
             {
                 while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
-                    await ToggleLightsAsync();
+                    await UpdateLightStateAsync();
                 }
             }
             catch (OperationCanceledException)
@@ -73,12 +76,12 @@ namespace MyFullstackApp.Services
             }
         }
 
-        private async Task ToggleLightsAsync()
+        private async Task UpdateLightStateAsync()
         {
             try
             {
                 DateTime now = DateTime.Now;
-                int secondsSinceStart = (int)(now - _startTime).TotalSeconds;
+                int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
                 DateTime scaledNow = _startTime.AddSeconds(scaledSecondsSinceStart);
                 _logger.LogInformation($"Scaled time: {scaledNow}");

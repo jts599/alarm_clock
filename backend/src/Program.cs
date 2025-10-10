@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -43,6 +44,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Health check endpoint
-app.MapGet("/", () => new { status = "Alarm Clock API is running", timestamp = DateTime.UtcNow });
+app.MapGet("/", () => Results.Ok(new { status = "Alarm Clock API is running", timestamp = DateTime.UtcNow }));
 
 app.Run();

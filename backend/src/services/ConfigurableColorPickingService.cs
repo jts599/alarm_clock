@@ -1,27 +1,95 @@
 using System;
+using System.Collections.Generic;
 using LifxNet;
 
-namespace AlarmClock.Backend.Services
+namespace MyFullstackApp.Services
 {
-    public class SimpleColorPickingService : IColorPickingService
+
+    public class ConfigurableColorPickingServiceConstructionParameters
     {
+        public TimeOnly AlarmTime { get; }
+        public int TransitionMinutes { get; }
+        public int HoldOnMinutes { get; }
+        public DayOfWeek[] ActiveDays { get; }
+
+        public bool Validate(out string errorMessage)
+        {
+            if (AlarmTime == default)
+            {
+                errorMessage = "AlarmTime must be set.";
+                return false;
+            }
+            if (TransitionMinutes <= 0)
+            {
+                errorMessage = "TransitionMinutes must be greater than 0.";
+                return false;
+            }
+            if (HoldOnMinutes < 0)
+            {
+                errorMessage = "HoldOnMinutes cannot be negative.";
+                return false;
+            }
+            if (ActiveDays == null || ActiveDays.Length == 0)
+            {
+                errorMessage = "ActiveDays must contain at least one day.";
+                return false;
+            }
+
+            DateTime today = DateTime.Today;
+            DateTime alarmDateTime = today.AddHours(AlarmTime.Hour).AddMinutes(AlarmTime.Minute);
+            if (alarmDateTime.AddMinutes(TransitionMinutes + HoldOnMinutes).Day != today.Day)
+            {
+                errorMessage = "The combination of AlarmTime, TransitionMinutes, and HoldOnMinutes must not cross over to the next day.";
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
+        }
+    }
+
+    public class ConfigurableColorPickingService : IColorPickingService
+    {
+
+        public ConfigurableColorPickingService(ConfigurableColorPickingServiceConstructionParameters parameters)
+            : this(parameters.AlarmTime, parameters.TransitionMinutes, parameters.HoldOnMinutes, parameters.ActiveDays)
+        {
+            if (!parameters.Validate(out string errorMessage))
+            {
+                throw new ArgumentException($"Invalid construction parameters: {errorMessage}");
+            }
+        }
+
+        private ConfigurableColorPickingService(TimeOnly alarmTime, int transitionMinutes, int holdOnMinutes, DayOfWeek[] activeDays)
+        {
+            AlarmStartTimeInSeconds = (alarmTime.Hour * 60 + alarmTime.Minute) * 60;
+            EightAMInSeconds = AlarmStartTimeInSeconds + (transitionMinutes * 60);
+            NineAMInSeconds = EightAMInSeconds + (holdOnMinutes * 60);
+            ActiveDays = [.. activeDays];
+        }
+
         private const int MaxKelvin = 4500;
         private const int MinKelvin = 1500;
 
+
+        /// <summary>
+        /// The days of the week the alarm is active on.
+        /// </summary>
+        private HashSet<DayOfWeek> ActiveDays { get; set; }
         /// <summary>
         /// Sunrise start time: 6:30 AM
         /// </summary>
-        private static int SixThirtyAMInSeconds = (6 * 60 + 30) * 60;
+        private int AlarmStartTimeInSeconds = (6 * 60 + 30) * 60;
 
         /// <summary>
         /// Sunrise end time: 8:00 AM
         /// </summary>
-        private static int EightAMInSeconds = (8 * 60) * 60;
+        private int EightAMInSeconds = (8 * 60) * 60;
 
         /// <summary>
         /// Lights are held on until: 9:00 AM
         /// </summary>
-        private static int NineAMInSeconds = (9 * 60) * 60;
+        private int NineAMInSeconds = (9 * 60) * 60;
 
         /// <summary>
         /// Determines if the light should be on at the given time.
@@ -70,7 +138,11 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         private bool IsDuringLightsOffTime(int secondsSinceMidnight)
         {
-            if (secondsSinceMidnight < SixThirtyAMInSeconds)
+            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            {
+                return true;
+            }
+            if (secondsSinceMidnight < AlarmStartTimeInSeconds)
             {
                 return true;
             }
@@ -89,7 +161,11 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         private bool IsDuringTransitionToOnTime(int secondsSinceMidnight)
         {
-            return secondsSinceMidnight >= SixThirtyAMInSeconds && secondsSinceMidnight <= EightAMInSeconds;
+            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            {
+                return false;
+            }
+            return secondsSinceMidnight >= AlarmStartTimeInSeconds && secondsSinceMidnight <= EightAMInSeconds;
         }
 
         /// <summary>
@@ -99,6 +175,10 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         private bool IsDuringHoldOnTime(int secondsSinceMidnight)
         {
+            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            {
+                return false;
+            }
             return secondsSinceMidnight > EightAMInSeconds && secondsSinceMidnight <= NineAMInSeconds;
         }
 
@@ -120,8 +200,8 @@ namespace AlarmClock.Backend.Services
             else if (IsDuringTransitionToOnTime(secondsSinceMidnight))
             {
                 // Between 6 AM and 8 AM: Gradually increase brightness and color temperature
-                int totalSeconds = EightAMInSeconds - SixThirtyAMInSeconds;
-                int elapsedSeconds = secondsSinceMidnight - SixThirtyAMInSeconds;
+                int totalSeconds = EightAMInSeconds - AlarmStartTimeInSeconds;
+                int elapsedSeconds = secondsSinceMidnight - AlarmStartTimeInSeconds;
                 double percentage = (100 * elapsedSeconds / (double)totalSeconds);
 
                 return ColorFromLightPercentage(percentage);

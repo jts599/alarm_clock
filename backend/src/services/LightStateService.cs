@@ -159,7 +159,7 @@ namespace AlarmClock.Backend.Services
         {
             if (_lastSetColor == null)
                 return true;
-            return !_lastSetColor.IsEqual((IAlarmClockColor)newColor);
+            return !_lastSetColor.IsEqual(newColor);
         }
 
         private bool IsChosenOnStateDifferent(bool newOnState)

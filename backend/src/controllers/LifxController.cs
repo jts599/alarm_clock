@@ -16,6 +16,10 @@ namespace Backend.Controllers
     {
         private readonly ILogger<LifxController> _logger;
         private static LifxClient _client = null;
+
+        private static int NumberOfBulbs => Bulbs?.Count() ?? 0;
+
+        private static IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
         private static readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
         private static readonly SemaphoreSlim _clientLock = new(1, 1);
 
@@ -56,7 +60,6 @@ namespace Backend.Controllers
             if (e.Device is LightBulb bulb)
             {
                 var deviceId = bulb.GetHashCode().ToString();
-                _bulbs.TryAdd(deviceId, bulb);
                 _logger.LogInformation($"Light bulb discovered: {bulb.ToString()} (ID: {deviceId})");
             }
         }
@@ -66,7 +69,6 @@ namespace Backend.Controllers
             if (e.Device is LightBulb bulb)
             {
                 var deviceId = bulb.GetHashCode().ToString();
-                _bulbs.TryRemove(deviceId, out _);
                 _logger.LogInformation($"Light bulb lost: {bulb.ToString()} (ID: {deviceId})");
             }
         }
@@ -79,9 +81,7 @@ namespace Backend.Controllers
                 // Ensure client is initialized
                 await GetOrCreateClientAsync();
 
-                _logger.LogInformation($"Current number of bulbs (from client): {_client.Devices.Count()}");
-
-                var bulbCount = _bulbs.Count;
+                var bulbCount = NumberOfBulbs;
                 _logger.LogInformation($"Current number of bulbs: {bulbCount}");
 
                 return Ok(new
@@ -109,7 +109,7 @@ namespace Backend.Controllers
             {
                 var client = await GetOrCreateClientAsync();
 
-                if (_bulbs.IsEmpty)
+                if (Bulbs.Count() == 0)
                 {
                     return Ok(new
                     {
@@ -119,20 +119,20 @@ namespace Backend.Controllers
                     });
                 }
 
-                var tasks = _bulbs.Values.Select(bulb =>
+                var tasks = Bulbs.Select(bulb =>
                     client.SetDevicePowerStateAsync(bulb, request.On)
                 );
 
                 await Task.WhenAll(tasks);
 
                 var action = request.On ? "turned on" : "turned off";
-                _logger.LogInformation($"All {_bulbs.Count} bulbs {action}");
+                _logger.LogInformation($"All {Bulbs.Count()} bulbs {action}");
 
                 return Ok(new
                 {
                     success = true,
                     message = $"All bulbs {action}",
-                    bulbsAffected = _bulbs.Count,
+                    bulbsAffected = Bulbs.Count(),
                     powerState = request.On
                 });
             }

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using MyFullstackApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register custom services
+builder.Services.AddSingleton<ILifxService, LifxService>();
+builder.Services.AddTransient<IColorPickingService, SimpleColorPickingService>();
+builder.Services.AddHostedService<LightStateService>();
 
 // Add CORS policy for development
 builder.Services.AddCors(options =>
@@ -37,6 +44,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Health check endpoint
-app.MapGet("/", () => new { status = "Alarm Clock API is running", timestamp = DateTime.UtcNow });
+app.MapGet("/", () => Results.Ok(new { status = "Alarm Clock API is running", timestamp = DateTime.UtcNow }));
 
 app.Run();

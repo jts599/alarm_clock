@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -89,30 +90,58 @@ namespace MyFullstackApp.Services
                 AlarmClockColor desiredColor;
                 bool desiredOnState;
 
+                bool shouldUpdateColor;
+                bool shouldUpdateOnState;
+                int transitionTime = 0;
+
                 lock (_colorPickerLock)
                 {
                     desiredColor = _colorPicker.GetColorForTime(scaledNow);
                     desiredOnState = _colorPicker.IsLightOnAtTime(scaledNow);
+                    shouldUpdateColor = IsChosenColorDifferent(desiredColor);
+                    shouldUpdateOnState = IsChosenOnStateDifferent(desiredOnState);
+                    if (shouldUpdateColor)
+                    {
+                        transitionTime = CalculateTransitionTime(desiredColor, scaledNow);
+                    }
                 }
+                if (IsChosenColorDifferent(desiredColor))
+                {
+                    _logger.LogInformation($"Changing light color to: {desiredColor}");
+                    await _lifxService.SetColorAllAsync(desiredColor.Color, desiredColor.Kelvin, transitionTime);
+                    _lastSetColor = desiredColor;
+
+                }
+
                 if (IsChosenOnStateDifferent(desiredOnState))
                 {
                     _logger.LogInformation($"Changing light on state to: {desiredOnState}");
                     await _lifxService.SetAllBulbsPowerAsync(desiredOnState);
                     _lastSetOnState = desiredOnState;
                 }
-
-                if (IsChosenColorDifferent(desiredColor))
-                {
-                    _logger.LogInformation($"Changing light color to: {desiredColor}");
-                    await _lifxService.SetColorAllAsync(desiredColor.Color, desiredColor.Kelvin);
-                    _lastSetColor = desiredColor;
-
-                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Setting Lights");
             }
+        }
+
+        private int CalculateTransitionTime(AlarmClockColor newColor, DateTime scaledNow)
+        {
+            int time = 0;
+            DateTime checkTime = scaledNow;
+            do
+            {
+                time += 1;
+                checkTime = scaledNow.AddSeconds(time);
+
+                var nextColor = _colorPicker.GetColorForTime(checkTime);
+                if (!newColor.IsEqual(nextColor))
+                {
+                    break;
+                }
+            } while (time < 10); // Limit to 10 seconds max transition time
+            return time;
         }
 
         private bool IsChosenColorDifferent(AlarmClockColor newColor)

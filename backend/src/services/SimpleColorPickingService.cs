@@ -9,25 +9,25 @@ namespace MyFullstackApp.Services
         private const int MinKelvin = 1500;
         public bool IsLightOnAtTime(DateTime time)
         {
-            int minutesSinceMidnight = GetMinutesSinceMidnight(time);
-            return minutesSinceMidnight >= SixAMInMinutes && minutesSinceMidnight <= EightAMInMinutes;
+            var color = GetColorForTime(time);
+            return !(color.Color.R == 0 && color.Color.G == 0 && color.Color.B == 0);
         }
 
         public AlarmClockColor GetColorForTime(DateTime time)
         {
             int minutesSinceMidnight = GetMinutesSinceMidnight(time);
 
-            if (minutesSinceMidnight < SixAMInMinutes)
+            if (minutesSinceMidnight < SixThirtyAMInMinutes)
             {
                 // Before 6 AM: Off
                 return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MinKelvin);
             }
-            else if (minutesSinceMidnight >= SixAMInMinutes && minutesSinceMidnight <= EightAMInMinutes)
+            else if (minutesSinceMidnight >= SixThirtyAMInMinutes && minutesSinceMidnight <= EightAMInMinutes)
             {
                 // Between 6 AM and 8 AM: Gradually increase brightness and color temperature
-                int totalMinutes = EightAMInMinutes - SixAMInMinutes;
-                int elapsedMinutes = minutesSinceMidnight - SixAMInMinutes;
-                int percentage = (int)((elapsedMinutes / (double)totalMinutes) * 100);
+                int totalMinutes = EightAMInMinutes - SixThirtyAMInMinutes;
+                int elapsedMinutes = minutesSinceMidnight - SixThirtyAMInMinutes;
+                int percentage = (int)(100 * elapsedMinutes / (double)totalMinutes);
 
                 return ColorFromLightPercentage(percentage);
             }
@@ -39,18 +39,25 @@ namespace MyFullstackApp.Services
             else
             {
                 // After 9 AM: Off
-                return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MaxKelvin);
+                int minutesSinceNine = minutesSinceMidnight - NineAMInMinutes;
+                byte dimmedValue = rgbValueForDim(minutesSinceNine);
+                return new AlarmClockColor(new LifxNet.Color { R = dimmedValue, G = dimmedValue, B = dimmedValue }, MaxKelvin);
             }
         }
 
-
+        private byte rgbValueForDim(int minutesSinceNine)
+        {
+            if (minutesSinceNine < 0) return 255;
+            if (minutesSinceNine > 60) return 0;
+            return (byte)(255 - (int)(minutesSinceNine / 60.0 * 255));
+        }
 
         private static int GetMinutesSinceMidnight(DateTime time)
         {
             return time.Hour * 60 + time.Minute;
         }
 
-        private static int SixAMInMinutes = 6 * 60;
+        private static int SixThirtyAMInMinutes = 6 * 60 + 30;
         private static int EightAMInMinutes = 8 * 60;
         private static int NineAMInMinutes = 9 * 60;
 
@@ -73,10 +80,10 @@ namespace MyFullstackApp.Services
 
         private static ushort KelvinFromPercentage(int percentage)
         {
-            if (percentage < 50) return MinKelvin;
-            if (percentage > 100) return MaxKelvin;
+            if (percentage < 25) return MinKelvin;
+            if (percentage > 75) return MaxKelvin;
             const ushort range = MaxKelvin - MinKelvin;
-            double multiplier = 2 * (percentage - 50) / 100.0;
+            double multiplier = (percentage - 25) / 50.0;
             ushort addition = (ushort)(multiplier * range);
             return (ushort)(MinKelvin + addition);
         }

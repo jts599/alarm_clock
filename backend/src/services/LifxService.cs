@@ -189,7 +189,7 @@ namespace MyFullstackApp.Services
         }
 
 
-        public async Task<bool> SetColorAllAsync(LifxNet.Color color, ushort kelvin)
+        public async Task<bool> SetColorAllAsync(LifxNet.Color color, ushort kelvin, int transitionTime = 0)
         {
 
             try
@@ -203,7 +203,7 @@ namespace MyFullstackApp.Services
                 Bulbs.ToList().ForEach(bulb =>
                 {
                     _logger.LogInformation($"Setting color of bulb {bulb.ToString()} to {color}");
-                    client.SetColorAsync(bulb, color, kelvin).Wait();
+                    client.SetColorAsync(bulb, color, kelvin, TimeSpan.FromSeconds(transitionTime)).Wait();
                 });
                 return true;
             }

@@ -7,7 +7,7 @@ namespace MyFullstackApp.Services
     {
         Task<int> GetNumberOfBulbsAsync();
         Task<bool> SetAllBulbsPowerAsync(bool powerOn);
-        Task<bool> SetColorAllAsync(Color color, ushort kelvin);
+        Task<bool> SetColorAllAsync(Color color, ushort kelvin, int transitionTime = 0);
         Task InitializeAsync();
     }
 }

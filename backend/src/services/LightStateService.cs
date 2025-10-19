@@ -45,7 +45,18 @@ namespace MyFullstackApp.Services
         }
 
         private DateTime _trueStartTime;
-        private DateTime DefaultStartTime => DateTime.Now;
+
+        /// <summary>
+        /// In prod this should be DateTime.Now, for testing it can be set to a fixed time.
+        /// </summary>
+        private DateTime DefaultStartTime => AlarmStartTime;
+
+
+        /// <summary>
+        /// This can be used for testing so that the alarm goes off when the program starts. 
+        /// Update DefaultStartTime to change the default alarm start time.
+        /// </summary>
+        private DateTime AlarmStartTime => DateTime.Today.AddHours(6).AddMinutes(30); // 6:30 AM today
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -85,7 +96,7 @@ namespace MyFullstackApp.Services
                 int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
                 DateTime scaledNow = _startTime.AddSeconds(scaledSecondsSinceStart);
-                _logger.LogInformation($"Scaled time: {scaledNow}");
+                //_logger.LogInformation($"Scaled time: {scaledNow}");
 
                 AlarmClockColor desiredColor;
                 bool desiredOnState;
@@ -107,7 +118,7 @@ namespace MyFullstackApp.Services
                 }
                 if (IsChosenColorDifferent(desiredColor))
                 {
-                    _logger.LogInformation($"Changing light color to: {desiredColor}");
+                    _logger.LogInformation($"Changing light color to: {desiredColor}. Transition time: {transitionTime} seconds");
                     await _lifxService.SetColorAllAsync(desiredColor.Color, desiredColor.Kelvin, transitionTime);
                     _lastSetColor = desiredColor;
 

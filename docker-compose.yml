@@ -1,28 +1,12 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    network_mode: "host"
-    environment:
-      - REACT_APP_API_URL=http://localhost:5000
-      - REACT_APP_ENV=production
-    depends_on:
-      - backend
-
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     network_mode: "host"
-    volumes:
-      - ./shared:/app/shared
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
-
-networks:
-  default:
-    driver: bridge
+    restart: unless-stopped

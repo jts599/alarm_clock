@@ -23,12 +23,49 @@ The custom fork includes commits beyond the official v2.2 release that improve r
 ## Development Setup
 
 ### Prerequisites
-- Docker and Docker Compose
-- .NET 8 SDK (for local development)
-- Node.js 18+ (for local frontend development)
+- **For Dev Container**: Docker and VS Code with Remote-Containers extension
+- **For Local Development**: Docker and Docker Compose, .NET 8 SDK, Node.js 18+
 - VS Code with C# and Docker extensions
 
-### First-Time Setup
+### Option 1: Dev Container Setup (Recommended)
+
+The easiest way to get started is using the VS Code dev container which provides a fully configured development environment:
+
+1. **Clone the repository with submodules**:
+   ```bash
+   git clone --recurse-submodules https://github.com/jts599/alarm_clock.git
+   cd alarm_clock
+   ```
+
+2. **Open in VS Code**:
+   ```bash
+   code .
+   ```
+
+3. **Reopen in Container**:
+   - VS Code will prompt to "Reopen in Container" when it detects the `.devcontainer` folder
+   - Or manually: `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
+
+4. **Wait for setup**: The container will automatically:
+   - Install .NET 8 SDK and Node.js 20
+   - Restore .NET dependencies 
+   - Install npm packages
+   - Configure the development environment
+
+5. **Start development**:
+   - Backend: `cd backend && dotnet run` (port 5000)
+   - Frontend: `cd frontend && npm run dev` (port 3000)
+   - Or use VS Code debug: `F5` → "Launch Full Stack"
+
+**Dev Container Benefits**:
+- ✅ **No local setup required** - Everything runs in a container
+- ✅ **Consistent environment** across different machines
+- ✅ **All dependencies included** (.NET 8, Node.js 20, git, etc.)
+- ✅ **VS Code extensions** pre-configured for fullstack development
+- ✅ **Port forwarding** automatically configured (5000, 3000)
+- ✅ **Works with stub services** - No network issues since LIFX services are mocked
+
+### Option 2: Local Development Setup
 
 1. **Clone the repository with submodules**:
    ```bash

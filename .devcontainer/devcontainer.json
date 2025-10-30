@@ -1,34 +1,68 @@
 {
-    "name": "Alarm Clock Dev Container",
+    "name": "Alarm Clock Fullstack Dev Container",
     "build": {
         "dockerfile": "Dockerfile",
         "context": "."
     },
     "workspaceFolder": "/workspace",
-    "runArgs": [
-        "--network=host",
-        "--privileged"
-    ],
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-dotnettools.csharp",
-                "ms-vscode.js-debug-nightly",
-                "dbaeumer.vscode-eslint"
+                "ms-dotnettools.blazorwasm-companion",
+                "ms-vscode.js-debug",
+                "dbaeumer.vscode-eslint",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-typescript-next",
+                "ms-vscode.vscode-json"
             ],
             "settings": {
-                "terminal.integrated.defaultProfile.linux": "bash"
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "dotnet.defaultSolution": "/workspace/backend/backend.sln",
+                "typescript.preferences.quoteStyle": "single",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "explicit"
+                }
             }
         }
     },
-    "remoteUser": "root",
-    "mounts": [
-        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
-        "source=${localWorkspaceFolder},target=/workspace,type=bind"
-    ],
+    "remoteUser": "vscode",
     "containerEnv": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://+:5000"
+        "ASPNETCORE_URLS": "http://+:5000",
+        "NODE_ENV": "development"
     },
-    "postCreateCommand": "dotnet restore /workspace/backend/backend.csproj"
+    "forwardPorts": [
+        5000,
+        3000
+    ],
+    "portsAttributes": {
+        "5000": {
+            "label": "Backend API",
+            "protocol": "http"
+        },
+        "3000": {
+            "label": "Frontend Dev Server",
+            "protocol": "http"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "configureZshAsDefaultShell": true,
+            "installOhMyZsh": true,
+            "installOhMyZshConfig": true,
+            "upgradePackages": true,
+            "username": "vscode",
+            "userUid": "automatic",
+            "userGid": "automatic"
+        },
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "latest"
+        }
+    }
 }

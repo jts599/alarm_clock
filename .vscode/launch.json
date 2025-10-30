@@ -22,12 +22,12 @@
       }
     },
     {
-      "name": "Launch Chrome",
+      "name": "Launch Chrome (Frontend)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/frontend/src",
-      "preLaunchTask": "npm: start"
+      "preLaunchTask": "npm: dev"
     },
     {
       "name": "Attach to Docker Backend",
@@ -42,7 +42,7 @@
       "name": "Launch Full Stack",
       "configurations": [
         ".NET Core Launch (web)",
-        "Launch Chrome"
+        "Launch Chrome (Frontend)"
       ],
       "stopAll": true
     }

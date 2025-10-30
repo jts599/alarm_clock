@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public class LightStateService : BackgroundService, ILightStateService
     {

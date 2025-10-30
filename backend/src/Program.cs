@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using MyFullstackApp.Services;
+using AlarmClock.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

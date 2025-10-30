@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using LifxNet;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public interface ILifxService
     {

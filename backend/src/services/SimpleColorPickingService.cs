@@ -1,7 +1,7 @@
 using System;
 using LifxNet;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public class SimpleColorPickingService : IColorPickingService
     {

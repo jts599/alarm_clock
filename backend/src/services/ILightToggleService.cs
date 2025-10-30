@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public interface ILightToggleService
     {

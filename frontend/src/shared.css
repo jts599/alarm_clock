@@ -1,0 +1,234 @@
+/* ========================================
+   SHARED STYLES - ALARM FRONTEND
+   ======================================== */
+
+/* Color Variables */
+:root {
+  /* Background Colors */
+  --bg-primary: #2d2d2d;
+  --bg-secondary: #1a1a1a;
+  --bg-screensaver: #1a1a1a;
+  --bg-transparent: transparent;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #666666;
+  
+  /* Border Colors */
+  --border-primary: #ffffff;
+  --border-secondary: rgba(255, 255, 255, 0.3);
+  --border-muted: #666666;
+  
+  /* Interactive States */
+  --hover-overlay: rgba(255, 255, 255, 0.1);
+  --active-overlay: rgba(255, 255, 255, 0.05);
+  
+  /* Opacity Levels */
+  --opacity-high: 0.9;
+  --opacity-medium: 0.8;
+  --opacity-low: 0.6;
+  --opacity-disabled: 0.4;
+}
+
+/* Typography Scale */
+:root {
+  /* Font Family */
+  --font-family-primary: 'Comfortaa', 'Comic Sans MS', 'Segoe UI', 'Roboto', sans-serif;
+  --font-family-secondary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Font Weights */
+  --font-weight-ultra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  
+  /* Font Sizes - Increased by ~25% maintaining proportions */
+  --font-size-xs: 15px;
+  --font-size-sm: 18px;
+  --font-size-md: 20px;
+  --font-size-lg: 23px;
+  --font-size-xl: 25px;
+  --font-size-2xl: 30px;
+  --font-size-3xl: 35px;
+  --font-size-4xl: 40px;
+  --font-size-5xl: 60px;
+  --font-size-6xl: 90px;
+  
+  /* Line Heights */
+  --line-height-tight: 1;
+  --line-height-normal: 1.5;
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -2px;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.5px;
+  --letter-spacing-wider: 1px;
+}
+
+/* Spacing Scale */
+:root {
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  --spacing-4xl: 40px;
+  --spacing-5xl: 48px;
+}
+
+/* Border Radius */
+:root {
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* Border Widths */
+:root {
+  --border-thin: 1px;
+  --border-medium: 2px;
+  --border-thick: 3px;
+}
+
+/* Transitions */
+:root {
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Common Component Styles */
+.component-base {
+  background: var(--bg-transparent);
+  border: var(--border-medium) solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  color: var(--text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+}
+
+.component-loading,
+.component-error {
+  border-color: var(--border-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.loading-text,
+.error-text {
+  font-size: var(--font-size-sm);
+  text-align: center;
+  opacity: var(--opacity-low);
+  color: var(--text-secondary);
+}
+
+/* Button Base Styles */
+.button-base {
+  background: var(--bg-transparent);
+  border: var(--border-thin) solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-base:hover:not(:disabled) {
+  background: var(--hover-overlay);
+  border-color: var(--border-primary);
+}
+
+.button-base:active:not(:disabled) {
+  background: var(--active-overlay);
+}
+
+.button-base:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  border-color: var(--border-muted);
+  color: var(--text-muted);
+}
+
+/* Header Styles */
+.header-primary {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-light);
+  text-align: center;
+}
+
+.header-secondary {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  opacity: var(--opacity-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--text-secondary);
+}
+
+/* Icon Styles */
+.icon-large {
+  font-size: var(--font-size-5xl);
+  line-height: var(--line-height-tight);
+  opacity: var(--opacity-high);
+}
+
+.icon-medium {
+  font-size: var(--font-size-4xl);
+  line-height: var(--line-height-tight);
+  opacity: var(--opacity-high);
+}
+
+.icon-small {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  opacity: var(--opacity-high);
+}
+
+/* Utility Classes */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.opacity-high { opacity: var(--opacity-high); }
+.opacity-medium { opacity: var(--opacity-medium); }
+.opacity-low { opacity: var(--opacity-low); }
+
+/* Animation Classes */
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: var(--opacity-low);
+  }
+  50% {
+    opacity: 1;
+  }
+}

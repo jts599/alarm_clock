@@ -1,0 +1,112 @@
+@import '../../shared.css';
+
+.duration-inputs {
+  display: flex;
+  gap: var(--spacing-2xl);
+  width: 100%;
+  max-width: 600px;
+  justify-content: space-between;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+  max-width: 220px;
+  min-width: 180px;
+}
+
+.input-label {
+  color: var(--text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.tooltip-icon {
+  font-size: var(--font-size-sm);
+  cursor: help;
+  opacity: var(--opacity-medium);
+  transition: opacity 0.2s ease;
+}
+
+.tooltip-icon:hover {
+  opacity: var(--opacity-high);
+}
+
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--bg-transparent);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: border-color 0.2s ease;
+  min-width: 140px;
+  max-width: 180px;
+  justify-content: center;
+}
+
+.input-with-unit:focus-within {
+  border-color: var(--border-primary);
+}
+
+.duration-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  font-family: inherit;
+  width: 60px;
+  outline: none;
+  text-align: center;
+}
+
+.duration-input::-webkit-outer-spin-button,
+.duration-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.duration-input[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.unit-label {
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-light);
+  white-space: nowrap;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .duration-inputs {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .input-group {
+    gap: var(--spacing-xs);
+  }
+  
+  .input-label {
+    font-size: var(--font-size-lg);
+  }
+  
+  .duration-input {
+    font-size: var(--font-size-md);
+  }
+  
+  .unit-label {
+    font-size: var(--font-size-md);
+  }
+}

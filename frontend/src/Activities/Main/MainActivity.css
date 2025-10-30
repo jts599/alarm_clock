@@ -1,0 +1,106 @@
+@import '../../shared.css';
+
+.main-activity {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background-image: url('https://images.pexels.com/photos/1612351/pexels-photo-1612351.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.time-section {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.components-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  pointer-events: none; /* Allow clicks to pass through to time */
+}
+
+.components-grid > * {
+  pointer-events: auto; /* Re-enable clicks on components */
+}
+
+/* Position components in corners */
+.light-status-container {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+}
+
+.weather-container {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+}
+
+.next-event-container {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: end;
+  justify-self: start;
+}
+
+.light-control-container {
+  grid-column: 3;
+  grid-row: 3;
+  align-self: end;
+  justify-self: end;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .components-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .light-control-container {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-activity {
+    padding: 16px;
+  }
+  
+  .main-activity h1 {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .time-section {
+    margin-bottom: 32px;
+  }
+  
+  .components-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .light-control-container {
+    grid-column: span 1;
+  }
+}

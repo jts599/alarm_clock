@@ -1,0 +1,73 @@
+@import '../../shared.css';
+
+.days-of-week-picker {
+  width: 100%;
+  max-width: 400px;
+}
+
+.days-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: space-between;
+}
+
+.day-button {
+  background: var(--bg-transparent);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--spacing-md);
+  font-family: inherit;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.day-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.day-button.selected {
+  border-color: var(--border-primary);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.day-button.selected:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-primary);
+}
+
+.day-button:active {
+  transform: scale(0.95);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .day-button {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-md);
+    padding: var(--spacing-sm);
+  }
+  
+  .days-container {
+    gap: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .day-button {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-sm);
+  }
+}

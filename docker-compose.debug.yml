@@ -1,11 +1,26 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.debug
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+
   backend:
     command: [ "/bin/sh", "-c", "while sleep 1000; do :; done" ]
     build:
       context: ./backend
       dockerfile: Dockerfile.debug
     working_dir: /workspace
-    network_mode: "host"
+    ports:
+      - "5000:5000"
     volumes:
       - .:/workspace
       - ./backend:/app/backend

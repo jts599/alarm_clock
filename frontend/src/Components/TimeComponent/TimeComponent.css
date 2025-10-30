@@ -1,0 +1,78 @@
+@import '../../shared.css';
+
+.time-component {
+    background: var(--bg-transparent);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl) var(--spacing-5xl);
+    color: var(--text-primary);
+    font-family: var(--font-family-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-display {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-md);
+}
+
+.time-digits {
+    font-size: var(--font-size-6xl);
+    font-weight: var(--font-weight-ultra-light);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+}
+
+.time-period {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-light);
+    color: var(--text-secondary);
+    opacity: var(--opacity-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wider);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .time-digits {
+        font-size: 70px;
+        letter-spacing: -1px;
+    }
+    
+    .time-period {
+        font-size: 25px;
+        margin-bottom: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .time-digits {
+        font-size: 60px;
+        letter-spacing: -1px;
+    }
+    
+    .time-period {
+        font-size: 23px;
+        margin-bottom: 4px;
+    }
+}
+
+/* Smooth transition for time changes */
+.time-digits,
+.time-period {
+    transition: opacity 0.1s ease;
+}
+
+/* Optional: Add a subtle animation when seconds change */
+@keyframes timeUpdate {
+    0% { opacity: 1; }
+    50% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+.time-component.updating .time-digits {
+    animation: timeUpdate 0.2s ease;
+}

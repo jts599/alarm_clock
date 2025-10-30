@@ -26,6 +26,8 @@ namespace AlarmClock.Backend.Services
             Kelvin = kelvin;
         }
 
+        public static AlarmClockColor Default => new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, 3500);
+
         /// <summary>
         /// Checks if this AlarmClockColor is equal to another
         /// </summary>

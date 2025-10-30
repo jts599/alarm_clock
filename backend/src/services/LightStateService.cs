@@ -1,5 +1,7 @@
+using AlarmClock.Backend.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -11,6 +13,9 @@ namespace AlarmClock.Backend.Services
     {
         private readonly ILogger<LightStateService> _logger;
         private readonly ILifxService _lifxService;
+
+        private readonly RunConfiguration _config;
+
         private bool _lastSetOnState = false; // false = off, true = on
         private DateTime _startTime = DateTime.MinValue;
 
@@ -28,14 +33,34 @@ namespace AlarmClock.Backend.Services
             }
         }
 
+        public AlarmClockColor GetCurrentColor()
+        {
+            DateTime scaledNow = GetScaledTime();
+            lock (_colorPickerLock)
+            {
+                return _colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default;
+            }
+        }
+
+        public bool isLightCurrentlyOn()
+        {
+            lock (_colorPickerLock)
+            {
+                return _colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false;
+            }
+        }
+
         public LightStateService(
             ILogger<LightStateService> logger,
             ILifxService lifxService,
             IColorPickingService colorPicker,
-            int secondsStepInterval = 1,
+            IOptions<RunConfiguration> configOptions,
             DateTime? startTime = null
             )
         {
+            var config = configOptions.Value;
+            int secondsStepInterval = config.TimescaleMultiplier;
+            _config = config;
             _logger = logger;
             _lifxService = lifxService;
             _colorPicker = colorPicker;
@@ -56,7 +81,17 @@ namespace AlarmClock.Backend.Services
         /// This can be used for testing so that the alarm goes off when the program starts. 
         /// Update DefaultStartTime to change the default alarm start time.
         /// </summary>
-        private DateTime AlarmStartTime => DateTime.Today.AddHours(6).AddMinutes(30); // 6:30 AM today
+        private DateTime AlarmStartTime
+        {
+            get
+            {
+                if (_config != null && _config.StartTimeHour >= 0 && _config.StartTimeHour < 24)
+                {
+                    return DateTime.Today.AddHours(_config.StartTimeHour);
+                }
+                return DateTime.Today.AddHours(6).AddMinutes(30); // 6:30 AM today
+            }
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -88,6 +123,15 @@ namespace AlarmClock.Backend.Services
             }
         }
 
+        public DateTime GetScaledTime()
+        {
+            DateTime now = DateTime.Now;
+            int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
+            int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
+            DateTime scaledNow = _startTime.AddSeconds(scaledSecondsSinceStart);
+            return scaledNow;
+        }
+
         private async Task UpdateLightStateAsync()
         {
             try
@@ -95,7 +139,7 @@ namespace AlarmClock.Backend.Services
                 DateTime now = DateTime.Now;
                 int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
-                DateTime scaledNow = _startTime.AddSeconds(scaledSecondsSinceStart);
+                DateTime scaledNow = GetScaledTime();
                 //_logger.LogInformation($"Scaled time: {scaledNow}");
 
                 AlarmClockColor desiredColor;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using LifxNet;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
 
     public class ConfigurableColorPickingServiceConstructionParameters

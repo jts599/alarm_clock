@@ -1,0 +1,3 @@
+[submodule "LifxNet-Source"]
+	path = LifxNet-Source
+	url = https://github.com/jts599/LifxNet.git

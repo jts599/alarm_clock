@@ -1,45 +1,69 @@
-# Alarm Clock Full-Stack Application
+# Alarm Clock Backend API
 
-A containerized full-stack application with React/TypeScript frontend and .NET 6 backend.
+A .NET 8 Web API for controlling LIFX smart lights as part of an alarm clock system.
 
 ## Architecture
 
-- **Frontend**: React with TypeScript, served on port 3000
-- **Backend**: .NET 6 Web API, served on port 5000
+- **Backend**: .NET 8 Web API, served on port 5000
+- **LIFX Integration**: Custom fork of LifxNet library with stability improvements
 - **Shared**: API specifications and shared models
 - **Containerization**: Docker with Docker Compose
+
+## Custom Dependencies
+
+This project uses a **custom fork of the LifxNet library** located in `LifxNet-Source/` with the following improvements:
+- Debugging output commented out
+- Added `ToString()` implementation for `Lifx.Color`
+- Timing fixes for better stability
+- Bug fixes and stabilization of the lifxlan loop
+
+The custom fork includes commits beyond the official v2.2 release that improve reliability for continuous operation in an alarm clock system.
 
 ## Development Setup
 
 ### Prerequisites
 - Docker and Docker Compose
-- .NET 6 SDK (for local development)
-- Node.js 16+ (for local development)
+- .NET 8 SDK (for local development)
 - VS Code with C# and Docker extensions
+
+### First-Time Setup
+
+1. **Clone the repository with submodules**:
+   ```bash
+   git clone --recurse-submodules https://github.com/jts599/alarm_clock.git
+   cd alarm_clock
+   ```
+
+   Or if you already cloned without submodules:
+   ```bash
+   git clone https://github.com/jts599/alarm_clock.git
+   cd alarm_clock
+   git submodule update --init --recursive
+   ```
+
+2. **The LifxNet-Source dependency** is automatically included as a Git submodule pointing to the custom fork with stability improvements
+
+3. **Build the solution**:
+   ```bash
+   dotnet build alarm_clock.sln
+   ```
 
 ### Running in Development Mode
 
-#### Option 1: Local Development (with debugging)
-1. **Backend**:
+#### Local Development (with debugging)
+1. **Build and run the backend**:
    ```bash
    cd backend
    dotnet run
    ```
 
-2. **Frontend**:
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
+2. **VS Code Debugging**:
+   - Use `F5` or select "Launch Backend" from the debug panel
+   - This will start the backend with full debugging support
 
-3. **VS Code Debugging**:
-   - Use `F5` or select "Launch Full Stack" from the debug panel
-   - This will start both backend and frontend with full debugging support
-
-#### Option 2: Docker Development Mode
+#### Docker Development Mode
 ```bash
-# Build and run in development mode with hot reload
+# Build and run in development mode
 docker-compose -f docker-compose.debug.yml up --build
 
 # Or use the VS Code task: Ctrl+Shift+P -> "Tasks: Run Task" -> "docker-up-debug"
@@ -54,40 +78,20 @@ docker-compose up --build
 docker-compose up -d --build
 ```
 
-## Debug Configurations
-
-### VS Code Debug Configurations Available:
-
-1. **".NET Core Launch (web)"** - Debug the backend locally
-2. **"Launch Chrome"** - Debug the frontend in Chrome
-3. **"Launch Full Stack"** - Debug both frontend and backend simultaneously
-4. **"Attach to Docker Backend"** - Attach debugger to running Docker container
-
-### Environment Variables
-
-#### Development (.env.development)
-- `REACT_APP_API_URL=http://localhost:5000`
-- `REACT_APP_ENV=development`
-- `ASPNETCORE_ENVIRONMENT=Development`
-
-#### Production
-- `REACT_APP_ENV=production`
-- `ASPNETCORE_ENVIRONMENT=Production`
-
-## File Structure
+## Project Structure
 
 ```
 alarm_clock/
-├── frontend/
-│   ├── src/
-│   ├── Dockerfile (production)
-│   ├── Dockerfile.debug (development)
-│   └── package.json
 ├── backend/
 │   ├── src/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   └── models/
 │   ├── Dockerfile (production)
 │   ├── Dockerfile.debug (development)
 │   └── backend.csproj
+├── LifxNet-Source/          # Custom fork of LifxNet with stability improvements
+│   └── src/LifxNet/
 ├── shared/
 │   └── api-spec.json
 ├── .vscode/
@@ -95,7 +99,7 @@ alarm_clock/
 │   └── tasks.json
 ├── docker-compose.yml (production)
 ├── docker-compose.debug.yml (development)
-└── .env.development
+└── alarm_clock.sln
 ```
 
 ## Available Commands
@@ -105,70 +109,57 @@ alarm_clock/
 - `docker-compose -f docker-compose.debug.yml up --build` - Build and run development
 - `docker-compose down` - Stop and remove containers
 
+### .NET Commands
+- `dotnet build alarm_clock.sln` - Build the entire solution including LifxNet dependency
+- `dotnet run --project backend/backend.csproj` - Run the backend locally
+
 ### VS Code Tasks
 - **build** - Build the .NET backend
-- **npm: start** - Start the React development server
 - **docker-build-debug** - Build debug Docker images
 - **docker-up-debug** - Build and run debug containers
 
-## API Specification
+## API Endpoints
 
-The shared API specification is located in `shared/api-spec.json` and is used by both frontend and backend for type safety and consistency.
+The backend provides REST API endpoints for controlling LIFX lights:
 
-## Project Structure
+- `GET /api/status` - Health check endpoint
+- `GET /api/lifx/lights` - Get all discovered LIFX lights
+- `POST /api/lifx/lights/{id}/power` - Toggle light power
+- `POST /api/lifx/lights/{id}/color` - Set light color
 
+## LIFX Integration
+
+This project uses a **custom fork of the LifxNet library** (https://github.com/jts599/LifxNet) included as a Git submodule with the following improvements over the official v2.2 release:
+
+- **Stability improvements**: Better handling of network timeouts and connection issues
+- **Enhanced debugging**: Cleaner logging output for production use  
+- **Performance optimizations**: Timing fixes for more reliable light control
+- **Extended functionality**: Additional color handling and string representations
+
+The custom library is automatically built as part of the solution and doesn't require separate installation.
+
+## Updating the LifxNet Submodule
+
+To update to the latest version of the custom LifxNet fork:
+
+```bash
+cd LifxNet-Source
+git pull origin master
+cd ..
+git add LifxNet-Source
+git commit -m "Update LifxNet submodule"
 ```
-my-fullstack-app
-├── frontend          # React/TypeScript frontend application
-│   ├── src          # Source code for the frontend
-│   ├── package.json  # Frontend dependencies and scripts
-│   ├── tsconfig.json # TypeScript configuration
-│   └── Dockerfile    # Dockerfile for building the frontend image
-├── backend           # C#/.NET backend application
-│   ├── src          # Source code for the backend
-│   ├── backend.csproj # Backend project file
-│   └── Dockerfile    # Dockerfile for building the backend image
-├── shared            # Shared resources between frontend and backend
-│   └── api-spec.json # API specifications
-├── docker-compose.yml # Docker Compose configuration for multi-container setup
-└── README.md         # Project documentation
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Setup
-
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd my-fullstack-app
-   ```
-
-2. Build and run the application using Docker Compose:
-   ```
-   docker-compose up --build
-   ```
-
-### Frontend
-
-The frontend is built using React and TypeScript. It communicates with the backend through API calls defined in the `frontend/src/services/api.ts` file.
-
-### Backend
-
-The backend is built using C#/.NET and exposes various API endpoints defined in the controllers located in `backend/src/controllers/index.cs`.
-
-### API Specifications
-
-The API specifications are defined in the `shared/api-spec.json` file, which can be used to ensure consistency between the frontend and backend.
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+
+### Note on LifxNet Dependency
+
+If you need to modify the LifxNet library:
+1. Make changes in the `LifxNet-Source/src/LifxNet/` directory
+2. The changes will be automatically included when building the solution
+3. Consider contributing useful changes back to the upstream LifxNet project
 
 ## License
 

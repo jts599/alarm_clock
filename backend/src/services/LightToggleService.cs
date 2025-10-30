@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public class LightToggleService : BackgroundService, ILightToggleService
     {

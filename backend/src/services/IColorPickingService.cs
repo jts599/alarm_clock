@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Identity.Client;
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public interface IAlarmClockColor
     {

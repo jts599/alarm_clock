@@ -1,6 +1,6 @@
 using System;
 
-namespace MyFullstackApp.Services
+namespace AlarmClock.Backend.Services
 {
     public class UserService
     {

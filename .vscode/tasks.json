@@ -16,38 +16,6 @@
       "problemMatcher": "$tsc"
     },
     {
-      "label": "npm: start",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "start"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}/frontend"
-      },
-      "group": "build",
-      "isBackground": true,
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "problemMatcher": {
-        "owner": "webpack",
-        "pattern": {
-          "regexp": "ERROR in (.*)\\((\\d+),(\\d+)\\): (.*)$",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "message": 4
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^.*webpack.*",
-          "endsPattern": "webpack compiled.*"
-        }
-      }
-    },
-    {
       "label": "docker-build-debug",
       "type": "shell",
       "command": "docker-compose",

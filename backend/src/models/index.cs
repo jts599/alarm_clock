@@ -1,6 +1,6 @@
 using System;
 
-namespace MyFullstackApp.Models
+namespace AlarmClock.Backend.Models
 {
     public class User
     {

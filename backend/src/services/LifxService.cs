@@ -8,9 +8,9 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Net.NetworkInformation;
 using System.Net;
-using Humanizer;
 
-namespace MyFullstackApp.Services
+
+namespace AlarmClock.Backend.Services
 {
     public class LifxService : ILifxService
     {

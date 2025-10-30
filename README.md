@@ -1,11 +1,11 @@
 # Alarm Clock Full-Stack Application
 
-A containerized full-stack application with React/TypeScript frontend and .NET 6 backend.
+A containerized full-stack application with React/TypeScript frontend and .NET 8 backend.
 
 ## Architecture
 
 - **Frontend**: React with TypeScript, served on port 3000
-- **Backend**: .NET 6 Web API, served on port 5000
+- **Backend**: .NET 8 Web API, served on port 5000
 - **Shared**: API specifications and shared models
 - **Containerization**: Docker with Docker Compose
 
@@ -13,7 +13,7 @@ A containerized full-stack application with React/TypeScript frontend and .NET 6
 
 ### Prerequisites
 - Docker and Docker Compose
-- .NET 6 SDK (for local development)
+- .NET 8 SDK (for local development)
 - Node.js 16+ (for local development)
 - VS Code with C# and Docker extensions
 

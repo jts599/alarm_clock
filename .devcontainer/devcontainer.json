@@ -4,7 +4,6 @@
         "dockerfile": "Dockerfile",
         "context": "."
     },
-    "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -19,7 +18,7 @@
             ],
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "bash",
-                "dotnet.defaultSolution": "/workspace/backend/backend.sln",
+                "dotnet.defaultSolution": "./backend/backend.sln",
                 "typescript.preferences.quoteStyle": "single",
                 "editor.formatOnSave": true,
                 "editor.codeActionsOnSave": {

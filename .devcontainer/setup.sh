@@ -2,8 +2,7 @@
 
 echo "🚀 Setting up Alarm Clock Fullstack Development Environment..."
 
-# Change to workspace directory
-cd /workspace
+# We're already in the workspace directory, no need to change directories
 
 # Setup Backend
 echo "📦 Restoring .NET dependencies..."
@@ -15,7 +14,7 @@ cd frontend
 npm install
 
 # Return to workspace root
-cd /workspace
+cd ..
 
 # Verify installations
 echo "✅ Verifying installations..."
@@ -24,7 +23,7 @@ echo "npm version: $(npm --version)"
 echo ".NET version: $(dotnet --version)"
 
 # Set up git safe directory (if needed)
-git config --global --add safe.directory /workspace
+git config --global --add safe.directory $(pwd)
 
 echo "🎉 Development environment setup complete!"
 echo ""

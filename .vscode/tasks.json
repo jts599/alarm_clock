@@ -16,6 +16,65 @@
       "problemMatcher": "$tsc"
     },
     {
+      "label": "npm: install",
+      "type": "shell",
+      "command": "npm",
+      "args": ["install"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "npm: dev",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": "^\\s+(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*Local:",
+          "endsPattern": "ready in"
+        }
+      }
+    },
+    {
+      "label": "npm: generate-icons",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "generate-icons"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "docker-build-debug",
       "type": "shell",
       "command": "docker-compose",
@@ -44,6 +103,20 @@
         "reveal": "always"
       },
       "dependsOn": "docker-build-debug"
+    },
+    {
+      "label": "docker-down",
+      "type": "shell",
+      "command": "docker-compose",
+      "args": [
+        "-f",
+        "docker-compose.debug.yml",
+        "down"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      }
     }
   ]
 }

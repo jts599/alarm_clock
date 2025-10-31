@@ -1,0 +1,17 @@
+.openapi-generator-ignore
+apis/AlarmSettingsApi.ts
+apis/BackendApi.ts
+apis/StatusApi.ts
+apis/index.ts
+docs/AlarmSettingsApi.md
+docs/AlarmStatusDto.md
+docs/BackendApi.md
+docs/ColorDto.md
+docs/StatusApi.md
+docs/UserSettingsDto.md
+index.ts
+models/AlarmStatusDto.ts
+models/ColorDto.ts
+models/UserSettingsDto.ts
+models/index.ts
+runtime.ts

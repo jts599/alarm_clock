@@ -2,20 +2,69 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using System;
 using AlarmClock.Backend.Services;
+using AlarmClock.Backend.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Bind configuration sections
+builder.Services.Configure<WeatherConfiguration>(
+    builder.Configuration.GetSection("Weather"));
+builder.Services.Configure<RunConfiguration>(
+    builder.Configuration.GetSection("RunConfiguration"));
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register custom services
-builder.Services.AddSingleton<ILifxService, LifxService>();
-builder.Services.AddTransient<IColorPickingService, SimpleColorPickingService>();
-builder.Services.AddHostedService<LightStateService>();
+// Get configuration to determine which LIFX service to use
+var runConfig = builder.Configuration.GetSection("RunConfiguration").Get<RunConfiguration>();
+
+// Register LIFX service conditionally based on configuration
+if (runConfig?.StubLifx == true)
+{
+    builder.Services.AddSingleton<ILifxService, StubLifxService>();
+}
+else
+{
+    builder.Services.AddSingleton<ILifxService, LifxService>();
+}
+
+// Configure default alarm settings for ConfigurableColorPickingService
+var defaultAlarmParameters = new ConfigurableColorPickingServiceConstructionParameters
+{
+    AlarmTime = new TimeOnly(6, 30), // 6:30 AM
+    TransitionMinutes = 90, // 1.5 hours sunrise simulation
+    HoldOnMinutes = 60, // Hold on for 1 hour after sunrise
+    ActiveDays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday }
+};
+
+// Register ConfigurableColorPickingService as the base service
+builder.Services.AddTransient<ConfigurableColorPickingService>(provider =>
+    new ConfigurableColorPickingService(defaultAlarmParameters));
+
+// Register OverrideableColorPickingService with ConfigurableColorPickingService as the base
+builder.Services.AddTransient<OverrideableColorPickingService>(provider =>
+{
+    var baseColorPicker = provider.GetRequiredService<ConfigurableColorPickingService>();
+    return new OverrideableColorPickingService(baseColorPicker);
+});
+
+// Register the main ICompositeColorPickingService interface to use OverrideableColorPickingService
+builder.Services.AddTransient<ICompositeColorPickingService>(provider =>
+    provider.GetRequiredService<OverrideableColorPickingService>());
+
+// Keep IColorPickingService registration for backward compatibility if needed
+builder.Services.AddTransient<IColorPickingService>(provider =>
+    provider.GetRequiredService<OverrideableColorPickingService>());
+
+// Register LightStateService as both the interface and the hosted service
+builder.Services.AddSingleton<LightStateService>();
+builder.Services.AddSingleton<ILightStateService>(provider => provider.GetService<LightStateService>());
+builder.Services.AddHostedService<LightStateService>(provider => provider.GetService<LightStateService>());
 
 // Add CORS policy for development
 builder.Services.AddCors(options =>

@@ -1,0 +1,46 @@
+@import '../../shared.css';
+
+.screensaver-activity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: var(--bg-screensaver);
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+}
+
+.screensaver-content {
+  text-align: center;
+}
+
+.screensaver-content p:first-child {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-ultra-light);
+  margin: 0 0 var(--spacing-lg) 0;
+  opacity: var(--opacity-high);
+  color: var(--text-primary);
+}
+
+.screensaver-hint {
+  font-size: var(--font-size-md);
+  opacity: var(--opacity-low);
+  margin: 0;
+  font-style: italic;
+  font-weight: var(--font-weight-light);
+  color: var(--text-secondary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .screensaver-content p:first-child {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .screensaver-hint {
+    font-size: 14px;
+  }
+}

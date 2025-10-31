@@ -1,0 +1,177 @@
+@import '../../shared.css';
+
+.light-control-component {
+    background: var(--bg-transparent);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    color: var(--text-primary);
+    min-width: 320px;
+    min-height: 220px;
+    font-family: var(--font-family-primary);
+}
+
+.control-container {
+    background: transparent;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    height: 180px;
+}
+
+.light-on-button {
+    flex: 1.5;
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.light-on-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+.light-on-button:active:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.light-on-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #666666;
+    color: #666666;
+}
+
+.light-on-button .button-icon {
+    font-size: 40px;
+    line-height: 1;
+    opacity: 0.9;
+}
+
+.light-on-button .button-label {
+    font-size: 18px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.right-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 0 0 120px;
+}
+
+.settings-button,
+.duration-button {
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.settings-button {
+    flex: 1;
+}
+
+.duration-button {
+    flex: 1;
+}
+
+.settings-button:hover,
+.duration-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+.settings-button:active,
+.duration-button:active {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-button .button-icon {
+    font-size: 25px;
+    line-height: 1;
+    opacity: 0.9;
+}
+
+.settings-button .button-label {
+    font-size: 15px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.duration-button .button-text {
+    font-size: 25px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .light-control-component {
+        min-width: 240px;
+        min-height: 160px;
+        padding: 16px;
+    }
+    
+    .control-container {
+        height: 120px;
+        padding: 12px;
+    }
+    
+    .light-on-button .button-icon {
+        font-size: 30px;
+    }
+    
+    .light-on-button .button-label {
+        font-size: 15px;
+    }
+    
+    .settings-button .button-icon {
+        font-size: 20px;
+    }
+    
+    .settings-button .button-label {
+        font-size: 13px;
+    }
+    
+    .duration-button .button-text {
+        font-size: 20px;
+    }
+    
+    .right-buttons {
+        flex: 0 0 100px;
+    }
+}
+
+/* Loading state animation */
+.light-on-button:disabled .button-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}

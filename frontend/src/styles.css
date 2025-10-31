@@ -1,0 +1,26 @@
+/* Import shared styles */
+@import './shared.css';
+
+/* Reset default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  font-family: var(--font-family-primary);
+  padding: 2rem;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}

@@ -1,15 +1,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
+# Install Node.js 20.x for frontend development
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Java (OpenJDK 17) for OpenAPI Generator
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install additional tools and utilities
 RUN apt-get update && apt-get install -y \
     procps \
-    iproute2 \
-    iputils-ping \
-    wireless-tools \
+    git \
+    curl \
+    wget \
     sudo \
-    tcpdump \
-    netcat-openbsd \
-    nmap \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace directory
@@ -18,8 +24,9 @@ WORKDIR /workspace
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV NODE_ENV=development
 
-# Expose ports
+# Expose ports for backend and frontend
 EXPOSE 5000
 EXPOSE 3000
 

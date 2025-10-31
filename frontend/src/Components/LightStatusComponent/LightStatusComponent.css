@@ -1,0 +1,85 @@
+@import '../../shared.css';
+
+.light-status-component {
+    background: var(--bg-transparent);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    color: var(--text-primary);
+    min-width: 120px;
+    max-width: 160px;
+    font-family: var(--font-family-primary);
+}
+
+.light-status-component.loading,
+.light-status-component.error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.light-status-loading,
+.light-status-error {
+    font-size: var(--font-size-xs);
+    text-align: center;
+    opacity: var(--opacity-low);
+    color: var(--text-secondary);
+}
+
+.light-status-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.light-icon {
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-tight);
+    opacity: var(--opacity-high);
+}
+
+.light-count {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-light);
+    color: var(--text-primary);
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .light-status-component {
+        padding: 12px;
+        min-width: 100px;
+    }
+    
+    .light-icon {
+        font-size: 35px;
+    }
+    
+    .light-count {
+        font-size: 30px;
+    }
+}
+
+/* Animation for loading state */
+.light-status-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Subtle glow effect when there are active bulbs */
+.light-status-component {
+    transition: box-shadow 0.3s ease;
+}
+
+.light-status-component:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(253, 203, 110, 0.3);
+}

@@ -1,9 +1,10 @@
-# Alarm Clock Backend API
+# Alarm Clock Full-Stack Application
 
-A .NET 8 Web API for controlling LIFX smart lights as part of an alarm clock system.
+A containerized full-stack application with React/TypeScript frontend and .NET 8 backend for controlling LIFX smart lights as part of an alarm clock system.
 
 ## Architecture
 
+- **Frontend**: React with TypeScript and Vite, served on port 3000 (development) / 80 (production)
 - **Backend**: .NET 8 Web API, served on port 5000
 - **LIFX Integration**: Custom fork of LifxNet library with stability improvements
 - **Shared**: API specifications and shared models
@@ -22,11 +23,49 @@ The custom fork includes commits beyond the official v2.2 release that improve r
 ## Development Setup
 
 ### Prerequisites
-- Docker and Docker Compose
-- .NET 8 SDK (for local development)
+- **For Dev Container**: Docker and VS Code with Remote-Containers extension
+- **For Local Development**: Docker and Docker Compose, .NET 8 SDK, Node.js 18+
 - VS Code with C# and Docker extensions
 
-### First-Time Setup
+### Option 1: Dev Container Setup (Recommended)
+
+The easiest way to get started is using the VS Code dev container which provides a fully configured development environment:
+
+1. **Clone the repository with submodules**:
+   ```bash
+   git clone --recurse-submodules https://github.com/jts599/alarm_clock.git
+   cd alarm_clock
+   ```
+
+2. **Open in VS Code**:
+   ```bash
+   code .
+   ```
+
+3. **Reopen in Container**:
+   - VS Code will prompt to "Reopen in Container" when it detects the `.devcontainer` folder
+   - Or manually: `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
+
+4. **Wait for setup**: The container will automatically:
+   - Install .NET 8 SDK and Node.js 20
+   - Restore .NET dependencies 
+   - Install npm packages
+   - Configure the development environment
+
+5. **Start development**:
+   - Backend: `cd backend && dotnet run` (port 5000)
+   - Frontend: `cd frontend && npm run dev` (port 3000)
+   - Or use VS Code debug: `F5` → "Launch Full Stack"
+
+**Dev Container Benefits**:
+- ✅ **No local setup required** - Everything runs in a container
+- ✅ **Consistent environment** across different machines
+- ✅ **All dependencies included** (.NET 8, Node.js 20, git, etc.)
+- ✅ **VS Code extensions** pre-configured for fullstack development
+- ✅ **Port forwarding** automatically configured (5000, 3000)
+- ✅ **Works with stub services** - No network issues since LIFX services are mocked
+
+### Option 2: Local Development Setup
 
 1. **Clone the repository with submodules**:
    ```bash
@@ -48,18 +87,60 @@ The custom fork includes commits beyond the official v2.2 release that improve r
    dotnet build alarm_clock.sln
    ```
 
+## Configuration
+
+The application uses `appsettings.json` for configuration. Key settings include:
+
+### Weather Configuration
+- **`Weather.Longitude`**: Longitude coordinate for weather/sunrise calculations
+- **`Weather.Latitude`**: Latitude coordinate for weather/sunrise calculations
+
+### Runtime Configuration
+- **`RunConfiguration.StubLifx`**: Set to `true` to use mock LIFX service for development/testing
+- **`RunConfiguration.FastTimescale`**: Set to `true` to accelerate time-based operations for testing
+
+### Environment-Specific Settings
+- **Development**: `appsettings.Development.json` - Uses stub services by default
+- **Production**: `appsettings.json` - Uses real LIFX integration by default
+
+Example `appsettings.Development.json`:
+```json
+{
+  "Weather": {
+    "Longitude": -74.0060,
+    "Latitude": 40.7128
+  },
+  "RunConfiguration": {
+    "StubLifx": true,
+    "FastTimescale": true
+  }
+}
+```
+
 ### Running in Development Mode
 
 #### Local Development (with debugging)
-1. **Build and run the backend**:
+1. **Install frontend dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Build and run the backend**:
    ```bash
    cd backend
    dotnet run
    ```
 
-2. **VS Code Debugging**:
-   - Use `F5` or select "Launch Backend" from the debug panel
-   - This will start the backend with full debugging support
+3. **Run the frontend**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+4. **VS Code Debugging**:
+   - Use `F5` or select "Launch Full Stack" from the debug panel
+   - This will start both backend and frontend with full debugging support
 
 #### Docker Development Mode
 ```bash
@@ -68,6 +149,10 @@ docker-compose -f docker-compose.debug.yml up --build
 
 # Or use the VS Code task: Ctrl+Shift+P -> "Tasks: Run Task" -> "docker-up-debug"
 ```
+
+This will start:
+- Frontend on http://localhost:3000 (Vite dev server with hot reload)
+- Backend on http://localhost:5000 (with API endpoints)
 
 ### Running in Production Mode
 ```bash
@@ -78,10 +163,22 @@ docker-compose up --build
 docker-compose up -d --build
 ```
 
+This will start:
+- Frontend on http://localhost:3000 (served by nginx)
+- Backend on http://localhost:5000
+
 ## Project Structure
 
 ```
 alarm_clock/
+├── frontend/                 # React/TypeScript frontend with Vite
+│   ├── src/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── Dockerfile (production)
+│   ├── Dockerfile.debug (development)
+│   └── nginx.conf
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/
@@ -113,10 +210,19 @@ alarm_clock/
 - `dotnet build alarm_clock.sln` - Build the entire solution including LifxNet dependency
 - `dotnet run --project backend/backend.csproj` - Run the backend locally
 
+### Frontend Commands
+- `npm install` - Install frontend dependencies (run from frontend/ directory)
+- `npm run dev` - Start Vite development server with hot reload
+- `npm run build` - Build frontend for production
+- `npm run preview` - Preview production build locally
+
 ### VS Code Tasks
 - **build** - Build the .NET backend
+- **npm: install** - Install frontend dependencies
+- **npm: dev** - Start frontend development server
 - **docker-build-debug** - Build debug Docker images
 - **docker-up-debug** - Build and run debug containers
+- **docker-down** - Stop and remove containers
 
 ## API Endpoints
 

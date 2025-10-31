@@ -1,0 +1,311 @@
+@import '../../shared.css';
+
+.settings-activity {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background-image: url('https://images.pexels.com/photos/1612351/pexels-photo-1612351.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-4xl);
+  position: relative;
+}
+
+.settings-header h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-light);
+  text-align: center;
+}
+
+.settings-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  color: var(--text-primary);
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.setting-section {
+  background: var(--bg-transparent);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.setting-section.time-picker {
+  width: 33.33%;
+  flex-shrink: 0;
+}
+
+.setting-section.light-settings {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 600px;
+}
+
+.setting-section h2 {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-light);
+}
+
+.setting-section h2.centered-title {
+  text-align: center;
+}
+
+.setting-section h3 {
+  margin: var(--spacing-xl) 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-light);
+}
+
+.days-section {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.days-section h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-light);
+  text-align: center;
+}
+
+.action-buttons {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  display: flex;
+  gap: var(--spacing-md);
+  z-index: 10;
+}
+
+.cancel-button,
+.save-button {
+  background: var(--bg-transparent);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: var(--transition-normal);
+  min-width: 120px;
+  justify-content: center;
+}
+
+.cancel-button:hover,
+.save-button:hover {
+  background: var(--hover-overlay);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cancel-button:active,
+.save-button:active {
+  background: var(--active-overlay);
+  transform: translateY(0);
+}
+
+.cancel-button {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cancel-button:hover {
+  border-color: var(--border-primary);
+}
+
+.button-icon {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.button-text {
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .settings-content {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  
+  .setting-section.time-picker {
+    width: 100%;
+  }
+  
+  .setting-section.light-settings {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-content {
+    padding: var(--spacing-lg);
+  }
+  
+  .setting-section {
+    padding: var(--spacing-lg);
+  }
+  
+  .save-button {
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+  }
+  
+  .save-icon {
+    font-size: var(--font-size-md);
+  }
+}
+
+/* Static Time Picker Constraints */
+.setting-section .MuiStaticTimePicker-root {
+  width: 100%;
+  max-width: 320px;
+  background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setting-section .MuiTimeClock-root {
+  max-width: 280px;
+  margin: 0 auto;
+  background: transparent !important;
+}
+
+.setting-section .MuiPickersLayout-root {
+  background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setting-section .MuiPickersLayout-contentWrapper {
+  background: transparent !important;
+  display: flex;
+  justify-content: center;
+}
+
+/* Hide the Material-UI time picker label */
+.setting-section .MuiPickersLayout-toolbar {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Hide just the "Select time" text label */
+.setting-section .MuiTypography-overline {
+  display: none !important;
+}
+
+/* Material-UI component overrides */
+.setting-section .MuiTextField-root {
+  margin-top: var(--spacing-md);
+}
+
+.setting-section .MuiInputLabel-root {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.setting-section .MuiInputLabel-root.Mui-focused {
+  color: #ffffff !important;
+}
+
+/* Clock Picker Styling */
+.MuiTimeClock-root {
+  background-color: transparent !important;
+}
+
+.MuiClock-root {
+  background-color: transparent !important;
+}
+
+.MuiClockPointer-root {
+  background-color: #ffffff !important;
+}
+
+.MuiClockPointer-thumb {
+  background-color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.MuiClockNumber-root {
+  color: #ffffff !important;
+  font-family: var(--font-family-primary) !important;
+  font-size: 1.3rem !important;
+}
+
+.MuiClockNumber-root.Mui-selected {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.MuiPickersLayout-root {
+  background-color: transparent !important;
+}
+
+.MuiPickersLayout-contentWrapper {
+  background-color: transparent !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .settings-header {
+    margin-bottom: 32px;
+  }
+  
+  .settings-header h1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .settings-content {
+    font-size: var(--font-size-lg);
+  }
+  
+  .action-buttons {
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .cancel-button,
+  .save-button {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    min-width: 100px;
+  }
+  
+  .button-icon {
+    font-size: var(--font-size-xl);
+  }
+}

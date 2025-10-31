@@ -4,6 +4,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
+# Install Java (OpenJDK 17) for OpenAPI Generator
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install additional tools and utilities
 RUN apt-get update && apt-get install -y \
     procps \

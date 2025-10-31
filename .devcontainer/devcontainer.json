@@ -31,7 +31,8 @@
     "containerEnv": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://+:5000",
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
     },
     "forwardPorts": [
         5000,
@@ -47,7 +48,7 @@
             "protocol": "http"
         }
     },
-    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "postCreateCommand": "bash .devcontainer/setup.sh && chmod +x scripts/generate-api-client.sh",
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": true,

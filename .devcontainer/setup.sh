@@ -31,6 +31,13 @@ echo "OpenAPI Generator CLI: $(openapi-generator-cli version 2>/dev/null || echo
 # Set up git safe directory (if needed)
 git config --global --add safe.directory $(pwd)
 
+# Configure VS Code as the default merge tool
+echo "⚙️  Configuring VS Code as git merge tool..."
+git config --global merge.tool vscode
+git config --global mergetool.vscode.cmd 'code --wait $MERGED'
+git config --global mergetool.vscode.trustExitCode true
+git config --global mergetool.keepBackup false
+
 # Initialize and update git submodules
 echo "🔗 Initializing git submodules..."
 git submodule init

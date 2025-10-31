@@ -13,7 +13,7 @@
       "serverReadyAction": {
         "action": "openExternally", 
         "pattern": "\\bNow listening on:\\s+https?://\\[::\\]:(\\d+)",
-        "uriFormat": "http://localhost:%s/api/live"
+        "uriFormat": "http://localhost:%s/api/status/live"
       },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"

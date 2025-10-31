@@ -60,6 +60,21 @@
       }
     },
     {
+      "label": "npm: generate-icons",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "generate-icons"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "docker-build-debug",
       "type": "shell",
       "command": "docker-compose",

@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename)
 // Paths
 const iconsDir = path.join(__dirname, '../src/assets/icons')
 const registryPath = path.join(__dirname, '../src/Components/Icon/iconRegistry.ts')
+const weatherCsvPath = path.join(__dirname, '../src/assets/icons/weather/weather_icons_descriptions.csv')
+const backendWeatherIconsPath = path.join(__dirname, '../src/assets/icons/weather/valid_weather_icons.txt')
 
 // Helper function to convert filename to camelCase
 function toCamelCase(str) {
@@ -40,6 +42,79 @@ function findSvgFiles(dir, baseDir = dir) {
   }
   
   return files
+}
+
+// Helper function to create icon key from file path
+function createIconKey(file) {
+  const iconName = path.basename(file, '.svg')
+  const dir = path.dirname(file)
+  
+  if (dir === '.') {
+    return iconName
+  } else {
+    const pathParts = dir.split(/[/\\]/)
+    return pathParts.join('.') + '.' + iconName
+  }
+}
+
+// Function to generate weather icons validation file for backend
+function generateWeatherIconsValidation(svgFiles) {
+  try {
+    // Check if weather CSV exists
+    if (!fs.existsSync(weatherCsvPath)) {
+      console.log(`Weather CSV not found: ${weatherCsvPath}`)
+      return
+    }
+
+    // Read and parse the CSV file
+    const csvContent = fs.readFileSync(weatherCsvPath, 'utf8')
+    const csvLines = csvContent.trim().split('\n')
+    
+    // Create a set of available icon keys from SVG files
+    const availableIconKeys = new Set()
+    svgFiles.forEach(file => {
+      const iconKey = createIconKey(file)
+      availableIconKeys.add(iconKey)
+    })
+
+    // Process CSV and match with available icons
+    const validWeatherIcons = []
+    
+    csvLines.forEach(line => {
+      // Parse CSV line - handle quoted descriptions that may contain commas
+      const match = line.match(/^"?([^",]+)"?,?"?([^"]*)"?$/)
+      if (!match) {
+        console.warn(`Skipping malformed CSV line: ${line}`)
+        return
+      }
+      
+      const iconKey = match[1].trim()
+      const description = match[2].trim()
+      
+      // Check if this icon exists in our generated icons
+      if (availableIconKeys.has(iconKey)) {
+        validWeatherIcons.push(`${iconKey}|${description}`)
+      } else {
+        console.warn(`Weather icon not found in SVG files: ${iconKey}`)
+      }
+    })
+
+    // Ensure the backend Weather directory exists
+    const weatherDir = path.dirname(backendWeatherIconsPath)
+    if (!fs.existsSync(weatherDir)) {
+      fs.mkdirSync(weatherDir, { recursive: true })
+    }
+
+    // Write the validation file
+    const validationContent = validWeatherIcons.join('\n') + '\n'
+    fs.writeFileSync(backendWeatherIconsPath, validationContent, 'utf8')
+    
+    console.log(`✅ Generated weather icons validation file with ${validWeatherIcons.length} icons`)
+    console.log(`   Written to: ${backendWeatherIconsPath}`)
+    
+  } catch (error) {
+    console.error('Error generating weather icons validation:', error)
+  }
 }
 
 function generateIconRegistry() {
@@ -235,6 +310,9 @@ export type IconName = keyof typeof iconRegistry | \`\${keyof typeof iconRegistr
       const iconName = path.basename(file, '.svg')
       console.log(`   - ${iconName}`)
     })
+
+    // Generate weather icons validation file for backend
+    generateWeatherIconsValidation(svgFiles)
 
   } catch (error) {
     console.error('Error generating icon registry:', error)

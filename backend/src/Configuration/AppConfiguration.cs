@@ -13,4 +13,12 @@ namespace AlarmClock.Backend.Configuration
 
         public int StartTimeHour { get; set; }
     }
+
+    public class LlmConfiguration
+    {
+        public string ModelPath { get; set; } = "";
+        public int MaxTokens { get; set; } = 100;
+        public float Temperature { get; set; } = 0.1f;
+        public bool EnableLlm { get; set; } = true;
+    }
 }

@@ -585,6 +585,16 @@ dist/
 # package-lock.json
 # yarn.lock
 
+# AI/ML Models - DO NOT COMMIT TO GIT
+models/
+*.onnx
+*.bin
+*.safetensors
+
+# Model metadata and configs that CAN be committed
+!models/.gitkeep
+!models/README.md
+
 # Raspberry Pi specific files
 *.img
 *.iso

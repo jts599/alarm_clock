@@ -1,28 +1,63 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  # Model downloader - runs once to ensure models exist
+  model-init:
+    image: curlimages/curl:latest
+    volumes:
+      - models-data:/models
+    command: >
+      sh -c "
+        if [ ! -f /models/tinyllama-1.1b-chat.onnx ]; then
+          echo 'Downloading TinyLlama model...';
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/microsoft/TinyLlama-1.1B-Chat-v1.0-onnx/resolve/main/model.onnx' ||
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0/resolve/main/pytorch_model.bin';
+          echo 'Model downloaded successfully';
+        else
+          echo 'Model already exists, skipping download';
+        fi
+      "
+    restart: "no" # Only run once
+
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: your-registry/alarm-clock-frontend:latest # Your published image
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      model-init:
+        condition: service_completed_successfully
+      backend:
+        condition: service_started
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: your-registry/alarm-clock-backend:latest # Your published image
     ports:
       - "5000:5000"
     volumes:
       - ./shared:/app/shared
+      - models-data:/app/models # Persistent models volume
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
+      - Llm__EnableLlm=true
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  models-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/alarm-clock/models # Persistent location on Pi
 
 networks:
   default:

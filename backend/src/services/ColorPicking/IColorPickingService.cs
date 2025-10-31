@@ -78,6 +78,11 @@ namespace AlarmClock.Backend.Services
     public interface IOverrideColorPickingService : IColorPickingService
     {
         /// <summary>
+        /// Unique identifier for this override
+        /// </summary>
+        string guid { get; }
+
+        /// <summary>
         /// When should this override be active from
         /// </summary>
         DateTime StartTime { get; set; }
@@ -88,7 +93,7 @@ namespace AlarmClock.Backend.Services
         DateTime EndTime { get; set; }
     }
 
-    public interface ICompositeColorPickingService : IColorPickingService
+    public interface ICompositeColorPickingService : IBaseColorPickingService
     {
 
         /// <summary>
@@ -96,6 +101,21 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="colorPicker">The override color picker to add</param>
         void AddOverride(IOverrideColorPickingService colorPicker);
+
+        ICompositeColorPickingService ReconstructWithBase(IBaseColorPickingService baseColorPicker);
+    }
+
+    public interface IConfigurableColorPickingServiceParameters
+    {
+        TimeOnly AlarmTime { get; }
+        int TransitionMinutes { get; }
+        int HoldOnMinutes { get; }
+        DayOfWeek[] ActiveDays { get; }
+    }
+
+    public interface IBaseColorPickingService : IColorPickingService
+    {
+        IConfigurableColorPickingServiceParameters GetParameters();
     }
 
 }

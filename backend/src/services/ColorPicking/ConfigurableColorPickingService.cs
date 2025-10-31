@@ -4,13 +4,12 @@ using LifxNet;
 
 namespace AlarmClock.Backend.Services
 {
-
-    public class ConfigurableColorPickingServiceConstructionParameters
+    public class ConfigurableColorPickingServiceConstructionParameters : IConfigurableColorPickingServiceParameters
     {
-        public TimeOnly AlarmTime { get; }
-        public int TransitionMinutes { get; }
-        public int HoldOnMinutes { get; }
-        public DayOfWeek[] ActiveDays { get; }
+        public TimeOnly AlarmTime { get; set; }
+        public int TransitionMinutes { get; set; }
+        public int HoldOnMinutes { get; set; }
+        public DayOfWeek[] ActiveDays { get; set; }
 
         public bool Validate(out string errorMessage)
         {
@@ -48,48 +47,42 @@ namespace AlarmClock.Backend.Services
         }
     }
 
-    public class ConfigurableColorPickingService : IColorPickingService
+    public class ConfigurableColorPickingService : IBaseColorPickingService
     {
 
         public ConfigurableColorPickingService(ConfigurableColorPickingServiceConstructionParameters parameters)
-            : this(parameters.AlarmTime, parameters.TransitionMinutes, parameters.HoldOnMinutes, parameters.ActiveDays)
         {
             if (!parameters.Validate(out string errorMessage))
             {
                 throw new ArgumentException($"Invalid construction parameters: {errorMessage}");
             }
-        }
-
-        private ConfigurableColorPickingService(TimeOnly alarmTime, int transitionMinutes, int holdOnMinutes, DayOfWeek[] activeDays)
-        {
-            AlarmStartTimeInSeconds = (alarmTime.Hour * 60 + alarmTime.Minute) * 60;
-            EightAMInSeconds = AlarmStartTimeInSeconds + (transitionMinutes * 60);
-            NineAMInSeconds = EightAMInSeconds + (holdOnMinutes * 60);
-            ActiveDays = [.. activeDays];
+            _parameters = parameters;
         }
 
         private const int MaxKelvin = 4500;
         private const int MinKelvin = 1500;
 
 
+        private ConfigurableColorPickingServiceConstructionParameters _parameters { get; set; }
+
         /// <summary>
         /// The days of the week the alarm is active on.
         /// </summary>
-        private HashSet<DayOfWeek> ActiveDays { get; set; }
+        private HashSet<DayOfWeek> ActiveDays => [.. _parameters.ActiveDays];
         /// <summary>
         /// Sunrise start time: 6:30 AM
         /// </summary>
-        private int AlarmStartTimeInSeconds = (6 * 60 + 30) * 60;
+        private int AlarmStartTimeInSeconds => (_parameters.AlarmTime.Hour * 60 + _parameters.AlarmTime.Minute) * 60;
 
         /// <summary>
         /// Sunrise end time: 8:00 AM
         /// </summary>
-        private int EightAMInSeconds = (8 * 60) * 60;
+        private int SunriseEndTimeInSeconds => AlarmStartTimeInSeconds + (_parameters.TransitionMinutes * 60);
 
         /// <summary>
         /// Lights are held on until: 9:00 AM
         /// </summary>
-        private int NineAMInSeconds = (9 * 60) * 60;
+        private int TurnOffTimeInSeconds => SunriseEndTimeInSeconds + (_parameters.HoldOnMinutes * 60);
 
         /// <summary>
         /// Determines if the light should be on at the given time.
@@ -115,20 +108,7 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         public string Status(DateTime time)
         {
-            int secondsSinceMidnight = GetSecondsSinceMidnight(time);
-            if (IsDuringLightsOffTime(secondsSinceMidnight))
-            {
-                return "Lights turn on at 6:30 AM";
-            }
-            else if (IsDuringTransitionToOnTime(secondsSinceMidnight))
-            {
-                return "Sun is rising";
-            }
-            else if (IsDuringHoldOnTime(secondsSinceMidnight))
-            {
-                return "Lights off at 9:00 AM";
-            }
-            return "Lights are off";
+            return "Stubbed";
         }
 
         /// <summary>
@@ -146,7 +126,7 @@ namespace AlarmClock.Backend.Services
             {
                 return true;
             }
-            if (secondsSinceMidnight > NineAMInSeconds)
+            if (secondsSinceMidnight > TurnOffTimeInSeconds)
             {
                 return true;
             }
@@ -165,7 +145,7 @@ namespace AlarmClock.Backend.Services
             {
                 return false;
             }
-            return secondsSinceMidnight >= AlarmStartTimeInSeconds && secondsSinceMidnight <= EightAMInSeconds;
+            return secondsSinceMidnight >= AlarmStartTimeInSeconds && secondsSinceMidnight <= SunriseEndTimeInSeconds;
         }
 
         /// <summary>
@@ -179,7 +159,7 @@ namespace AlarmClock.Backend.Services
             {
                 return false;
             }
-            return secondsSinceMidnight > EightAMInSeconds && secondsSinceMidnight <= NineAMInSeconds;
+            return secondsSinceMidnight > SunriseEndTimeInSeconds && secondsSinceMidnight <= TurnOffTimeInSeconds;
         }
 
         /// <summary>
@@ -200,7 +180,7 @@ namespace AlarmClock.Backend.Services
             else if (IsDuringTransitionToOnTime(secondsSinceMidnight))
             {
                 // Between 6 AM and 8 AM: Gradually increase brightness and color temperature
-                int totalSeconds = EightAMInSeconds - AlarmStartTimeInSeconds;
+                int totalSeconds = SunriseEndTimeInSeconds - AlarmStartTimeInSeconds;
                 int elapsedSeconds = secondsSinceMidnight - AlarmStartTimeInSeconds;
                 double percentage = (100 * elapsedSeconds / (double)totalSeconds);
 
@@ -213,6 +193,15 @@ namespace AlarmClock.Backend.Services
             }
             //Default: Off
             return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MinKelvin);
+        }
+
+        /// <summary>
+        /// Gets the parameters for the color picking service.
+        /// </summary>
+        /// <returns></returns>
+        public IConfigurableColorPickingServiceParameters GetParameters()
+        {
+            return _parameters;
         }
 
         /// <summary>

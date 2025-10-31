@@ -33,7 +33,33 @@ else
     builder.Services.AddSingleton<ILifxService, LifxService>();
 }
 
-builder.Services.AddTransient<IColorPickingService, SimpleColorPickingService>();
+// Configure default alarm settings for ConfigurableColorPickingService
+var defaultAlarmParameters = new ConfigurableColorPickingServiceConstructionParameters
+{
+    AlarmTime = new TimeOnly(6, 30), // 6:30 AM
+    TransitionMinutes = 90, // 1.5 hours sunrise simulation
+    HoldOnMinutes = 60, // Hold on for 1 hour after sunrise
+    ActiveDays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday }
+};
+
+// Register ConfigurableColorPickingService as the base service
+builder.Services.AddTransient<ConfigurableColorPickingService>(provider =>
+    new ConfigurableColorPickingService(defaultAlarmParameters));
+
+// Register OverrideableColorPickingService with ConfigurableColorPickingService as the base
+builder.Services.AddTransient<OverrideableColorPickingService>(provider =>
+{
+    var baseColorPicker = provider.GetRequiredService<ConfigurableColorPickingService>();
+    return new OverrideableColorPickingService(baseColorPicker);
+});
+
+// Register the main ICompositeColorPickingService interface to use OverrideableColorPickingService
+builder.Services.AddTransient<ICompositeColorPickingService>(provider =>
+    provider.GetRequiredService<OverrideableColorPickingService>());
+
+// Keep IColorPickingService registration for backward compatibility if needed
+builder.Services.AddTransient<IColorPickingService>(provider =>
+    provider.GetRequiredService<OverrideableColorPickingService>());
 
 // Register LightStateService as both the interface and the hosted service
 builder.Services.AddSingleton<LightStateService>();

@@ -22,14 +22,23 @@ namespace AlarmClock.Backend.Services
         private int _secondsStepInterval = 1; // 1 second
         private AlarmClockColor _lastSetColor = null;
 
-        private IColorPickingService _colorPicker;
+        private ICompositeColorPickingService _colorPicker;
         private readonly object _colorPickerLock = new object();
 
-        public void SwapColorPicker(IColorPickingService newColorPicker)
+        public void SwapColorPicker(ICompositeColorPickingService newColorPicker)
         {
             lock (_colorPickerLock)
             {
                 _colorPicker = newColorPicker;
+            }
+        }
+
+        public void SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker)
+        {
+            lock (_colorPickerLock)
+            {
+                _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
+                              new OverrideableColorPickingService(newBaseColorPicker);
             }
         }
 
@@ -50,10 +59,18 @@ namespace AlarmClock.Backend.Services
             }
         }
 
+        public IConfigurableColorPickingServiceParameters GetCurrentParameters()
+        {
+            lock (_colorPickerLock)
+            {
+                return _colorPicker?.GetParameters() ?? throw new InvalidOperationException("Color picker not initialized");
+            }
+        }
+
         public LightStateService(
             ILogger<LightStateService> logger,
             ILifxService lifxService,
-            IColorPickingService colorPicker,
+            ICompositeColorPickingService colorPicker,
             IOptions<RunConfiguration> configOptions,
             DateTime? startTime = null
             )

@@ -3,3 +3,6 @@ dist/
 .idea/
 .vscode/
 *.log
+
+# Auto-generated icon registry
+src/Components/Icon/iconRegistry.ts

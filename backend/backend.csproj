@@ -14,8 +14,11 @@
     <IncludeSymbols>true</IncludeSymbols>
     <!-- Include source packages -->
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
-    
-    <!-- Configuration for standalone executable (cross-platform) -->
+  </PropertyGroup>
+
+  <!-- Self-contained publish configuration for deployment (e.g., Raspberry Pi) -->
+  <!-- These settings only apply during publish operations, not during build/debug -->
+  <PropertyGroup Condition="'$(PublishProtocol)' != '' OR '$(PublishSingleFile)' == 'true'">
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>false</PublishTrimmed>

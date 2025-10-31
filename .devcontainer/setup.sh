@@ -25,6 +25,11 @@ echo ".NET version: $(dotnet --version)"
 # Set up git safe directory (if needed)
 git config --global --add safe.directory $(pwd)
 
+# Initialize and update git submodules
+echo "🔗 Initializing git submodules..."
+git submodule init
+git submodule update
+
 echo "🎉 Development environment setup complete!"
 echo ""
 echo "📋 Available commands:"

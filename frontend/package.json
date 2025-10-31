@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm run generate-icons",
     "dev": "vite",
+    "prebuild": "npm run generate-icons",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "generate-icons": "node scripts/generate-icons.mjs"

@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename)
 const iconsDir = path.join(__dirname, '../src/assets/icons')
 const registryPath = path.join(__dirname, '../src/Components/Icon/iconRegistry.ts')
 const weatherCsvPath = path.join(__dirname, '../src/assets/icons/weather/weather_icons_descriptions.csv')
-const backendWeatherIconsPath = path.join(__dirname, '../src/assets/icons/weather/valid_weather_icons.txt')
+const sharedWeatherIconsPath = path.join(__dirname, '../../shared/weather/valid_weather_icons.txt')
 
 // Helper function to convert filename to camelCase
 function toCamelCase(str) {
@@ -99,18 +99,16 @@ function generateWeatherIconsValidation(svgFiles) {
       }
     })
 
-    // Ensure the backend Weather directory exists
-    const weatherDir = path.dirname(backendWeatherIconsPath)
-    if (!fs.existsSync(weatherDir)) {
-      fs.mkdirSync(weatherDir, { recursive: true })
-    }
-
-    // Write the validation file
+    // Write the validation file to shared directory for backend access
     const validationContent = validWeatherIcons.join('\n') + '\n'
-    fs.writeFileSync(backendWeatherIconsPath, validationContent, 'utf8')
+    const sharedWeatherDir = path.dirname(sharedWeatherIconsPath)
+    if (!fs.existsSync(sharedWeatherDir)) {
+      fs.mkdirSync(sharedWeatherDir, { recursive: true })
+    }
+    fs.writeFileSync(sharedWeatherIconsPath, validationContent, 'utf8')
     
     console.log(`✅ Generated weather icons validation file with ${validWeatherIcons.length} icons`)
-    console.log(`   Written to: ${backendWeatherIconsPath}`)
+    console.log(`   Written to: ${sharedWeatherIconsPath}`)
     
   } catch (error) {
     console.error('Error generating weather icons validation:', error)

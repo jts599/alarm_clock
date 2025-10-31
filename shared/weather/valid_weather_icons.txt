@@ -1,0 +1,60 @@
+weather.day.cloudy-gusts|sun,cloud,wind
+weather.day.cloudy|sun,cloud
+weather.day.fog|sun,fog,cloud
+weather.day.hail|sun,cloud,hail
+weather.day.haze|sun,haze
+weather.day.lightning|sun,cloud,lightning
+weather.day.rain-mix|sun,cloud,rain,snow
+weather.day.rain|sun,cloud,heavy rain
+weather.day.showers|sun,cloud,rain,raindrops
+weather.day.sleet-storm|sun,cloud,sleet,lightning
+weather.day.sleet|sun,cloud,sleet
+weather.day.snow-thunderstorm|sun,cloud,snow,lightning
+weather.day.snow-wind|sun,cloud,snow,wind
+weather.day.snow|sun,cloud,snow
+weather.day.sprinkle|sun,cloud,droplets
+weather.day.storm-showers|sun,cloud,rain,lightning
+weather.day.sunny-overcast|sun,cloud
+weather.day.sunny|sun
+weather.day.thunderstorm|sun,cloud,heavy rain,lightning
+weather.day.windy|sun,wind
+weather.night.cloudy-gusts|moon,cloud,wind
+weather.night.cloudy|moon,cloud
+weather.night.hail|moon,cloud,hail
+weather.night.lightning|moon,cloud,lightning
+weather.night.partly-cloudy|moon,cloud
+weather.night.rain-mix|moon,cloud,rain,snow
+weather.night.rain-wind|moon,cloud,rain,wind
+weather.night.rain|moon,cloud,heavy rain
+weather.night.showers|moon,cloud,rain,raindrops
+weather.night.sleet-storm|moon,cloud,sleet,lightning
+weather.night.sleet|moon,cloud,sleet
+weather.night.snow-thunderstorm|moon,cloud,snow,lightning
+weather.night.snow|moon,cloud,snow
+weather.night.sprinkle|moon,cloud,droplets
+weather.night.stars|stars
+weather.night.storm-showers|moon,cloud,rain,lightning
+weather.night.thunderstorm|moon,cloud,heavy rain,lightning
+weather.cloud|cloud
+weather.cloudy-gusts|cloud,wind
+weather.cloudy|clouds
+weather.dust|dust,wind
+weather.fog|fog,cloud
+weather.hail|cloud,hail
+weather.horizon|horizon,sun
+weather.hot|sun,heat
+weather.hurricane|hurricane
+weather.lightning|lightning
+weather.na|question,unavailable
+weather.rain-mix|cloud,rain,snow
+weather.rain-wind|cloud,rain,wind
+weather.rain|cloud,heavy rain
+weather.raindrops|droplets
+weather.showers|cloud,raindrops
+weather.sleet|cloud,sleet
+weather.snow-wind|cloud,snow,wind
+weather.snow|snow,cloud
+weather.snowflake-cold|snowflake,cold
+weather.sprinkle|cloud,droplets
+weather.storm-showers|cloud,rain,lightning
+weather.thunderstorm|cloud,heavy rain,lightning

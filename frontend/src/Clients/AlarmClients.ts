@@ -9,7 +9,6 @@ export interface IAlarmClient {
     getNextAlarmEventInfo(): Promise<IAlarmEventInfo>
     turnLightOnUntil(nextEventTime: Date): Promise<void>
     removeAlarmOverride(): Promise<void>
-
 }
 
 export interface IAlarmEventInfo {

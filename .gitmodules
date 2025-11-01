@@ -1,3 +1,6 @@
 [submodule "LifxNet-Source"]
 	path = LifxNet-Source
 	url = https://github.com/jts599/LifxNet.git
+[submodule "NationalWeatherServiceLibrary"]
+	path = NationalWeatherServiceLibrary
+	url = https://github.com/jts599/NationalWeatherServiceLibrary.git

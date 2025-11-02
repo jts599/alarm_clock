@@ -9,6 +9,14 @@ A containerized full-stack application with React/TypeScript frontend and .NET 8
 - **LIFX Integration**: Custom fork of LifxNet library with stability improvements
 - **Shared**: API specifications and shared models
 - **Containerization**: Docker with Docker Compose
+- **CI/CD**: GitHub Actions with automatic Docker image publishing
+- **Deployment**: Raspberry Pi with Watchtower for automatic updates
+
+## 🚀 Quick Links
+
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Deploy to Raspberry Pi with Docker Hub
+- **[CI/CD Setup](CI_CD_SETUP.md)** - GitHub Actions and branch strategy
+- **[Contributing](#contributing)** - Development workflow and guidelines
 
 ## Custom Dependencies
 
@@ -256,9 +264,66 @@ git add LifxNet-Source
 git commit -m "Update LifxNet submodule"
 ```
 
+## Deployment
+
+### Quick Deploy to Docker Hub
+
+Use the provided script to build and push multi-architecture images:
+
+```bash
+# Build and push with 'latest' tag
+./scripts/deploy.sh
+
+# Build and push with custom tag
+./scripts/deploy.sh v1.0.0
+```
+
+### Raspberry Pi Deployment
+
+Full instructions in **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)**:
+
+1. **Publish Docker images** to Docker Hub
+2. **Set up Raspberry Pi** with Docker and Docker Compose
+3. **Configure auto-start** with systemd
+4. **Enable automatic updates** with Watchtower
+
+Once configured, your Raspberry Pi will:
+- ✅ Start the application on boot
+- ✅ Automatically update when you push new images
+- ✅ Monitor and restart containers if they fail
+
+### CI/CD Pipeline
+
+Full instructions in **[CI_CD_SETUP.md](CI_CD_SETUP.md)**:
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+- **Branch Strategy**: `main` (production) and `dev` (development)
+- **Automatic Testing**: Runs on all PRs and pushes
+- **Automatic Deployment**: Publishes Docker images on push to `main` or `dev`
+- **Multi-Architecture**: Builds for AMD64 and ARM64 (Raspberry Pi)
+- **Release Management**: Create releases with version tags (e.g., `v1.0.0`)
+
+**Workflow:**
+```
+feature branch → dev branch (auto-deploy) → main branch (auto-deploy) → release tag
+```
+
+**GitHub Secrets Required:**
+- `DOCKER_USERNAME` - Your Docker Hub username
+- `DOCKER_PASSWORD` - Your Docker Hub access token
+
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+Contributions are welcome! Please follow the development workflow:
+
+1. **Fork and clone** the repository with submodules
+2. **Create a feature branch** from `dev`: `git checkout -b feature/my-feature`
+3. **Make your changes** and test locally
+4. **Submit a PR** targeting the `dev` branch
+5. **After testing on dev**, changes will be promoted to `main`
+
+See **[CI_CD_SETUP.md](CI_CD_SETUP.md)** for detailed workflow.
 
 ### Note on LifxNet Dependency
 

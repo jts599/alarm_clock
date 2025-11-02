@@ -5,11 +5,13 @@
 ### GitHub Actions Workflows
 
 1. **`.github/workflows/ci.yml`**
+
    - Runs automated tests on PRs and pushes
    - Tests both backend (.NET) and frontend (React/TypeScript)
    - Validates Docker builds without pushing
 
 2. **`.github/workflows/deploy.yml`**
+
    - Automatically builds and publishes Docker images
    - Triggers on push to `main` or `dev` branches
    - Builds multi-architecture images (AMD64 + ARM64)
@@ -23,10 +25,12 @@
 ### Docker Compose Files
 
 1. **`docker-compose.yml`**
+
    - Base configuration with Watchtower
    - Uses environment variables for flexibility
 
 2. **`docker-compose.prod.yml`**
+
    - Production configuration for `main` branch
    - Uses `:latest` tag
    - Ports 3000 (frontend) and 5000 (backend)
@@ -40,12 +44,14 @@
 ### Documentation
 
 1. **`DEPLOYMENT_GUIDE.md`**
+
    - Complete guide for publishing Docker images
    - Raspberry Pi setup instructions
    - Watchtower configuration
    - Troubleshooting section
 
 2. **`CI_CD_SETUP.md`**
+
    - Comprehensive CI/CD documentation
    - Branch strategy explanation
    - GitHub Secrets setup
@@ -98,6 +104,7 @@
 ## 🚀 Automatic Deployment Flow
 
 ### Push to `dev` branch:
+
 1. GitHub Actions runs CI tests
 2. If tests pass, Deploy workflow builds images
 3. Images pushed to Docker Hub with `:dev` tag
@@ -105,6 +112,7 @@
 5. Watchtower pulls and restarts containers (~5 min)
 
 ### Push to `main` branch:
+
 1. GitHub Actions runs CI tests
 2. If tests pass, Deploy workflow builds images
 3. Images pushed to Docker Hub with `:latest` tag
@@ -112,6 +120,7 @@
 5. Watchtower pulls and restarts containers (~5 min)
 
 ### Push version tag (e.g., `v1.0.0`):
+
 1. Release workflow builds images
 2. Images tagged as both `:v1.0.0` and `:latest`
 3. GitHub release created with changelog
@@ -128,6 +137,7 @@ Settings → Secrets and variables → Actions → New repository secret
 ```
 
 Add:
+
 - **Name:** `DOCKER_USERNAME` | **Value:** Your Docker Hub username
 - **Name:** `DOCKER_PASSWORD` | **Value:** Your Docker Hub access token
 
@@ -177,6 +187,7 @@ git push origin main
 ### 5. Set Up Raspberry Pi(s)
 
 Follow **DEPLOYMENT_GUIDE.md** to:
+
 - Install Docker on Raspberry Pi
 - Copy configuration files
 - Create systemd services
@@ -185,6 +196,7 @@ Follow **DEPLOYMENT_GUIDE.md** to:
 ### 6. Optional: Set Up Dev Environment
 
 Follow **CI_CD_SETUP.md** section "Raspberry Pi Setup for Multi-Environment" to:
+
 - Run both prod and dev on one Pi, OR
 - Set up separate Pis for each environment
 
@@ -227,6 +239,7 @@ your-username/alarm-clock-frontend:
 ### Raspberry Pi
 
 Production Pi (`/opt/alarm-clock-prod`):
+
 ```
 Container: alarm-clock-backend (port 5000)
 Container: alarm-clock-frontend (port 3000)
@@ -235,6 +248,7 @@ Image Tag: :latest
 ```
 
 Dev Pi (`/opt/alarm-clock-dev`):
+
 ```
 Container: alarm-clock-backend-dev (port 5001)
 Container: alarm-clock-frontend-dev (port 3001)
@@ -254,12 +268,12 @@ Image Tag: :dev
 
 ## 📚 Documentation Reference
 
-| Document | Purpose |
-|----------|---------|
+| Document              | Purpose                                       |
+| --------------------- | --------------------------------------------- |
 | `DEPLOYMENT_GUIDE.md` | Complete Raspberry Pi deployment instructions |
-| `CI_CD_SETUP.md` | GitHub Actions and CI/CD workflow details |
-| `QUICKREF.md` | Quick reference for common tasks |
-| `README.md` | Project overview and getting started |
+| `CI_CD_SETUP.md`      | GitHub Actions and CI/CD workflow details     |
+| `QUICKREF.md`         | Quick reference for common tasks              |
+| `README.md`           | Project overview and getting started          |
 
 ## 💡 Tips
 

@@ -3,6 +3,7 @@
 This guide walks you through publishing your alarm clock Docker images to Docker Hub and setting up a Raspberry Pi to run them on startup with automatic updates via Watchtower.
 
 ## Table of Contents
+
 1. [Prerequisites](#prerequisites)
 2. [Part 1: Build and Publish Docker Images](#part-1-build-and-publish-docker-images)
 3. [Part 2: Raspberry Pi Setup](#part-2-raspberry-pi-setup)
@@ -16,12 +17,14 @@ This guide walks you through publishing your alarm clock Docker images to Docker
 ## Prerequisites
 
 ### On Your Development Machine
+
 - Docker installed and running
 - Docker Hub account (free tier works fine)
 - Git with repository cloned
 - Terminal access
 
 ### For Raspberry Pi
+
 - Raspberry Pi 4 (recommended) or Pi 3B+ with at least 2GB RAM
 - Raspberry Pi OS (64-bit recommended for better .NET performance)
 - Network connection (WiFi or Ethernet)
@@ -45,6 +48,7 @@ docker login
 Replace `your-dockerhub-username` with your actual Docker Hub username throughout this guide.
 
 Example: If your username is `jsmith`, your images will be:
+
 - `jsmith/alarm-clock-backend:latest`
 - `jsmith/alarm-clock-frontend:latest`
 
@@ -68,6 +72,7 @@ docker buildx build --platform linux/arm64,linux/amd64 \
 ```
 
 **Note**: If `buildx` is not available, you can build directly on the Raspberry Pi, or set it up:
+
 ```bash
 # Set up buildx (one-time setup)
 docker buildx create --name mybuilder --use
@@ -216,6 +221,7 @@ nano docker-compose.yml
 ```
 
 Update the image references:
+
 ```yaml
 services:
   frontend:
@@ -328,23 +334,23 @@ services:
     environment:
       # Check for updates every 5 minutes (300 seconds)
       - WATCHTOWER_POLL_INTERVAL=300
-      
+
       # Only update containers from this compose file
       - WATCHTOWER_SCOPE=alarm-clock
-      
+
       # Clean up old images after updating
       - WATCHTOWER_CLEANUP=true
-      
+
       # Send notifications (optional - see notification options below)
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_NOTIFICATION_URL=generic://
-      
+
       # Enable debug logging
       - WATCHTOWER_DEBUG=false
-      
+
       # Include stopped containers
       - WATCHTOWER_INCLUDE_STOPPED=true
-      
+
       # Monitor only containers with this label
       - WATCHTOWER_LABEL_ENABLE=true
     labels:
@@ -369,19 +375,19 @@ networks:
 Update your frontend and backend services to be monitored by Watchtower:
 
 ```yaml
-  frontend:
-    image: ${DOCKER_USERNAME}/alarm-clock-frontend:latest
-    labels:
-      - "com.centurylinklabs.watchtower.scope=alarm-clock"
-      - "com.centurylinklabs.watchtower.enable=true"
-    # ... rest of config
+frontend:
+  image: ${DOCKER_USERNAME}/alarm-clock-frontend:latest
+  labels:
+    - "com.centurylinklabs.watchtower.scope=alarm-clock"
+    - "com.centurylinklabs.watchtower.enable=true"
+  # ... rest of config
 
-  backend:
-    image: ${DOCKER_USERNAME}/alarm-clock-backend:latest
-    labels:
-      - "com.centurylinklabs.watchtower.scope=alarm-clock"
-      - "com.centurylinklabs.watchtower.enable=true"
-    # ... rest of config
+backend:
+  image: ${DOCKER_USERNAME}/alarm-clock-backend:latest
+  labels:
+    - "com.centurylinklabs.watchtower.scope=alarm-clock"
+    - "com.centurylinklabs.watchtower.enable=true"
+  # ... rest of config
 ```
 
 ### Step 4.3: Restart Services with Watchtower
@@ -402,6 +408,7 @@ docker logs watchtower -f
 To receive notifications when Watchtower updates containers:
 
 #### Email Notifications:
+
 ```yaml
 environment:
   - WATCHTOWER_NOTIFICATIONS=email
@@ -414,6 +421,7 @@ environment:
 ```
 
 #### Slack Notifications:
+
 ```yaml
 environment:
   - WATCHTOWER_NOTIFICATIONS=slack
@@ -641,6 +649,7 @@ chmod +x deploy.sh
 ```
 
 Then simply run:
+
 ```bash
 ./deploy.sh
 ```
@@ -660,6 +669,7 @@ echo "your-api-key" | docker secret create api_key -
 ```
 
 Update docker-compose.yml:
+
 ```yaml
 secrets:
   api_key:
@@ -694,6 +704,7 @@ Access at: http://<raspberry-pi-ip>:9000
 ## Summary
 
 You now have:
+
 - ✅ Docker images published to Docker Hub
 - ✅ Raspberry Pi configured to run your application
 - ✅ Auto-start on boot via systemd

@@ -28,7 +28,7 @@ services:
     image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-frontend:dev
     container_name: alarm-clock-frontend-dev
     ports:
-      - "3001:80"  # Different port for dev
+      - "3001:80" # Different port for dev
     depends_on:
       model-init:
         condition: service_completed_successfully
@@ -44,7 +44,7 @@ services:
     image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-backend:dev
     container_name: alarm-clock-backend-dev
     ports:
-      - "5001:5000"  # Different port for dev
+      - "5001:5000" # Different port for dev
     volumes:
       - ./shared:/app/shared
       - models-data:/app/models

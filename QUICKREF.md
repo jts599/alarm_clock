@@ -9,11 +9,11 @@
 
 ## Branch Strategy
 
-| Branch | Purpose | Auto-Deploy | Docker Tag |
-|--------|---------|-------------|------------|
-| `main` | Production | ✅ Yes | `latest` |
-| `dev` | Development | ✅ Yes | `dev` |
-| `feature/*` | Feature work | ❌ No | N/A |
+| Branch      | Purpose      | Auto-Deploy | Docker Tag |
+| ----------- | ------------ | ----------- | ---------- |
+| `main`      | Production   | ✅ Yes      | `latest`   |
+| `dev`       | Development  | ✅ Yes      | `dev`      |
+| `feature/*` | Feature work | ❌ No       | N/A        |
 
 ## Development Workflow
 
@@ -87,11 +87,13 @@ journalctl -u alarm-clock-prod.service -f
 **View workflows:** https://github.com/jts599/alarm_clock/actions
 
 **Workflows:**
+
 - `ci.yml` - Runs tests on PRs and pushes
 - `deploy.yml` - Builds and publishes images
 - `release.yml` - Creates releases from tags
 
 **Manual trigger:**
+
 1. Go to Actions tab
 2. Select "Deploy - Build and Publish Docker Images"
 3. Click "Run workflow"
@@ -103,6 +105,7 @@ journalctl -u alarm-clock-prod.service -f
 **View images:** https://hub.docker.com/u/your-username
 
 **Expected images:**
+
 - `your-username/alarm-clock-backend:latest`
 - `your-username/alarm-clock-backend:dev`
 - `your-username/alarm-clock-frontend:latest`
@@ -110,20 +113,20 @@ journalctl -u alarm-clock-prod.service -f
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| CI tests fail | Check GitHub Actions logs for details |
-| Deploy fails | Verify GitHub secrets are set correctly |
-| Pi not updating | Check `docker logs watchtower`, ensure images pushed to Docker Hub |
-| Wrong image version | Check docker-compose.yml uses correct image name/tag |
-| Build fails | Test locally: `docker buildx build --platform linux/arm64 -f backend/Dockerfile backend/` |
+| Issue               | Solution                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| CI tests fail       | Check GitHub Actions logs for details                                                     |
+| Deploy fails        | Verify GitHub secrets are set correctly                                                   |
+| Pi not updating     | Check `docker logs watchtower`, ensure images pushed to Docker Hub                        |
+| Wrong image version | Check docker-compose.yml uses correct image name/tag                                      |
+| Build fails         | Test locally: `docker buildx build --platform linux/arm64 -f backend/Dockerfile backend/` |
 
 ## Environment Ports
 
-| Environment | Frontend | Backend | Location |
-|-------------|----------|---------|----------|
+| Environment | Frontend | Backend | Location                |
+| ----------- | -------- | ------- | ----------------------- |
 | Production  | 3000     | 5000    | `/opt/alarm-clock-prod` |
-| Development | 3001     | 5001    | `/opt/alarm-clock-dev` |
+| Development | 3001     | 5001    | `/opt/alarm-clock-dev`  |
 
 ## Useful Links
 

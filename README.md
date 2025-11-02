@@ -21,6 +21,7 @@ A containerized full-stack application with React/TypeScript frontend and .NET 8
 ## Custom Dependencies
 
 This project uses a **custom fork of the LifxNet library** located in `LifxNet-Source/` with the following improvements:
+
 - Debugging output commented out
 - Added `ToString()` implementation for `Lifx.Color`
 - Timing fixes for better stability
@@ -31,6 +32,7 @@ The custom fork includes commits beyond the official v2.2 release that improve r
 ## Development Setup
 
 ### Prerequisites
+
 - **For Dev Container**: Docker and VS Code with Remote-Containers extension
 - **For Local Development**: Docker and Docker Compose, .NET 8 SDK, Node.js 18+
 - VS Code with C# and Docker extensions
@@ -40,23 +42,27 @@ The custom fork includes commits beyond the official v2.2 release that improve r
 The easiest way to get started is using the VS Code dev container which provides a fully configured development environment:
 
 1. **Clone the repository with submodules**:
+
    ```bash
    git clone --recurse-submodules https://github.com/jts599/alarm_clock.git
    cd alarm_clock
    ```
 
 2. **Open in VS Code**:
+
    ```bash
    code .
    ```
 
 3. **Reopen in Container**:
+
    - VS Code will prompt to "Reopen in Container" when it detects the `.devcontainer` folder
    - Or manually: `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
 
 4. **Wait for setup**: The container will automatically:
+
    - Install .NET 8 SDK and Node.js 20
-   - Restore .NET dependencies 
+   - Restore .NET dependencies
    - Install npm packages
    - Configure the development environment
 
@@ -66,6 +72,7 @@ The easiest way to get started is using the VS Code dev container which provides
    - Or use VS Code debug: `F5` → "Launch Full Stack"
 
 **Dev Container Benefits**:
+
 - ✅ **No local setup required** - Everything runs in a container
 - ✅ **Consistent environment** across different machines
 - ✅ **All dependencies included** (.NET 8, Node.js 20, git, etc.)
@@ -76,12 +83,14 @@ The easiest way to get started is using the VS Code dev container which provides
 ### Option 2: Local Development Setup
 
 1. **Clone the repository with submodules**:
+
    ```bash
    git clone --recurse-submodules https://github.com/jts599/alarm_clock.git
    cd alarm_clock
    ```
 
    Or if you already cloned without submodules:
+
    ```bash
    git clone https://github.com/jts599/alarm_clock.git
    cd alarm_clock
@@ -100,22 +109,26 @@ The easiest way to get started is using the VS Code dev container which provides
 The application uses `appsettings.json` for configuration. Key settings include:
 
 ### Weather Configuration
+
 - **`Weather.Longitude`**: Longitude coordinate for weather/sunrise calculations
 - **`Weather.Latitude`**: Latitude coordinate for weather/sunrise calculations
 
 ### Runtime Configuration
+
 - **`RunConfiguration.StubLifx`**: Set to `true` to use mock LIFX service for development/testing
 - **`RunConfiguration.FastTimescale`**: Set to `true` to accelerate time-based operations for testing
 
 ### Environment-Specific Settings
+
 - **Development**: `appsettings.Development.json` - Uses stub services by default
 - **Production**: `appsettings.json` - Uses real LIFX integration by default
 
 Example `appsettings.Development.json`:
+
 ```json
 {
   "Weather": {
-    "Longitude": -74.0060,
+    "Longitude": -74.006,
     "Latitude": 40.7128
   },
   "RunConfiguration": {
@@ -128,19 +141,23 @@ Example `appsettings.Development.json`:
 ### Running in Development Mode
 
 #### Local Development (with debugging)
+
 1. **Install frontend dependencies**:
+
    ```bash
    cd frontend
    npm install
    ```
 
 2. **Build and run the backend**:
+
    ```bash
    cd backend
    dotnet run
    ```
 
 3. **Run the frontend**:
+
    ```bash
    cd frontend
    npm run dev
@@ -151,6 +168,7 @@ Example `appsettings.Development.json`:
    - This will start both backend and frontend with full debugging support
 
 #### Docker Development Mode
+
 ```bash
 # Build and run in development mode
 docker-compose -f docker-compose.debug.yml up --build
@@ -159,10 +177,12 @@ docker-compose -f docker-compose.debug.yml up --build
 ```
 
 This will start:
+
 - Frontend on http://localhost:3000 (Vite dev server with hot reload)
 - Backend on http://localhost:5000 (with API endpoints)
 
 ### Running in Production Mode
+
 ```bash
 # Build and run production containers
 docker-compose up --build
@@ -172,6 +192,7 @@ docker-compose up -d --build
 ```
 
 This will start:
+
 - Frontend on http://localhost:3000 (served by nginx)
 - Backend on http://localhost:5000
 
@@ -210,21 +231,25 @@ alarm_clock/
 ## Available Commands
 
 ### Docker Commands
+
 - `docker-compose up --build` - Build and run production
 - `docker-compose -f docker-compose.debug.yml up --build` - Build and run development
 - `docker-compose down` - Stop and remove containers
 
 ### .NET Commands
+
 - `dotnet build alarm_clock.sln` - Build the entire solution including LifxNet dependency
 - `dotnet run --project backend/backend.csproj` - Run the backend locally
 
 ### Frontend Commands
+
 - `npm install` - Install frontend dependencies (run from frontend/ directory)
 - `npm run dev` - Start Vite development server with hot reload
 - `npm run build` - Build frontend for production
 - `npm run preview` - Preview production build locally
 
 ### VS Code Tasks
+
 - **build** - Build the .NET backend
 - **npm: install** - Install frontend dependencies
 - **npm: dev** - Start frontend development server
@@ -246,7 +271,7 @@ The backend provides REST API endpoints for controlling LIFX lights:
 This project uses a **custom fork of the LifxNet library** (https://github.com/jts599/LifxNet) included as a Git submodule with the following improvements over the official v2.2 release:
 
 - **Stability improvements**: Better handling of network timeouts and connection issues
-- **Enhanced debugging**: Cleaner logging output for production use  
+- **Enhanced debugging**: Cleaner logging output for production use
 - **Performance optimizations**: Timing fixes for more reliable light control
 - **Extended functionality**: Additional color handling and string representations
 
@@ -288,6 +313,7 @@ Full instructions in **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)**:
 4. **Enable automatic updates** with Watchtower
 
 Once configured, your Raspberry Pi will:
+
 - ✅ Start the application on boot
 - ✅ Automatically update when you push new images
 - ✅ Monitor and restart containers if they fail
@@ -305,11 +331,13 @@ The project uses GitHub Actions for continuous integration and deployment:
 - **Release Management**: Create releases with version tags (e.g., `v1.0.0`)
 
 **Workflow:**
+
 ```
 feature branch → dev branch (auto-deploy) → main branch (auto-deploy) → release tag
 ```
 
 **GitHub Secrets Required:**
+
 - `DOCKER_USERNAME` - Your Docker Hub username
 - `DOCKER_PASSWORD` - Your Docker Hub access token
 
@@ -328,6 +356,7 @@ See **[CI_CD_SETUP.md](CI_CD_SETUP.md)** for detailed workflow.
 ### Note on LifxNet Dependency
 
 If you need to modify the LifxNet library:
+
 1. Make changes in the `LifxNet-Source/src/LifxNet/` directory
 2. The changes will be automatically included when building the solution
 3. Consider contributing useful changes back to the upstream LifxNet project

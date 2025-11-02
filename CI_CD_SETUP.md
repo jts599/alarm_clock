@@ -3,6 +3,7 @@
 This guide explains how to set up Continuous Integration and Continuous Deployment (CI/CD) for the alarm clock project using GitHub Actions with separate `main` and `dev` branches.
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Branch Strategy](#branch-strategy)
 3. [GitHub Secrets Setup](#github-secrets-setup)
@@ -17,6 +18,7 @@ This guide explains how to set up Continuous Integration and Continuous Deployme
 ## Overview
 
 The CI/CD pipeline automatically:
+
 - ✅ Tests and builds code on every pull request
 - ✅ Publishes Docker images to Docker Hub when code is pushed to `main` or `dev`
 - ✅ Creates GitHub releases when version tags are pushed
@@ -24,6 +26,7 @@ The CI/CD pipeline automatically:
 - ✅ Enables automatic updates via Watchtower
 
 ### Workflow Files
+
 - **`.github/workflows/ci.yml`** - Runs tests on PRs and pushes
 - **`.github/workflows/deploy.yml`** - Builds and publishes Docker images
 - **`.github/workflows/release.yml`** - Creates releases for version tags
@@ -33,6 +36,7 @@ The CI/CD pipeline automatically:
 ## Branch Strategy
 
 ### Main Branch (`main`)
+
 - **Purpose**: Production-ready code
 - **Deployment**: Automatic on every push
 - **Docker Tags**: `latest` and `main`
@@ -40,6 +44,7 @@ The CI/CD pipeline automatically:
 - **Use Case**: Stable releases running on your primary Raspberry Pi
 
 ### Dev Branch (`dev`)
+
 - **Purpose**: Development and testing
 - **Deployment**: Automatic on every push
 - **Docker Tags**: `dev` and `dev-<commit-sha>`
@@ -47,6 +52,7 @@ The CI/CD pipeline automatically:
 - **Use Case**: Testing new features before promoting to main
 
 ### Feature Branches
+
 - **Naming**: `feature/<feature-name>` or `fix/<bug-name>`
 - **Deployment**: None (only CI tests run)
 - **Merge Target**: `dev` branch
@@ -75,9 +81,9 @@ You need to configure secrets in your GitHub repository for the workflows to fun
 
 Add these two secrets:
 
-| Name | Value | Description |
-|------|-------|-------------|
-| `DOCKER_USERNAME` | Your Docker Hub username | e.g., `jsmith` |
+| Name              | Value                        | Description       |
+| ----------------- | ---------------------------- | ----------------- |
+| `DOCKER_USERNAME` | Your Docker Hub username     | e.g., `jsmith`    |
 | `DOCKER_PASSWORD` | Your Docker Hub access token | Token from Step 1 |
 
 ### Verification
@@ -91,10 +97,12 @@ After adding secrets, they should appear in your repository settings. You won't 
 ### 1. CI Workflow (`ci.yml`)
 
 **Triggers:**
+
 - Pull requests to `main` or `dev`
 - Pushes to `main` or `dev`
 
 **Jobs:**
+
 1. **test-backend**: Builds and tests .NET backend
 2. **test-frontend**: Lints, type-checks, and builds React frontend
 3. **build-docker-images**: Builds Docker images without pushing (validation)
@@ -104,11 +112,13 @@ After adding secrets, they should appear in your repository settings. You won't 
 ### 2. Deploy Workflow (`deploy.yml`)
 
 **Triggers:**
+
 - Pushes to `main` or `dev` branches
 - Manual workflow dispatch
 
 **Jobs:**
-1. **build-and-push**: 
+
+1. **build-and-push**:
    - Builds multi-architecture images (AMD64 + ARM64)
    - Pushes to Docker Hub with appropriate tags
    - Generates deployment summary
@@ -116,6 +126,7 @@ After adding secrets, they should appear in your repository settings. You won't 
 **Image Tags Produced:**
 
 For `main` branch:
+
 ```
 your-username/alarm-clock-backend:latest
 your-username/alarm-clock-backend:main
@@ -123,6 +134,7 @@ your-username/alarm-clock-backend:main-<sha>
 ```
 
 For `dev` branch:
+
 ```
 your-username/alarm-clock-backend:dev
 your-username/alarm-clock-backend:dev-<sha>
@@ -131,15 +143,18 @@ your-username/alarm-clock-backend:dev-<sha>
 ### 3. Release Workflow (`release.yml`)
 
 **Triggers:**
+
 - Version tags pushed (e.g., `v1.0.0`, `v1.2.3`)
 
 **Jobs:**
+
 1. **release**:
    - Builds and pushes images with version tag
    - Creates GitHub release with changelog
    - Tags images as both `latest` and version number
 
 **Creating a Release:**
+
 ```bash
 # Tag your commit
 git tag -a v1.0.0 -m "Release version 1.0.0"
@@ -163,6 +178,7 @@ feature branch → dev branch → main branch → release tag
 ### Step-by-Step
 
 #### 1. Create Feature Branch
+
 ```bash
 # Start from dev
 git checkout dev
@@ -173,6 +189,7 @@ git checkout -b feature/my-new-feature
 ```
 
 #### 2. Develop and Test Locally
+
 ```bash
 # Make changes
 # Test locally with dev containers or Docker Compose
@@ -183,6 +200,7 @@ git commit -m "feat: add new feature"
 ```
 
 #### 3. Push and Create PR to Dev
+
 ```bash
 # Push feature branch
 git push origin feature/my-new-feature
@@ -192,6 +210,7 @@ git push origin feature/my-new-feature
 ```
 
 #### 4. Merge to Dev
+
 ```bash
 # After PR approval, merge to dev
 # Deploy workflow automatically publishes :dev images
@@ -199,11 +218,13 @@ git push origin feature/my-new-feature
 ```
 
 #### 5. Test on Dev Environment
+
 - Access dev Pi at `http://<pi-ip>:3001` (frontend) and `http://<pi-ip>:5001` (backend)
 - Verify functionality
 - Test for stability
 
 #### 6. Promote to Main
+
 ```bash
 # Create PR from dev to main
 # CI workflow runs tests
@@ -214,6 +235,7 @@ git push origin feature/my-new-feature
 ```
 
 #### 7. Create Release (Optional)
+
 ```bash
 # Tag the main branch
 git checkout main
@@ -250,6 +272,7 @@ mkdir -p models shared logs
 ```
 
 #### Production Setup
+
 ```bash
 cd /opt/alarm-clock-prod
 
@@ -271,6 +294,7 @@ sudo nano /etc/systemd/system/alarm-clock-prod.service
 ```
 
 Add:
+
 ```ini
 [Unit]
 Description=Alarm Clock Production
@@ -299,6 +323,7 @@ sudo systemctl start alarm-clock-prod.service
 ```
 
 #### Dev Setup
+
 ```bash
 cd /opt/alarm-clock-dev
 
@@ -320,6 +345,7 @@ sudo nano /etc/systemd/system/alarm-clock-dev.service
 ```
 
 Add:
+
 ```ini
 [Unit]
 Description=Alarm Clock Development
@@ -350,6 +376,7 @@ sudo systemctl start alarm-clock-dev.service
 ### Option 2: Separate Pis for Each Environment
 
 Use two different Raspberry Pis:
+
 - **Pi 1**: Production (uses `docker-compose.prod.yml`)
 - **Pi 2**: Development (uses `docker-compose.dev.yml`)
 
@@ -420,6 +447,7 @@ git push origin v1.0.0
 ### GitHub Actions
 
 **View Workflows:**
+
 1. Go to your GitHub repository
 2. Click **Actions** tab
 3. Click on a workflow run to see details
@@ -427,29 +455,37 @@ git push origin v1.0.0
 **Common Issues:**
 
 #### Docker Login Fails
+
 ```
 Error: Could not authenticate to Docker Hub
 ```
+
 **Solution:** Check that `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets are set correctly.
 
 #### Build Fails
+
 ```
 Error: Build failed for platform linux/arm64
 ```
+
 **Solution:** Check Dockerfile syntax and dependencies. Test locally with:
+
 ```bash
 docker buildx build --platform linux/arm64 -f backend/Dockerfile backend/
 ```
 
 #### Submodules Not Initialized
+
 ```
 Error: LifxNet source not found
 ```
+
 **Solution:** Workflow includes `submodules: recursive`. Verify `.gitmodules` is correct.
 
 ### Raspberry Pi
 
 **Check Container Status:**
+
 ```bash
 # Production
 docker ps | grep alarm-clock
@@ -463,6 +499,7 @@ docker logs watchtower -f
 ```
 
 **Verify Watchtower Updates:**
+
 ```bash
 # Check Watchtower logs for update activity
 docker logs watchtower --tail 100
@@ -474,6 +511,7 @@ docker logs watchtower --tail 100
 ```
 
 **Manual Image Update:**
+
 ```bash
 cd /opt/alarm-clock-prod
 docker compose pull
@@ -481,6 +519,7 @@ docker compose up -d
 ```
 
 **Check Systemd Services:**
+
 ```bash
 # Status
 sudo systemctl status alarm-clock-prod.service
@@ -493,6 +532,7 @@ journalctl -u alarm-clock-prod.service -f
 ### Docker Hub
 
 **Verify Images Published:**
+
 1. Go to https://hub.docker.com
 2. Navigate to your repositories
 3. Check for:
@@ -502,6 +542,7 @@ journalctl -u alarm-clock-prod.service -f
    - `alarm-clock-frontend:dev`
 
 **Check Image Architectures:**
+
 - Click on an image
 - Look for `linux/amd64` and `linux/arm64` in the tag details
 
@@ -510,7 +551,9 @@ journalctl -u alarm-clock-prod.service -f
 ## Best Practices
 
 ### 1. Commit Messages
+
 Use conventional commit format:
+
 ```
 feat: add new alarm sound
 fix: resolve LIFX connection timeout
@@ -519,23 +562,28 @@ chore: update dependencies
 ```
 
 ### 2. Pull Requests
+
 - Always create PRs for code review
 - Target `dev` branch first, not `main`
 - Wait for CI to pass before merging
 - Add descriptive PR descriptions
 
 ### 3. Testing Before Merge
+
 - Test feature branches locally
 - Test on dev environment before promoting to main
 - Run manual tests on Pi after auto-deployment
 
 ### 4. Version Tags
+
 Use semantic versioning:
+
 - `v1.0.0` - Major release
 - `v1.1.0` - Minor feature addition
 - `v1.0.1` - Bug fix/patch
 
 ### 5. Monitoring
+
 - Check GitHub Actions after each push
 - Monitor Watchtower logs on Pi
 - Set up notifications for failed workflows (GitHub Settings → Notifications)
@@ -545,6 +593,7 @@ Use semantic versioning:
 ## Quick Reference Commands
 
 ### Development
+
 ```bash
 # Start feature
 git checkout -b feature/my-feature
@@ -557,6 +606,7 @@ git push origin feature/my-feature
 ```
 
 ### Deployment
+
 ```bash
 # Deploy to dev (automatic on push)
 git push origin dev
@@ -570,6 +620,7 @@ git push origin v1.0.0
 ```
 
 ### Monitoring
+
 ```bash
 # Check GitHub Actions
 # Visit: https://github.com/jts599/alarm_clock/actions

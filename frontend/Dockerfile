@@ -1,13 +1,13 @@
 # Production Dockerfile for Vite React frontend
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
 # Copy package files
 COPY frontend/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including dev dependencies needed for build)
+RUN npm ci
 
 # Copy shared folder (for API types)
 COPY shared/ ../shared/

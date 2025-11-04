@@ -34,6 +34,8 @@ This guide walks you through publishing your alarm clock Docker images to Docker
 
 ## Part 1: Build and Publish Docker Images
 
+**IMPORTANT**: You must complete this section BEFORE setting up the Raspberry Pi. The Pi will pull pre-built images from Docker Hub.
+
 ### Step 1.1: Log in to Docker Hub
 
 ```bash
@@ -58,20 +60,18 @@ Example: If your username is `jsmith`, your images will be:
 # Navigate to your project root
 cd /workspaces/alarm_clock
 
-# Build the backend image for ARM64 (Raspberry Pi)
-docker buildx build --platform linux/arm64 \
-  -t your-dockerhub-username/alarm-clock-backend:latest \
-  -f backend/Dockerfile \
-  backend/
-
-# Optional: Also build for AMD64 if you want multi-arch support
+# Build the backend image for multi-arch (ARM64 for Pi + AMD64 for dev)
 docker buildx build --platform linux/arm64,linux/amd64 \
-  -t your-dockerhub-username/alarm-clock-backend:latest \
+  -t jts599/alarm-clock-backend:latest \
   -f backend/Dockerfile \
-  backend/
+  . \
+  --push
+
+# Note: Building from workspace root (.) because Dockerfile needs LifxNet-Source
+# The --push flag automatically pushes to Docker Hub after building
 ```
 
-**Note**: If `buildx` is not available, you can build directly on the Raspberry Pi, or set it up:
+**Note**: If `buildx` is not available, set it up:
 
 ```bash
 # Set up buildx (one-time setup)
@@ -159,25 +159,39 @@ sudo mkdir -p /opt/alarm-clock
 sudo chown $USER:$USER /opt/alarm-clock
 cd /opt/alarm-clock
 
-# Create subdirectories
-mkdir -p models shared logs
+# Clone the repository to get configuration files
+# IMPORTANT: Use dev branch (PR #13 was merged here)
+git clone -b dev https://github.com/jts599/alarm_clock.git .
+
+# Create required directories
+mkdir -p models logs
+
+# IMPORTANT: Create the models directory at the absolute path used by docker-compose
+sudo mkdir -p /opt/alarm-clock/models
+sudo chown $USER:$USER /opt/alarm-clock/models
 ```
 
-### Step 2.3: Copy Configuration Files
+**Important Notes**: 
+- **Currently use `-b dev`** - PR #13 was merged here with the updated Dockerfiles and docker-compose.yml
+- After dev is merged to main, you can use `-b main` instead
+- This gets you the correct docker-compose.yml that uses pre-built images from Docker Hub
+- Images are automatically built and pushed to Docker Hub when code is pushed to dev
 
-From your development machine, copy the necessary files:
+### Step 2.3: Verify docker-compose.yml Uses Images (Not Build)
 
 ```bash
-# On your development machine (not on Pi)
-# Copy docker-compose.yml to the Pi
-scp docker-compose.yml pi@raspberrypi.local:/opt/alarm-clock/
+# Check that docker-compose.yml uses image: directives
+grep -A 2 "frontend:" docker-compose.yml
 
-# Copy shared configuration if needed
-scp -r shared/* pi@raspberrypi.local:/opt/alarm-clock/shared/
+# You should see something like:
+#   frontend:
+#     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:latest
 
-# Copy any environment-specific configs
-# Create a production appsettings file if needed
-scp backend/appsettings.json pi@raspberrypi.local:/opt/alarm-clock/
+# If you see "build:" instead, you're on the wrong branch!
+# Switch to dev:
+git fetch origin
+git checkout dev
+git pull
 ```
 
 ### Step 2.4: Configure Environment Variables on Pi
@@ -190,7 +204,10 @@ cd /opt/alarm-clock
 # Create a .env file for Docker Compose
 cat > .env << 'EOF'
 # Docker Registry
-DOCKER_USERNAME=your-dockerhub-username
+DOCKER_USERNAME=jts599
+
+# Image Tag (use 'dev' for dev branch, 'latest' for main branch)
+IMAGE_TAG=dev
 
 # Application Settings
 ASPNETCORE_ENVIRONMENT=Production
@@ -213,25 +230,17 @@ EOF
 nano .env
 ```
 
-### Step 2.5: Update docker-compose.yml Image References
+**Important**: 
+- Set `DOCKER_USERNAME=jts599` to use the jts599 Docker Hub account
+- Set `IMAGE_TAG=dev` when using the dev branch
+- Set `IMAGE_TAG=latest` when using the main branch (after merge)
 
-```bash
-# Edit docker-compose.yml to use your Docker Hub images
-nano docker-compose.yml
+---
+
+## Part 3: Configure Auto-Start with Docker Compose
 ```
 
-Update the image references:
-
-```yaml
-services:
-  frontend:
-    image: ${DOCKER_USERNAME}/alarm-clock-frontend:latest
-    # ...
-
-  backend:
-    image: ${DOCKER_USERNAME}/alarm-clock-backend:latest
-    # ...
-```
+**Important**: Replace `your-dockerhub-username` with `jts599` (or set `DOCKER_USERNAME=jts599` in your .env file).
 
 ---
 
@@ -272,6 +281,11 @@ WantedBy=multi-user.target
 ### Step 3.2: Enable and Start the Service
 
 ```bash
+# First, pull the Docker images from Docker Hub
+# This ensures you're using pre-built images, not building on the Pi
+cd /opt/alarm-clock
+docker compose pull
+
 # Reload systemd to recognize the new service
 sudo systemctl daemon-reload
 
@@ -284,9 +298,11 @@ sudo systemctl start alarm-clock.service
 # Check status
 sudo systemctl status alarm-clock.service
 
-# View logs
+# View logs if there are issues
 journalctl -u alarm-clock.service -f
 ```
+
+**Important**: Running `docker compose pull` first ensures images are downloaded from Docker Hub. Without this, docker-compose might try to build images locally, which will fail on the Pi.
 
 ### Step 3.3: Verify Containers Are Running
 
@@ -516,9 +532,91 @@ sudo ufw enable
 sudo ufw status
 ```
 
+### Step 5.5: Update Configuration Files from GitHub
+
+When you update configuration files (docker-compose.yml, .env.example, etc.) in the repository:
+
+```bash
+# SSH to your Pi
+ssh pi@raspberrypi.local
+cd /opt/alarm-clock
+
+# Pull latest configuration changes
+git pull origin main
+
+# Backup your .env file first (if you made custom changes)
+cp .env .env.backup
+
+# Review any changes to .env.example and update your .env if needed
+nano .env
+
+# Restart services to apply configuration changes
+sudo systemctl restart alarm-clock.service
+```
+
+**Note**: Watchtower only updates Docker images, not configuration files. You must manually pull configuration updates from GitHub.
+
 ---
 
 ## Troubleshooting
+
+### Error: "vite: not found" or Build Failures on Pi
+
+**Symptom**: When starting services, you see errors like:
+```
+sh: vite: not found
+target frontend: failed to solve
+```
+
+**Cause**: Your docker-compose.yml is trying to **build** images on the Pi instead of **pulling** pre-built images from Docker Hub.
+
+**Solution**:
+```bash
+cd /opt/alarm-clock
+
+# Check if you're building instead of pulling
+grep -B 2 -A 5 "frontend:" docker-compose.yml
+
+# If you see "build:" directives, you're on the wrong branch
+# Switch to dev branch:
+git fetch origin
+git checkout dev
+git pull
+
+# Verify it now uses image: instead of build:
+grep "image:" docker-compose.yml
+
+# Should see:
+#   image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:latest
+#   image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:latest
+
+# Pull the pre-built images
+docker compose pull
+
+# Now restart the service
+sudo systemctl restart alarm-clock.service
+```
+
+**Prevention**: Always clone from `dev` branch (until merged to main) to get the production-ready docker-compose.yml with `image:` directives. The deploy workflow automatically builds and pushes images when code is pushed to dev.
+
+### Error: "failed to mount local volume" or "no such file or directory"
+
+**Symptom**: When starting services, you see errors like:
+```
+failed to mount local volume: mount /opt/alarm-clock/models:/var/lib/docker/volumes/alarm-clock_models-data/_data, flags: 0x1000: no such file or directory
+```
+
+**Cause**: The `/opt/alarm-clock/models` directory doesn't exist.
+
+**Solution**:
+```bash
+# Create the models directory
+sudo mkdir -p /opt/alarm-clock/models
+sudo chown $USER:$USER /opt/alarm-clock/models
+
+# Restart the service
+sudo systemctl restart alarm-clock.service
+```
 
 ### Containers Won't Start
 

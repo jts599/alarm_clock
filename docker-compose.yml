@@ -38,8 +38,7 @@ services:
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}
-    ports:
-      - "5000:5000"
+    network_mode: host
     volumes:
       - ./shared:/app/shared
       - models-data:/app/models # Persistent models volume

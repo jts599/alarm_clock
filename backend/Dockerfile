@@ -11,9 +11,22 @@ RUN apt-get update && apt-get install -y \
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["backend.csproj", "./"]
-RUN dotnet restore "backend.csproj"
-COPY . .
+
+# Copy LifxNet source project first (dependency)
+COPY ["LifxNet-Source/src/LifxNet/LifxNet.csproj", "LifxNet-Source/src/LifxNet/"]
+
+# Copy backend project file
+COPY ["backend/backend.csproj", "backend/"]
+
+# Restore dependencies
+RUN dotnet restore "backend/backend.csproj"
+
+# Copy remaining source files
+COPY ["LifxNet-Source/src/LifxNet/", "LifxNet-Source/src/LifxNet/"]
+COPY ["backend/", "backend/"]
+
+# Build
+WORKDIR /src/backend
 RUN dotnet build "backend.csproj" -c Release -o /app/build
 
 FROM build AS publish

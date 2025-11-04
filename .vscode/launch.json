@@ -36,6 +36,17 @@
       "request": "attach",
       "processId": "${command:pickProcess}",
       "justMyCode": false
+    },
+    {
+      "name": "Debug Weather Console App with Parameters",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/NationalWeatherServiceLibrary/NWS.ConsoleDemoApp/bin/Debug/net8.0/NWS.ConsoleDemoApp.dll",
+      "args": ["43.072", "-89.401"],
+      "cwd": "${workspaceFolder}/NationalWeatherServiceLibrary/NWS.ConsoleDemoApp",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "preLaunchTask": "build-weather-console"
     }
   ],
   "compounds": [

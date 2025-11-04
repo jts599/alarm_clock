@@ -117,6 +117,22 @@
       "presentation": {
         "reveal": "always"
       }
+    },
+    {
+      "label": "build-weather-console",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/NationalWeatherServiceLibrary/NWS.ConsoleDemoApp/NWS.ConsoleDemoApp.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
     }
   ]
 }

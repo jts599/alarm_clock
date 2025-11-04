@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
 using AlarmClock.Backend.Services;
+using AlarmClock.Backend.Services.Stubs;
 using AlarmClock.Backend.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ builder.Services.Configure<WeatherConfiguration>(
     builder.Configuration.GetSection("Weather"));
 builder.Services.Configure<RunConfiguration>(
     builder.Configuration.GetSection("RunConfiguration"));
+builder.Services.Configure<LlmConfiguration>(
+    builder.Configuration.GetSection("Llm"));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -31,6 +34,16 @@ if (runConfig?.StubLifx == true)
 else
 {
     builder.Services.AddSingleton<ILifxService, LifxService>();
+}
+
+// Register LLM service conditionally based on configuration
+if (runConfig?.StubLifx == true) // Use same flag for simplicity, or add separate StubLlm flag
+{
+    builder.Services.AddSingleton<ILlmService, StubLlmService>();
+}
+else
+{
+    builder.Services.AddSingleton<ILlmService, LlmService>();
 }
 
 // Configure default alarm settings for ConfigurableColorPickingService

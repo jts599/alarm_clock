@@ -25,7 +25,7 @@ services:
     restart: "no"
 
   frontend:
-    image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-frontend:dev
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:dev
     container_name: alarm-clock-frontend-dev
     ports:
       - "3001:80" # Different port for dev
@@ -41,7 +41,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   backend:
-    image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-backend:dev
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:dev
     container_name: alarm-clock-backend-dev
     ports:
       - "5001:5000" # Different port for dev

@@ -22,7 +22,7 @@ services:
     restart: "no" # Only run once
 
   frontend:
-    image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-frontend:${IMAGE_TAG:-latest}
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:${IMAGE_TAG:-latest}
     ports:
       - "3000:80"
     depends_on:
@@ -37,7 +37,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   backend:
-    image: ${DOCKER_USERNAME:-your-dockerhub-username}/alarm-clock-backend:${IMAGE_TAG:-latest}
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}
     ports:
       - "5000:5000"
     volumes:

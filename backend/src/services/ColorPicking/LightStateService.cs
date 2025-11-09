@@ -19,7 +19,7 @@ namespace AlarmClock.Backend.Services
         private bool _lastSetOnState = false; // false = off, true = on
         private DateTime _startTime = DateTime.MinValue;
 
-        private int _secondsStepInterval = 1; // 1 second
+        private int _secondsStepInterval = 1; // 1 second default. overridden by config
         private AlarmClockColor _lastSetColor = null;
 
         private ICompositeColorPickingService _colorPicker;
@@ -102,11 +102,11 @@ namespace AlarmClock.Backend.Services
         {
             get
             {
-                if (_config != null && _config.StartTimeHour >= 0 && _config.StartTimeHour < 24)
+                if (_config != null && _config.StartTimeIso8601 != null)
                 {
-                    return DateTime.Today.AddHours(_config.StartTimeHour);
+                    return DateTime.Parse(_config.StartTimeIso8601);
                 }
-                return DateTime.Today.AddHours(6).AddMinutes(30); // 6:30 AM today
+                return DateTime.Now;
             }
         }
 

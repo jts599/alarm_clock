@@ -91,9 +91,8 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         public bool IsLightOnAtTime(DateTime time)
         {
-            int secondsSinceMidnight = GetSecondsSinceMidnight(time);
-            if (IsDuringTransitionToOnTime(secondsSinceMidnight) ||
-                IsDuringHoldOnTime(secondsSinceMidnight))
+            if (IsDuringTransitionToOnTime(time) ||
+                IsDuringHoldOnTime(time))
             {
                 return true;
             }
@@ -116,12 +115,13 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="secondsSinceMidnight"></param>
         /// <returns></returns>
-        private bool IsDuringLightsOffTime(int secondsSinceMidnight)
+        private bool IsDuringLightsOffTime(DateTime time)
         {
-            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            if (!ActiveDays.Contains(time.DayOfWeek))
             {
                 return true;
             }
+            int secondsSinceMidnight = GetSecondsSinceMidnight(time);
             if (secondsSinceMidnight < AlarmStartTimeInSeconds)
             {
                 return true;
@@ -139,12 +139,13 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="secondsSinceMidnight"></param>
         /// <returns></returns>
-        private bool IsDuringTransitionToOnTime(int secondsSinceMidnight)
+        private bool IsDuringTransitionToOnTime(DateTime time)
         {
-            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            if (!ActiveDays.Contains(time.DayOfWeek))
             {
                 return false;
             }
+            int secondsSinceMidnight = GetSecondsSinceMidnight(time);
             return secondsSinceMidnight >= AlarmStartTimeInSeconds && secondsSinceMidnight <= SunriseEndTimeInSeconds;
         }
 
@@ -153,12 +154,13 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="secondsSinceMidnight"></param>
         /// <returns></returns>
-        private bool IsDuringHoldOnTime(int secondsSinceMidnight)
+        private bool IsDuringHoldOnTime(DateTime time)
         {
-            if (!ActiveDays.Contains(DateTime.Now.DayOfWeek))
+            if (!ActiveDays.Contains(time.DayOfWeek))
             {
                 return false;
             }
+            int secondsSinceMidnight = GetSecondsSinceMidnight(time);
             return secondsSinceMidnight > SunriseEndTimeInSeconds && secondsSinceMidnight <= TurnOffTimeInSeconds;
         }
 
@@ -171,13 +173,13 @@ namespace AlarmClock.Backend.Services
         {
             int secondsSinceMidnight = GetSecondsSinceMidnight(time);
 
-            if (IsDuringLightsOffTime(secondsSinceMidnight))
+            if (IsDuringLightsOffTime(time))
             {
                 // Before 6 AM: Off
                 return new AlarmClockColor(new LifxNet.Color { R = 0, G = 0, B = 0 }, MinKelvin);
 
             }
-            else if (IsDuringTransitionToOnTime(secondsSinceMidnight))
+            else if (IsDuringTransitionToOnTime(time))
             {
                 // Between 6 AM and 8 AM: Gradually increase brightness and color temperature
                 int totalSeconds = SunriseEndTimeInSeconds - AlarmStartTimeInSeconds;
@@ -186,7 +188,7 @@ namespace AlarmClock.Backend.Services
 
                 return ColorFromLightPercentage(percentage);
             }
-            else if (IsDuringHoldOnTime(secondsSinceMidnight))
+            else if (IsDuringHoldOnTime(time))
             {
                 // Between 8 AM and 9 AM: Steady bright white light
                 return new AlarmClockColor(new LifxNet.Color { R = 0xFF, G = 0xFF, B = 0xFF }, MaxKelvin);

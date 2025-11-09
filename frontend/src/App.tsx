@@ -41,7 +41,6 @@ export default function App() {
             alignItems: 'center',
             minHeight: '100vh',
             backgroundColor: '#1a1a1a',
-            padding: '20px',
             boxSizing: 'border-box'
         }}>
             <div style={{

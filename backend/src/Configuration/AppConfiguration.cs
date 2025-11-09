@@ -11,7 +11,7 @@ namespace AlarmClock.Backend.Configuration
         public bool StubLifx { get; set; }
         public int TimescaleMultiplier { get; set; }
 
-        public int StartTimeHour { get; set; }
+        public string StartTimeIso8601 { get; set; }
     }
 
     public class LlmConfiguration

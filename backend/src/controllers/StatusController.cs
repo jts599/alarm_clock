@@ -52,7 +52,8 @@ namespace Backend.Controllers
                 red = scaledRed,
                 green = scaledGreen,
                 blue = scaledBlue,
-                currentTimeString = _lightStateService.GetScaledTime().ToString("HH:mm")
+                currentTimeString = _lightStateService.GetScaledTime().ToString("HH:mm"),
+                currentDateString = _lightStateService.GetScaledTime().ToString("dddd MM-dd-yyyy")
             });
         }
 
@@ -91,7 +92,7 @@ namespace Backend.Controllers
                                 const response = await fetch('/api/status/color');
                                 const data = await response.json();
                                 document.body.style.backgroundColor = `rgb(${data.red}, ${data.green}, ${data.blue})`;
-                                document.getElementById('status').innerText = `Current Time: ${data.currentTimeString} | Color RGB(${data.red}, ${data.green}, ${data.blue})`;
+                                document.getElementById('status').innerText = ` ${data.currentTimeString} | ${data.currentDateString} | Color RGB(${data.red}, ${data.green}, ${data.blue})`;
                             } catch (error) {
                                 console.error('Error fetching bulb color:', error);
                             }

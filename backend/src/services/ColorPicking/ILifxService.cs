@@ -9,5 +9,6 @@ namespace AlarmClock.Backend.Services
         Task<bool> SetAllBulbsPowerAsync(bool powerOn);
         Task<bool> SetColorAllAsync(Color color, ushort kelvin, int transitionTime = 0);
         Task InitializeAsync();
+        Task RefreshBulbStatesAsync();
     }
 }

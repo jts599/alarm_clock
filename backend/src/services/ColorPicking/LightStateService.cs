@@ -71,40 +71,41 @@ namespace AlarmClock.Backend.Services
             ILogger<LightStateService> logger,
             ILifxService lifxService,
             ICompositeColorPickingService colorPicker,
-            IOptions<RunConfiguration> configOptions,
-            DateTime? startTime = null
+            IOptions<RunConfiguration> configOptions
             )
         {
             var config = configOptions.Value;
-            int secondsStepInterval = config.TimescaleMultiplier;
+            int secondsStepInterval = config.TimescaleMultiplier > 0 ? config.TimescaleMultiplier : 1;
             _config = config;
             _logger = logger;
             _lifxService = lifxService;
             _colorPicker = colorPicker;
             _secondsStepInterval = secondsStepInterval;
-            _startTime = startTime ?? DefaultStartTime;
+            _startTime = InternalClockStartTime;
             _trueStartTime = DateTime.Now;
         }
 
         private DateTime _trueStartTime;
 
         /// <summary>
-        /// In prod this should be DateTime.Now, for testing it can be set to a fixed time.
+        /// This will read from config to see if the start time has been overridden.
+        /// It will return that time, or DateTime.Now if not set.
         /// </summary>
-        private DateTime DefaultStartTime => AlarmStartTime;
-
-
-        /// <summary>
-        /// This can be used for testing so that the alarm goes off when the program starts. 
-        /// Update DefaultStartTime to change the default alarm start time.
-        /// </summary>
-        private DateTime AlarmStartTime
+        private DateTime InternalClockStartTime
         {
             get
             {
-                if (_config != null && _config.StartTimeIso8601 != null)
+                if (_config != null && !string.IsNullOrEmpty(_config.StartTimeIso8601))
                 {
-                    return DateTime.Parse(_config.StartTimeIso8601);
+                    try
+                    {
+                        DateTime parsedTime = DateTime.Parse(_config.StartTimeIso8601);
+                        return parsedTime;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error parsing StartTimeIso8601 from config. Falling back to DateTime.Now");
+                    }
                 }
                 return DateTime.Now;
             }

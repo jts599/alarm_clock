@@ -16,13 +16,16 @@ namespace AlarmClock.Backend.Services
     {
         private readonly ILogger<LifxService> _logger;
         private LifxClient _client = null;
+        private readonly SemaphoreSlim _clientCreationLock = new(1, 1);
+
         private readonly SemaphoreSlim _clientLock = new(1, 1);
 
         private int NumberOfBulbs => Bulbs?.Count() ?? 0;
         private IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
         private readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
 
-        private const int DiscoveryDelayMilliseconds = 2000;
+        private const int DiscoveryDelayMilliseconds = 2500;
+
 
         public LifxService(ILogger<LifxService> logger)
         {
@@ -65,7 +68,7 @@ namespace AlarmClock.Backend.Services
         {
             if (_client == null)
             {
-                await _clientLock.WaitAsync();
+                await _clientCreationLock.WaitAsync();
                 try
                 {
                     if (_client == null)
@@ -78,50 +81,41 @@ namespace AlarmClock.Backend.Services
                         _client.DeviceDiscovered += OnDeviceDiscovered;
                         _client.DeviceLost += OnDeviceLost;
 
-                        _logger.LogInformation("Starting device discovery...");
-                        _client.StartDeviceDiscovery();
                         _logger.LogInformation("LifxClient created and discovery started");
-
-                        // Give some time for initial discovery
-                        _logger.LogInformation($"Waiting {DiscoveryDelayMilliseconds}ms for initial device discovery...");
-                        await Task.Delay(DiscoveryDelayMilliseconds);
-                        _client.StopDeviceDiscovery();
+                        await _client.DoInitialDeviceDiscovery();
 
                         var discoveredCount = Bulbs?.Count() ?? 0;
-                        _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices");
-                        await FlashFoundBulbs();
+                        _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices. They will refresh every minute.");
+                        //await FlashFoundBulbs();
                     }
                 }
                 finally
                 {
-                    _clientLock.Release();
+                    _clientCreationLock.Release();
                 }
             }
             return _client;
         }
 
+        //This is the lock that should be used to protect access to the client
+        private SemaphoreSlim ClientLock => _clientLock;
 
-        private async Task FlashFoundBulbs()
+        //This should really be the only method that gets the client. That way you can use the client lock provided by _clientCreationLock
+        private Task<LifxClient> GetClientAsync()
         {
-            var client = _client;
-            if (client == null || Bulbs.Count() == 0)
+            if (_client == null)
             {
-                _logger.LogInformation("No bulbs found to flash");
-                return;
+                //Creation may be in progress, wait for it if it is
+                _clientCreationLock.Wait();
+                _clientCreationLock.Release();
+                //Check again
+                if (_client == null)
+                {
+                    //Still null, means it was never created
+                    throw new InvalidOperationException("LifxClient has not been initialized. Call InitializeAsync() first.");
+                }
             }
-
-            foreach (var bulb in Bulbs)
-            {
-                await client.SetLightPowerAsync(bulb, TimeSpan.Zero, true);
-                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0xFF, G = 0, B = 0x0 }, 3500, TimeSpan.FromMilliseconds(1000));
-                await Task.Delay(1000);
-                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0, G = 0xFF, B = 0x0 }, 3500, TimeSpan.FromMilliseconds(1000));
-                await Task.Delay(1000);
-                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0x0, G = 0x0, B = 0xFF }, 3500, TimeSpan.FromMilliseconds(1000));
-                await Task.Delay(1000);
-                await client.SetColorAsync(bulb, new LifxNet.Color { R = 0, G = 0, B = 0 }, 3500, TimeSpan.Zero);
-                await client.SetLightPowerAsync(bulb, TimeSpan.Zero, false);
-            }
+            return Task.FromResult(_client);
         }
 
         private void OnDeviceDiscovered(object sender, LifxClient.DeviceDiscoveryEventArgs e)
@@ -144,9 +138,10 @@ namespace AlarmClock.Backend.Services
 
         public async Task<int> GetNumberOfBulbsAsync()
         {
+            await ClientLock.WaitAsync();
             try
             {
-                await GetOrCreateClientAsync();
+                await GetClientAsync();
                 var bulbCount = NumberOfBulbs;
                 _logger.LogInformation($"Current number of bulbs: {bulbCount}");
                 return bulbCount;
@@ -156,14 +151,19 @@ namespace AlarmClock.Backend.Services
                 _logger.LogError(ex, "Error getting number of bulbs");
                 throw;
             }
+            finally
+            {
+                ClientLock.Release();
+            }
+
         }
 
         public async Task<bool> SetAllBulbsPowerAsync(bool powerOn)
         {
+            await ClientLock.WaitAsync();
             try
             {
-                var client = await GetOrCreateClientAsync();
-
+                var client = await GetClientAsync();
                 if (Bulbs.Count() == 0)
                 {
                     _logger.LogInformation("No bulbs found to control");
@@ -178,7 +178,6 @@ namespace AlarmClock.Backend.Services
 
                 var action = powerOn ? "turned on" : "turned off";
                 _logger.LogInformation($"All {Bulbs.Count()} bulbs {action}");
-
                 return true;
             }
             catch (Exception ex)
@@ -186,15 +185,44 @@ namespace AlarmClock.Backend.Services
                 _logger.LogError(ex, "Error setting power for all bulbs");
                 throw;
             }
+            finally
+            {
+                ClientLock.Release();
+            }
+        }
+
+        public async Task RefreshBulbStatesAsync()
+        {
+            await ClientLock.WaitAsync();
+            try
+            {
+                var client = await GetClientAsync();
+                if (Bulbs.Count() == 0)
+                {
+                    _logger.LogInformation("Refreshing Bulbs");
+                    return;
+                }
+
+                await client.RefreshDevicesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error refreshing bulb states");
+                throw;
+            }
+            finally
+            {
+                ClientLock.Release();
+            }
         }
 
 
         public async Task<bool> SetColorAllAsync(LifxNet.Color color, ushort kelvin, int transitionTime = 0)
         {
-
+            await ClientLock.WaitAsync();
             try
             {
-                var client = await GetOrCreateClientAsync();
+                var client = await GetClientAsync();
                 if (Bulbs.Count() == 0)
                 {
                     _logger.LogInformation("No bulbs found to control");
@@ -211,6 +239,10 @@ namespace AlarmClock.Backend.Services
             {
                 _logger.LogError(ex, "Error setting color for all bulbs");
                 throw;
+            }
+            finally
+            {
+                ClientLock.Release();
             }
         }
     }

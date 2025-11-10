@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Clock - Starting...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .status {
+            margin: 2rem 0;
+        }
+
+        .service {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .service-name {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .service-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 2rem auto;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .checkmark {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4ade80;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .loading {
+            opacity: 0.6;
+        }
+
+        .ready {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 Alarm Clock</h1>
+        <div class="spinner"></div>
+        <div class="status">
+            <div class="service" id="backend-service">
+                <div class="service-name">Backend API</div>
+                <div class="service-status loading">Waiting for server...</div>
+            </div>
+            <div class="service" id="frontend-service">
+                <div class="service-name">Frontend</div>
+                <div class="service-status loading">Waiting for application...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let backendReady = false;
+        let frontendReady = false;
+        let checkInterval = 1000; // Check every 1 second
+        let maxRetries = 120; // Max 2 minutes of retries
+        let retryCount = 0;
+
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://localhost:5000/api/health', {
+                    method: 'GET',
+                    cache: 'no-cache'
+                });
+                
+                if (response.status === 200) {
+                    backendReady = true;
+                    updateServiceStatus('backend', true);
+                    return true;
+                }
+            } catch (error) {
+                // Service not ready yet
+            }
+            return false;
+        }
+
+        async function checkFrontend() {
+            try {
+                const response = await fetch('http://localhost:3000', {
+                    method: 'GET',
+                    cache: 'no-cache'
+                });
+                
+                // Any response from the frontend server means it's ready
+                if (response.ok || response.status !== 0) {
+                    frontendReady = true;
+                    updateServiceStatus('frontend', true);
+                    return true;
+                }
+            } catch (error) {
+                // Service not ready yet
+            }
+            return false;
+        }
+
+        function updateServiceStatus(service, ready) {
+            const serviceElement = document.getElementById(`${service}-service`);
+            const statusElement = serviceElement.querySelector('.service-status');
+            
+            if (ready) {
+                statusElement.textContent = 'Ready';
+                statusElement.classList.remove('loading');
+                statusElement.classList.add('ready');
+                
+                // Add checkmark
+                const checkmark = document.createElement('span');
+                checkmark.className = 'checkmark';
+                statusElement.appendChild(checkmark);
+            }
+        }
+
+        async function checkServices() {
+            retryCount++;
+
+            if (!backendReady) {
+                await checkBackend();
+            }
+
+            if (!frontendReady) {
+                await checkFrontend();
+            }
+
+            // If both services are ready, redirect
+            if (backendReady && frontendReady) {
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:3000';
+                }, 500);
+            } else if (retryCount >= maxRetries) {
+                // Timeout after max retries
+                document.querySelector('.spinner').style.display = 'none';
+                document.querySelector('h1').textContent = '⚠️ Startup Timeout';
+                const status = document.querySelector('.status');
+                status.innerHTML = '<p style="margin-top: 1rem;">Services are taking longer than expected to start. Please check the logs.</p>';
+            } else {
+                // Continue checking
+                setTimeout(checkServices, checkInterval);
+            }
+        }
+
+        // Start checking when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            checkServices();
+        });
+    </script>
+</body>
+</html>

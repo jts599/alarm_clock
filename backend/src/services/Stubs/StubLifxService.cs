@@ -19,6 +19,8 @@ namespace AlarmClock.Backend.Services
         private Color? _currentColor = null;
         private ushort _currentKelvin = 0;
 
+        private int _numberOfBulbs = 2;
+
         private bool _isOn = false;
         public StubLifxService(ILogger<StubLifxService> logger)
         {
@@ -33,8 +35,8 @@ namespace AlarmClock.Backend.Services
 
         public async Task<int> GetNumberOfBulbsAsync()
         {
-            _logger.LogDebug("StubLifxService: Returning 2 mock bulbs");
-            return 2; // Stub always has 2 bulbs
+            _logger.LogDebug("StubLifxService: Returning {NumberOfBulbs} mock bulbs", _numberOfBulbs);
+            return _numberOfBulbs;
         }
 
         public async Task<bool> SetAllBulbsPowerAsync(bool powerOn)
@@ -56,6 +58,8 @@ namespace AlarmClock.Backend.Services
 
         public async Task RefreshBulbStatesAsync()
         {
+            _numberOfBulbs += 1; //simulate a bulb being added over time
+            _numberOfBulbs %= 10;
             _logger.LogDebug("StubLifxService: RefreshBulbStatesAsync called - no action in stub");
         }
     }

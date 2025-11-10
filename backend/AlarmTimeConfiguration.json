@@ -1,0 +1,13 @@
+{
+  "AlarmTimeConfiguration": {
+    "StartTimeInMinutesSinceMidnight": 270,
+    "TransitionDurationInMinutes": 90,
+    "StayOnTimeInMinutes": 60,
+    "ActiveDays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Friday"
+    ]
+  }
+}

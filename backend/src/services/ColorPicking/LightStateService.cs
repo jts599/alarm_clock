@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,29 @@ namespace AlarmClock.Backend.Services
         private ICompositeColorPickingService _colorPicker;
         private readonly object _colorPickerLock = new object();
 
+        private IAlarmTimeConfigurationService _alarmConfigService;
+
+        public LightStateService(
+            ILogger<LightStateService> logger,
+            ILifxService lifxService,
+            ICompositeColorPickingService colorPicker,
+            IOptions<RunConfiguration> configOptions,
+            IAlarmTimeConfigurationService alarmConfigService,
+            DateTime? startTime = null
+            )
+        {
+            var config = configOptions.Value;
+            int secondsStepInterval = config.TimescaleMultiplier > 0 ? config.TimescaleMultiplier : 1;
+            _config = config;
+            _logger = logger;
+            _lifxService = lifxService;
+            _colorPicker = colorPicker;
+            _secondsStepInterval = secondsStepInterval;
+            _startTime = startTime ?? InternalClockStartTime;
+            _alarmConfigService = alarmConfigService;
+            _trueStartTime = DateTime.Now;
+        }
+
         public void SwapColorPicker(ICompositeColorPickingService newColorPicker)
         {
             lock (_colorPickerLock)
@@ -33,13 +57,17 @@ namespace AlarmClock.Backend.Services
             }
         }
 
-        public void SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker)
+        public async Task SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker)
         {
             lock (_colorPickerLock)
             {
                 _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
                               new OverrideableColorPickingService(newBaseColorPicker);
             }
+            IConfigurableColorPickingServiceParameters newParameters = newBaseColorPicker.GetParameters();
+            await ConfigurableColorPickingServiceConstructionParameters.SaveToAlarmTimeConfigurationService(
+                (AlarmTimeConfigurationService)_alarmConfigService,
+                newParameters);
         }
 
         public AlarmClockColor GetCurrentColor()
@@ -67,23 +95,7 @@ namespace AlarmClock.Backend.Services
             }
         }
 
-        public LightStateService(
-            ILogger<LightStateService> logger,
-            ILifxService lifxService,
-            ICompositeColorPickingService colorPicker,
-            IOptions<RunConfiguration> configOptions
-            )
-        {
-            var config = configOptions.Value;
-            int secondsStepInterval = config.TimescaleMultiplier > 0 ? config.TimescaleMultiplier : 1;
-            _config = config;
-            _logger = logger;
-            _lifxService = lifxService;
-            _colorPicker = colorPicker;
-            _secondsStepInterval = secondsStepInterval;
-            _startTime = InternalClockStartTime;
-            _trueStartTime = DateTime.Now;
-        }
+
 
         private DateTime _trueStartTime;
 
@@ -240,5 +252,8 @@ namespace AlarmClock.Backend.Services
         {
             base.Dispose();
         }
+
+
+
     }
 }

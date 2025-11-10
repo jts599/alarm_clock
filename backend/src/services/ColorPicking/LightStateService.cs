@@ -155,6 +155,13 @@ namespace AlarmClock.Backend.Services
             {
                 DateTime now = DateTime.Now;
                 int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
+
+                if (secondsSinceStart % 60 == 0)
+                {
+                    //Once a minute refresh bulb states
+                    await _lifxService.RefreshBulbStatesAsync();
+                }
+
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
                 DateTime scaledNow = GetScaledTime();
                 //_logger.LogInformation($"Scaled time: {scaledNow}");

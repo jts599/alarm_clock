@@ -49,9 +49,14 @@ namespace AlarmClock.Backend.Services
         {
             _currentColor = color;
             _currentKelvin = kelvin;
-            _logger.LogInformation("StubLifxService: Set color to R:{R} G:{G} B:{B}, Kelvin:{Kelvin}", 
+            _logger.LogInformation("StubLifxService: Set color to R:{R} G:{G} B:{B}, Kelvin:{Kelvin}",
                 color.R, color.G, color.B, kelvin);
             return true;
+        }
+
+        public async Task RefreshBulbStatesAsync()
+        {
+            _logger.LogDebug("StubLifxService: RefreshBulbStatesAsync called - no action in stub");
         }
     }
 }

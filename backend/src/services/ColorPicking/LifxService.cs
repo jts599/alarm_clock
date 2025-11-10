@@ -82,12 +82,10 @@ namespace AlarmClock.Backend.Services
                         _client.DeviceLost += OnDeviceLost;
 
                         _logger.LogInformation("LifxClient created and discovery started");
-                        await _client.RefreshDevicesAsync();
-
-
+                        await _client.DoInitialDeviceDiscovery();
 
                         var discoveredCount = Bulbs?.Count() ?? 0;
-                        _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices");
+                        _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices. They will refresh every minute.");
                         //await FlashFoundBulbs();
                     }
                 }

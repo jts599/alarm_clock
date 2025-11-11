@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AlarmClock.Backend.Services;
+using AlarmClock.Backend.DataModels.AlarmCore;
 
 namespace backend.Controllers;
 
@@ -58,38 +59,4 @@ public class AlarmStateController : ControllerBase
         }
         return NotFound();
     }
-}
-
-public class AlarmEventInfo
-{
-    public string NextEventDayOfWeek { get; set; } = string.Empty;
-    public string NextEventTime { get; set; } = string.Empty;
-    public EventType NextEventType { get; set; }
-    public bool IsAlarmActive { get; set; }
-}
-
-public enum EventType
-{
-    LightOff = 0,
-    Sunrise = 1
-}
-
-public class TurnLightOnRequest
-{
-    public DateTime NextEventTime { get; set; }
-}
-
-public class RemoveAlarmOverrideRequest
-{
-    public string OverrideGuid { get; set; } = string.Empty;
-}
-
-public class CreateLightOverrideRequest
-{
-    public DateTime EndTime { get; set; }
-}
-
-public class CreateLightOverrideResponse
-{
-    public string OverrideGuid { get; set; } = string.Empty;
 }

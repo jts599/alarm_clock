@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using AlarmClock.Backend.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmClock.Backend.Controllers
 {
@@ -40,7 +41,7 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpPut]
-        public ActionResult UpdateUserSettings([FromBody] UserSettingsDto settings)
+        public async Task<ActionResult> UpdateUserSettings([FromBody] UserSettingsDto settings)
         {
             try
             {
@@ -72,7 +73,7 @@ namespace AlarmClock.Backend.Controllers
                 var newColorPickingService = new ConfigurableColorPickingService(newParameters);
 
                 // Swap the base color picker in the light state service
-                _lightStateService.SwapBaseColorPicker(newColorPickingService);
+                await _lightStateService.SwapBaseColorPicker(newColorPickingService);
 
                 return Ok(new { message = "Settings updated successfully" });
             }

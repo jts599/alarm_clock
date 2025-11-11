@@ -11,12 +11,24 @@ using AlarmClock.Backend.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 
 // Bind configuration sections
+// Load runtime-updatable alarm configuration from a separate JSON file.
+// This file is optional and will be reloaded when changed on disk.
+builder.Configuration.AddJsonFile("AlarmTimeConfiguration.json", optional: true, reloadOnChange: true);
 builder.Services.Configure<WeatherConfiguration>(
     builder.Configuration.GetSection("Weather"));
 builder.Services.Configure<RunConfiguration>(
     builder.Configuration.GetSection("RunConfiguration"));
 builder.Services.Configure<LlmConfiguration>(
     builder.Configuration.GetSection("Llm"));
+// Bind the AlarmTimeConfiguration section (from AlarmTimeConfiguration.json)
+builder.Services.Configure<AlarmTimeConfiguration>(
+    builder.Configuration.GetSection("AlarmTimeConfiguration"));
+
+// Register the AlarmTimeConfiguration persistence service
+// Register the concrete type too so components that request AlarmTimeConfigurationService
+// directly (rather than the interface) can be constructed by DI.
+builder.Services.AddSingleton<AlarmTimeConfigurationService>();
+builder.Services.AddSingleton<IAlarmTimeConfigurationService>(sp => sp.GetRequiredService<AlarmTimeConfigurationService>());
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -46,18 +58,16 @@ else
     builder.Services.AddSingleton<ILlmService, LlmService>();
 }
 
-// Configure default alarm settings for ConfigurableColorPickingService
-var defaultAlarmParameters = new ConfigurableColorPickingServiceConstructionParameters
-{
-    AlarmTime = new TimeOnly(6, 30), // 6:30 AM
-    TransitionMinutes = 90, // 1.5 hours sunrise simulation
-    HoldOnMinutes = 60, // Hold on for 1 hour after sunrise
-    ActiveDays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday }
-};
+// Register ConfigurableColorPickingServiceConstructionParameters to be created via DI
+builder.Services.AddTransient<ConfigurableColorPickingServiceConstructionParameters>();
 
-// Register ConfigurableColorPickingService as the base service
+// Register ConfigurableColorPickingService as the base service and resolve its
+// construction parameters from DI (so they come from AlarmTimeConfigurationService).
 builder.Services.AddTransient<ConfigurableColorPickingService>(provider =>
-    new ConfigurableColorPickingService(defaultAlarmParameters));
+{
+    var parameters = provider.GetRequiredService<ConfigurableColorPickingServiceConstructionParameters>();
+    return new ConfigurableColorPickingService(parameters);
+});
 
 // Register OverrideableColorPickingService with ConfigurableColorPickingService as the base
 builder.Services.AddTransient<OverrideableColorPickingService>(provider =>

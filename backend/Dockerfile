@@ -3,10 +3,11 @@ WORKDIR /app
 EXPOSE 5000
 
 # Install network utilities for WiFi management
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     iproute2 \
     wireless-tools \
     sudo \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

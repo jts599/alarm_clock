@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AlarmClock.Backend.Configuration;
 using LifxNet;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AlarmClock.Backend.Services
 {
@@ -10,6 +15,38 @@ namespace AlarmClock.Backend.Services
         public int TransitionMinutes { get; set; }
         public int HoldOnMinutes { get; set; }
         public DayOfWeek[] ActiveDays { get; set; }
+
+        // Parameterless constructor for manual instantiation and object-initializer usage.
+        // This will not interfere with DI because the DI-targeted constructor is marked
+        // with [ActivatorUtilitiesConstructor] below (so the container will prefer it).
+        public ConfigurableColorPickingServiceConstructionParameters()
+        {
+            // leave default values; callers can set via object initializers or use Default()/FromAlarmTimeConfigurationService
+        }
+
+        /// <summary>
+        /// DI Constructor that should be registered as transient. Provides default parameters from AlarmTimeConfigurationService.
+        /// </summary>
+        /// <param name="config_service"></param>
+        /// <param name="logger"></param>
+        [ActivatorUtilitiesConstructor]
+        public ConfigurableColorPickingServiceConstructionParameters(AlarmTimeConfigurationService config_service, ILogger<ConfigurableColorPickingServiceConstructionParameters> logger)
+        {
+            var config = config_service.Get();
+            AlarmTime = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(config.StartTimeInMinutesSinceMidnight));
+            TransitionMinutes = config.TransitionDurationInMinutes;
+            HoldOnMinutes = config.StayOnTimeInMinutes;
+            ActiveDays = ActiveDaysFromStrings(config.ActiveDays);
+            if (!Validate(out string errorMessage))
+            {
+                logger.LogError("Invalid configuration from AlarmTimeConfigurationService: {ErrorMessage}", errorMessage);
+                var defaultParams = Default();
+                AlarmTime = defaultParams.AlarmTime;
+                TransitionMinutes = defaultParams.TransitionMinutes;
+                HoldOnMinutes = defaultParams.HoldOnMinutes;
+                ActiveDays = defaultParams.ActiveDays;
+            }
+        }
 
         public bool Validate(out string errorMessage)
         {
@@ -45,6 +82,73 @@ namespace AlarmClock.Backend.Services
             errorMessage = null;
             return true;
         }
+
+        public static ConfigurableColorPickingServiceConstructionParameters Default()
+        {
+            return new ConfigurableColorPickingServiceConstructionParameters
+            {
+                AlarmTime = new TimeOnly(6, 30),
+                TransitionMinutes = 90,
+                HoldOnMinutes = 60,
+                ActiveDays = new DayOfWeek[]
+                {
+                    DayOfWeek.Monday,
+                    DayOfWeek.Tuesday,
+                    DayOfWeek.Wednesday,
+                    DayOfWeek.Thursday,
+                    DayOfWeek.Friday
+                }
+            };
+        }
+
+        public static ConfigurableColorPickingServiceConstructionParameters FromAlarmTimeConfigurationService(AlarmTimeConfigurationService config_service)
+        {
+            var result = new ConfigurableColorPickingServiceConstructionParameters();
+            var config = config_service.Get();
+            result.AlarmTime = TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(config.StartTimeInMinutesSinceMidnight));
+            result.TransitionMinutes = config.TransitionDurationInMinutes;
+            result.HoldOnMinutes = config.StayOnTimeInMinutes;
+            result.ActiveDays = ActiveDaysFromStrings(config.ActiveDays);
+            if (!result.Validate(out string errorMessage))
+            {
+                throw new InvalidOperationException($"Invalid configuration from AlarmTimeConfigurationService: {errorMessage}");
+            }
+            return result;
+        }
+
+        public static async Task SaveToAlarmTimeConfigurationService(AlarmTimeConfigurationService config_service, IConfigurableColorPickingServiceParameters parameters)
+        {
+            var newConfig = new AlarmTimeConfiguration
+            {
+                StartTimeInMinutesSinceMidnight = parameters.AlarmTime.Hour * 60 + parameters.AlarmTime.Minute,
+                TransitionDurationInMinutes = parameters.TransitionMinutes,
+                StayOnTimeInMinutes = parameters.HoldOnMinutes,
+                ActiveDays = ActiveDaysAsStrings(parameters.ActiveDays)
+            };
+            await config_service.SaveAsync(newConfig);
+        }
+
+        private static string[] ActiveDaysAsStrings(DayOfWeek[] activeDays)
+        {
+            return [.. activeDays.Select(d => d.ToString())];
+        }
+
+        private static DayOfWeek[] ActiveDaysFromStrings(string[] activeDaysStrings)
+        {
+            try
+            {
+                return activeDaysStrings.Select(s => Enum.Parse<DayOfWeek>(s)).ToArray();
+            }
+            catch
+            {
+                return [ DayOfWeek.Monday,
+                        DayOfWeek.Tuesday,
+                        DayOfWeek.Wednesday,
+                        DayOfWeek.Thursday,
+                        DayOfWeek.Friday];
+            }
+        }
+
     }
 
     public class ConfigurableColorPickingService : IBaseColorPickingService

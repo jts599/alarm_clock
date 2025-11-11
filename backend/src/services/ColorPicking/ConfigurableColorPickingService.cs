@@ -48,6 +48,17 @@ namespace AlarmClock.Backend.Services
             }
         }
 
+        public ConfigurableColorPickingServiceConstructionParameters Clone()
+        {
+            return new ConfigurableColorPickingServiceConstructionParameters
+            {
+                AlarmTime = this.AlarmTime,
+                TransitionMinutes = this.TransitionMinutes,
+                HoldOnMinutes = this.HoldOnMinutes,
+                ActiveDays = (DayOfWeek[])this.ActiveDays.Clone()
+            };
+        }
+
         public bool Validate(out string errorMessage)
         {
             if (AlarmTime == default)
@@ -161,6 +172,16 @@ namespace AlarmClock.Backend.Services
                 throw new ArgumentException($"Invalid construction parameters: {errorMessage}");
             }
             _parameters = parameters;
+        }
+
+        /// <summary>
+        /// Creates a clone of this ConfigurableColorPickingService
+        /// </summary>
+        /// <returns></returns>
+        public IBaseColorPickingService Clone()
+        {
+            var newParameters = _parameters.Clone();
+            return new ConfigurableColorPickingService(newParameters);
         }
 
         private const int MaxKelvin = 4500;

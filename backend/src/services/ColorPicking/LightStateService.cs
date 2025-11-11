@@ -49,53 +49,88 @@ namespace AlarmClock.Backend.Services
             _trueStartTime = DateTime.Now;
         }
 
-        public void SwapColorPicker(ICompositeColorPickingService newColorPicker)
+        public async Task SwapColorPicker(ICompositeColorPickingService newColorPicker)
         {
-            lock (_colorPickerLock)
+            await Task.Run(() =>
             {
-                _colorPicker = newColorPicker;
-            }
+                lock (_colorPickerLock)
+                {
+                    _colorPicker = newColorPicker;
+                }
+            });
         }
 
         public async Task SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker)
         {
-            lock (_colorPickerLock)
+            await Task.Run(async () =>
             {
-                _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
-                              new OverrideableColorPickingService(newBaseColorPicker);
-            }
-            IConfigurableColorPickingServiceParameters newParameters = newBaseColorPicker.GetParameters();
-            await ConfigurableColorPickingServiceConstructionParameters.SaveToAlarmTimeConfigurationService(
-                (AlarmTimeConfigurationService)_alarmConfigService,
-                newParameters);
+                lock (_colorPickerLock)
+                {
+                    _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
+                                  new OverrideableColorPickingService(newBaseColorPicker);
+                }
+                IConfigurableColorPickingServiceParameters newParameters = newBaseColorPicker.GetParameters();
+                await ConfigurableColorPickingServiceConstructionParameters.SaveToAlarmTimeConfigurationService(
+                    (AlarmTimeConfigurationService)_alarmConfigService,
+                    newParameters);
+            });
         }
 
-        public AlarmClockColor GetCurrentColor()
+        public async Task<ICompositeColorPickingService> GetCurrentColorPickerCopy()
+        {
+            return await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    return _colorPicker.Clone();
+                }
+            });
+        }
+
+        public async Task AddOverrideColorPicker(IOverrideColorPickingService overrideColorPicker)
+        {
+            await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    _colorPicker?.AddOverride(overrideColorPicker);
+                }
+            });
+        }
+
+        public async Task<AlarmClockColor> GetCurrentColor()
         {
             DateTime scaledNow = GetScaledTime();
-            lock (_colorPickerLock)
+            return await Task.Run(() =>
             {
-                return _colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default;
-            }
+                lock (_colorPickerLock)
+                {
+                    return _colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default;
+                }
+            });
         }
 
-        public bool isLightCurrentlyOn()
+        public async Task<bool> IsLightCurrentlyOn()
         {
-            lock (_colorPickerLock)
+            return await Task.Run(() =>
             {
-                return _colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false;
-            }
+                lock (_colorPickerLock)
+                {
+                    return _colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false;
+                }
+            });
         }
 
-        public IConfigurableColorPickingServiceParameters GetCurrentParameters()
+        public async Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters()
         {
-            lock (_colorPickerLock)
+            return await Task.Run(() =>
             {
-                return _colorPicker?.GetParameters() ?? throw new InvalidOperationException("Color picker not initialized");
-            }
+                lock (_colorPickerLock)
+                {
+                    return _colorPicker?.GetParameters() ?? throw new InvalidOperationException("Color picker not initialized");
+                }
+            });
         }
-
-
 
         private DateTime _trueStartTime;
 

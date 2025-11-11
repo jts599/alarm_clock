@@ -5,11 +5,13 @@ namespace AlarmClock.Backend.Services
 {
     public interface ILightStateService
     {
-        void SwapColorPicker(ICompositeColorPickingService newColorPicker);
+        Task SwapColorPicker(ICompositeColorPickingService newColorPicker);
         Task SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker);
-        AlarmClockColor GetCurrentColor();
-        bool isLightCurrentlyOn();
+        Task<ICompositeColorPickingService> GetCurrentColorPickerCopy();
+
+        Task<AlarmClockColor> GetCurrentColor();
+        Task<bool> IsLightCurrentlyOn();
         DateTime GetScaledTime();
-        IConfigurableColorPickingServiceParameters GetCurrentParameters();
+        Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters();
     }
 }

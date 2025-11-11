@@ -102,7 +102,12 @@ namespace AlarmClock.Backend.Services
         /// <param name="colorPicker">The override color picker to add</param>
         void AddOverride(IOverrideColorPickingService colorPicker);
 
+        void ClearOverrideByGuid(string overrideGuid);
+
+        void ClearAllOverrides();
+
         ICompositeColorPickingService ReconstructWithBase(IBaseColorPickingService baseColorPicker);
+        new ICompositeColorPickingService Clone();
     }
 
     public interface IConfigurableColorPickingServiceParameters
@@ -115,6 +120,7 @@ namespace AlarmClock.Backend.Services
 
     public interface IBaseColorPickingService : IColorPickingService
     {
+        IBaseColorPickingService Clone();
         IConfigurableColorPickingServiceParameters GetParameters();
     }
 

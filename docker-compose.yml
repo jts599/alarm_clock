@@ -35,6 +35,9 @@ services:
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}
@@ -42,6 +45,8 @@ services:
     volumes:
       - ./shared:/app/shared
       - models-data:/app/models # Persistent models volume
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000

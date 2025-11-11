@@ -82,11 +82,61 @@ namespace AlarmClock.Backend.Services
             {
                 lock (_colorPickerLock)
                 {
-                    return _colorPicker.Clone();
+                    return _colorPicker?.Clone();
                 }
             });
         }
 
+        public async Task<string> AddOverride(DateTime endTime, AlarmClockColor color = null)
+        {
+            return await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    var overrideService = new LightOnOverrideColorPickingService(endTime, color);
+                    _colorPicker?.AddOverride(overrideService);
+                    return overrideService.guid;
+                }
+            });
+        }
+
+        public async Task<bool> RemoveOverride(string guid)
+        {
+            return await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    var countBefore = _colorPicker?.GetOverrideCount() ?? 0;
+                    _colorPicker?.ClearOverrideByGuid(guid);
+                    var countAfter = _colorPicker?.GetOverrideCount() ?? 0;
+                    return countBefore != countAfter;
+                }
+            });
+        }
+
+        public async Task ClearAllOverrides()
+        {
+            await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    _colorPicker?.ClearAllOverrides();
+                }
+            });
+        }
+
+        public async Task<int> GetOverrideCount()
+        {
+            return await Task.Run(() =>
+            {
+                lock (_colorPickerLock)
+                {
+                    return _colorPicker?.GetOverrideCount() ?? 0;
+                }
+            });
+        }
+
+        [Obsolete("Use AddOverride instead")]
         public async Task AddOverrideColorPicker(IOverrideColorPickingService overrideColorPicker)
         {
             await Task.Run(() =>

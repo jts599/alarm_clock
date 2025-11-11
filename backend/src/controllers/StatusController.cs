@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 using AlarmClock.Backend.Services;
 
 namespace Backend.Controllers
@@ -37,10 +38,10 @@ namespace Backend.Controllers
         }
 
         [HttpGet("color")]
-        public IActionResult GetColorSimulation()
+        public async Task<IActionResult> GetColorSimulation()
         {
             // Get the current color from the LightStateService
-            var currentColor = _lightStateService.GetCurrentColor();
+            var currentColor = await _lightStateService.GetCurrentColor();
             int[] rgb = ColorUtils.GetRgbFromTemperature(currentColor.Kelvin);
 
             int scaledRed = (int)(rgb[0] * currentColor.Color.R / 255.0);

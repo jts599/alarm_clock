@@ -106,6 +106,8 @@ namespace AlarmClock.Backend.Services
 
         void ClearAllOverrides();
 
+        int GetOverrideCount();
+
         ICompositeColorPickingService ReconstructWithBase(IBaseColorPickingService baseColorPicker);
         new ICompositeColorPickingService Clone();
     }

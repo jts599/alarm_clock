@@ -18,11 +18,11 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpGet]
-        public ActionResult<UserSettingsDto> GetUserSettings()
+        public async Task<ActionResult<UserSettingsDto>> GetUserSettings()
         {
             try
             {
-                var currentParameters = _lightStateService.GetCurrentParameters();
+                var currentParameters = await _lightStateService.GetCurrentParameters();
 
                 var settings = new UserSettingsDto
                 {
@@ -88,14 +88,14 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpGet("status")]
-        public ActionResult<AlarmStatusDto> GetAlarmStatus()
+        public async Task<ActionResult<AlarmStatusDto>> GetAlarmStatus()
         {
             try
             {
                 var currentTime = _lightStateService.GetScaledTime();
-                var currentParameters = _lightStateService.GetCurrentParameters();
-                var isLightOn = _lightStateService.isLightCurrentlyOn();
-                var currentColor = _lightStateService.GetCurrentColor();
+                var currentParameters = await _lightStateService.GetCurrentParameters();
+                var isLightOn = await _lightStateService.IsLightCurrentlyOn();
+                var currentColor = await _lightStateService.GetCurrentColor();
 
                 var status = new AlarmStatusDto
                 {

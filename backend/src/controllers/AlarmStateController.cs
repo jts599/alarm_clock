@@ -26,16 +26,16 @@ public class AlarmStateController : ControllerBase
     }
 
     [HttpGet("next-event")]
-    public async Task<ActionResult<AlarmEventInfo>> GetNextAlarmEventInfo()
+    public Task<ActionResult<AlarmEventInfo>> GetNextAlarmEventInfo()
     {
         // TODO: Implement actual logic to get next alarm event info
-        return Ok(new AlarmEventInfo
+        return Task.FromResult<ActionResult<AlarmEventInfo>>(Ok(new AlarmEventInfo
         {
             NextEventDayOfWeek = "Monday",
             NextEventTime = "07:00 AM",
             NextEventType = EventType.Sunrise,
             IsAlarmActive = true
-        });
+        }));
     }
 
     [HttpPost("turn-on-until")]

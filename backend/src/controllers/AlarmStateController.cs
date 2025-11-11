@@ -41,34 +41,18 @@ public class AlarmStateController : ControllerBase
     [HttpPost("turn-on-until")]
     public async Task<ActionResult<CreateLightOverrideResponse>> TurnLightOnUntil([FromBody] CreateLightOverrideRequest request)
     {
-        var colorOverride = new LightOnOverrideColorPickingService(request.EndTime);
-        var colorPicker = await _lightStateService.GetCurrentColorPickerCopy() as OverrideableColorPickingService;
-        if (colorPicker == null)
-        {
-            return BadRequest("Current color picker does not support overrides.");
-        }
-        colorPicker.AddOverride(colorOverride);
-        await _lightStateService.SwapColorPicker(colorPicker);
-
+        string guid = await _lightStateService.AddOverride(request.EndTime, null);
         return Ok(new CreateLightOverrideResponse
         {
-            OverrideGuid = colorOverride.guid
+            OverrideGuid = guid
         });
     }
 
     [HttpDelete("remove-override")]
     public async Task<ActionResult> RemoveAlarmOverride([FromBody] RemoveAlarmOverrideRequest request)
     {
-        var colorPicker = await _lightStateService.GetCurrentColorPickerCopy() as OverrideableColorPickingService;
-        if (colorPicker == null)
-        {
-            return NotFound();
-        }
-        int beforeCount = colorPicker.GetOverrideCount();
-        colorPicker?.ClearOverrideByGuid(request.OverrideGuid);
-        int afterCount = colorPicker.GetOverrideCount();
-        await _lightStateService.SwapColorPicker(colorPicker);
-        if (beforeCount > afterCount)
+        bool success = await _lightStateService.RemoveOverride(request.OverrideGuid);
+        if (success)
         {
             return Ok();
         }

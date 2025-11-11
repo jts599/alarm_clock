@@ -81,8 +81,9 @@ namespace AlarmClock.Backend.Services
                         _client.DeviceDiscovered += OnDeviceDiscovered;
                         _client.DeviceLost += OnDeviceLost;
 
-                        _logger.LogInformation("LifxClient created and discovery started");
-                        await _client.DoInitialDeviceDiscovery();
+                        _logger.LogInformation("Starting device discovery...");
+                        await _client.StartDeviceDiscovery(false); //This will have a long enough delay internally to discover devices
+                        _client.StopDeviceDiscovery();
 
                         var discoveredCount = Bulbs?.Count() ?? 0;
                         _logger.LogInformation($"Initial discovery complete. Found {discoveredCount} LIFX devices. They will refresh every minute.");

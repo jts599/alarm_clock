@@ -17,11 +17,11 @@ namespace AlarmClock.Backend.Services
 
         private readonly RunConfiguration _config;
 
-        private bool _lastSetOnState = false; // false = off, true = on
+        private volatile bool _lastSetOnState = false; // false = off, true = on
         private DateTime _startTime = DateTime.MinValue;
 
         private int _secondsStepInterval = 1; // 1 second default. overridden by config
-        private AlarmClockColor _lastSetColor = null;
+        private volatile AlarmClockColor _lastSetColor = null;
 
         private ICompositeColorPickingService _colorPicker;
         private readonly object _colorPickerLock = new object();
@@ -49,137 +49,99 @@ namespace AlarmClock.Backend.Services
             _trueStartTime = DateTime.Now;
         }
 
-        public async Task SwapColorPicker(ICompositeColorPickingService newColorPicker)
+        public Task SwapColorPicker(ICompositeColorPickingService newColorPicker)
         {
-            await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    _colorPicker = newColorPicker;
-                }
-            });
+                _colorPicker = newColorPicker;
+            }
+            return Task.CompletedTask;
         }
 
         public async Task SwapBaseColorPicker(IBaseColorPickingService newBaseColorPicker)
         {
-            await Task.Run(async () =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
-                                  new OverrideableColorPickingService(newBaseColorPicker);
-                }
-                IConfigurableColorPickingServiceParameters newParameters = newBaseColorPicker.GetParameters();
-                await ConfigurableColorPickingServiceConstructionParameters.SaveToAlarmTimeConfigurationService(
-                    (AlarmTimeConfigurationService)_alarmConfigService,
-                    newParameters);
-            });
+                _colorPicker = _colorPicker?.ReconstructWithBase(newBaseColorPicker) ??
+                              new OverrideableColorPickingService(newBaseColorPicker);
+            }
+
+            // This I/O operation happens outside the lock
+            IConfigurableColorPickingServiceParameters newParameters = newBaseColorPicker.GetParameters();
+            await ConfigurableColorPickingServiceConstructionParameters.SaveToAlarmTimeConfigurationService(
+                (AlarmTimeConfigurationService)_alarmConfigService,
+                newParameters);
         }
 
-        public async Task<ICompositeColorPickingService> GetCurrentColorPickerCopy()
+        public Task<ICompositeColorPickingService> GetCurrentColorPickerCopy()
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    return _colorPicker?.Clone();
-                }
-            });
+                return Task.FromResult(_colorPicker?.Clone());
+            }
         }
 
-        public async Task<string> AddOverride(DateTime endTime, AlarmClockColor color = null)
+        public Task<string> AddOverride(DateTime endTime, AlarmClockColor color = null)
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    var overrideService = new LightOnOverrideColorPickingService(endTime, color);
-                    _colorPicker?.AddOverride(overrideService);
-                    return overrideService.guid;
-                }
-            });
+                var overrideService = new LightOnOverrideColorPickingService(endTime, color);
+                _colorPicker?.AddOverride(overrideService);
+                return Task.FromResult(overrideService.guid);
+            }
         }
 
-        public async Task<bool> RemoveOverride(string guid)
+        public Task<bool> RemoveOverride(string guid)
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    var countBefore = _colorPicker?.GetOverrideCount() ?? 0;
-                    _colorPicker?.ClearOverrideByGuid(guid);
-                    var countAfter = _colorPicker?.GetOverrideCount() ?? 0;
-                    return countBefore != countAfter;
-                }
-            });
+                var countBefore = _colorPicker?.GetOverrideCount() ?? 0;
+                _colorPicker?.ClearOverrideByGuid(guid);
+                var countAfter = _colorPicker?.GetOverrideCount() ?? 0;
+                return Task.FromResult(countBefore != countAfter);
+            }
         }
 
-        public async Task ClearAllOverrides()
+        public Task ClearAllOverrides()
         {
-            await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    _colorPicker?.ClearAllOverrides();
-                }
-            });
+                _colorPicker?.ClearAllOverrides();
+            }
+            return Task.CompletedTask;
         }
 
-        public async Task<int> GetOverrideCount()
+        public Task<int> GetOverrideCount()
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    return _colorPicker?.GetOverrideCount() ?? 0;
-                }
-            });
+                return Task.FromResult(_colorPicker?.GetOverrideCount() ?? 0);
+            }
         }
 
-        [Obsolete("Use AddOverride instead")]
-        public async Task AddOverrideColorPicker(IOverrideColorPickingService overrideColorPicker)
-        {
-            await Task.Run(() =>
-            {
-                lock (_colorPickerLock)
-                {
-                    _colorPicker?.AddOverride(overrideColorPicker);
-                }
-            });
-        }
-
-        public async Task<AlarmClockColor> GetCurrentColor()
+        public Task<AlarmClockColor> GetCurrentColor()
         {
             DateTime scaledNow = GetScaledTime();
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    return _colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default;
-                }
-            });
+                return Task.FromResult(_colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default);
+            }
         }
 
-        public async Task<bool> IsLightCurrentlyOn()
+        public Task<bool> IsLightCurrentlyOn()
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    return _colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false;
-                }
-            });
+                return Task.FromResult(_colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false);
+            }
         }
 
-        public async Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters()
+        public Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters()
         {
-            return await Task.Run(() =>
+            lock (_colorPickerLock)
             {
-                lock (_colorPickerLock)
-                {
-                    return _colorPicker?.GetParameters() ?? throw new InvalidOperationException("Color picker not initialized");
-                }
-            });
+                return Task.FromResult(_colorPicker?.GetParameters() ?? throw new InvalidOperationException("Color picker not initialized"));
+            }
         }
 
         private DateTime _trueStartTime;
@@ -253,11 +215,12 @@ namespace AlarmClock.Backend.Services
             {
                 DateTime now = DateTime.Now;
                 int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
-
+                bool forceUpdate = false;
                 if (secondsSinceStart % 60 == 0)
                 {
                     //Once a minute refresh bulb states
                     await _lifxService.RefreshBulbStatesAsync();
+                    forceUpdate = true;
                 }
 
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
@@ -282,7 +245,7 @@ namespace AlarmClock.Backend.Services
                         transitionTime = CalculateTransitionTime(desiredColor, scaledNow);
                     }
                 }
-                if (IsChosenColorDifferent(desiredColor))
+                if (IsChosenColorDifferent(desiredColor) || forceUpdate)
                 {
                     _logger.LogInformation($"Changing light color to: {desiredColor}. Transition time: {transitionTime} seconds");
                     await _lifxService.SetColorAllAsync(desiredColor.Color, desiredColor.Kelvin, transitionTime);
@@ -290,7 +253,7 @@ namespace AlarmClock.Backend.Services
 
                 }
 
-                if (IsChosenOnStateDifferent(desiredOnState))
+                if (IsChosenOnStateDifferent(desiredOnState) || forceUpdate)
                 {
                     _logger.LogInformation($"Changing light on state to: {desiredOnState}");
                     await _lifxService.SetAllBulbsPowerAsync(desiredOnState);

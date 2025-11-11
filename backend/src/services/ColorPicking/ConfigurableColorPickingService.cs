@@ -6,6 +6,7 @@ using AlarmClock.Backend.Configuration;
 using LifxNet;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using AlarmClock.Backend.DataModels.AlarmCore;
 
 namespace AlarmClock.Backend.Services
 {
@@ -230,9 +231,63 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public string Status(DateTime time)
+        public AlarmEventInfo NextEvent(DateTime time)
         {
-            return "Stubbed";
+            if (IsDuringLightsOffTime(time))
+            {
+                DateTime nextSunriseTime = GetNextSunriseTime(time);
+                return new AlarmEventInfo(nextSunriseTime, EventType.Sunrise);
+            }
+            else if (IsDuringTransitionToOnTime(time) || IsDuringHoldOnTime(time))
+            {
+                DateTime nextOffTime = GetNextOffTime(time);
+                return new AlarmEventInfo(nextOffTime, EventType.LightOff);
+
+            }
+            return new AlarmEventInfo
+            {
+                NextEventType = EventType.LightOff,
+                NextEventDayOfWeek = "-",
+                NextEventTime = "-"
+            };
+        }
+
+        /// <summary>
+        /// Next time the light is off after the given time.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private DateTime GetNextOffTime(DateTime time)
+        {
+            var newTime = new DateTime(time.ToFileTime(), DateTimeKind.Local);
+            do
+            {
+                if (IsDuringLightsOffTime(newTime))
+                {
+                    break;
+                }
+                newTime = newTime.AddSeconds(1);
+            } while (true);
+            return newTime;
+        }
+
+        /// <summary>
+        /// Next time the sunrise starts after the given time.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private DateTime GetNextSunriseTime(DateTime time)
+        {
+            var newTime = new DateTime(time.ToFileTime(), DateTimeKind.Local);
+            do
+            {
+                if (IsDuringTransitionToOnTime(newTime))
+                {
+                    break;
+                }
+                newTime = newTime.AddSeconds(1);
+            } while (true);
+            return newTime;
         }
 
         /// <summary>

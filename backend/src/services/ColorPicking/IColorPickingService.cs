@@ -1,4 +1,5 @@
 using System;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using Microsoft.Identity.Client;
 namespace AlarmClock.Backend.Services
 {
@@ -72,7 +73,7 @@ namespace AlarmClock.Backend.Services
         /// e.g. "On until 7:30 AM" or "Next Alarm at 6:30 AM"
         /// </summary>
         /// <returns></returns>
-        string Status(DateTime time);
+        AlarmEventInfo NextEvent(DateTime time);
     }
 
     public interface IOverrideColorPickingService : IColorPickingService

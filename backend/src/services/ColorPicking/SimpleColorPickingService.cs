@@ -45,7 +45,7 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public string Status(DateTime time)
+        public string NextEvent(DateTime time)
         {
             int secondsSinceMidnight = GetSecondsSinceMidnight(time);
             if (IsDuringLightsOffTime(secondsSinceMidnight))

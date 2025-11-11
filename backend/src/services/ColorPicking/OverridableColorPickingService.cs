@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using LifxNet;
 
 namespace AlarmClock.Backend.Services
@@ -52,9 +53,9 @@ namespace AlarmClock.Backend.Services
             return GetActiveColorPicker(time).IsLightOnAtTime(time);
         }
 
-        public string Status(DateTime time)
+        public AlarmEventInfo NextEvent(DateTime time)
         {
-            return GetActiveColorPicker(time).Status(time);
+            return GetActiveColorPicker(time).NextEvent(time);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using AlarmClock.Backend.DataModels.AlarmCore;
 
 namespace AlarmClock.Backend.Services
 {
@@ -41,14 +42,20 @@ namespace AlarmClock.Backend.Services
             return time >= StartTime && time <= EndTime;
         }
 
-        public string Status(DateTime time)
+        public AlarmEventInfo NextEvent(DateTime time)
         {
             if (IsLightOnAtTime(time))
             {
-                return $"On until {EndTime:h:mm tt}";
+                return new AlarmEventInfo(EndTime, EventType.LightOff);
             }
 
-            return "Override inactive";
+            //Should never get here since this override only turns lights on and will not be active otherwise
+            return new AlarmEventInfo
+            {
+                NextEventDayOfWeek = "-",
+                NextEventTime = "-",
+                NextEventType = EventType.Sunrise
+            };
         }
     }
 }

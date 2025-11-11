@@ -50,6 +50,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - TZ=${TZ:-UTC}
       - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
       - Llm__EnableLlm=true
     depends_on:

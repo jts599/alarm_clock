@@ -1,4 +1,5 @@
 using AlarmClock.Backend.Configuration;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -116,6 +117,14 @@ namespace AlarmClock.Backend.Services
             lock (_colorPickerLock)
             {
                 return Task.FromResult(_colorPicker?.GetOverrideCount() ?? 0);
+            }
+        }
+
+        public Task<LightOverrideState> GetCurrentOverride()
+        {
+            lock (_colorPickerLock)
+            {
+                return Task.FromResult(_colorPicker?.GetCurrentOverride());
             }
         }
 

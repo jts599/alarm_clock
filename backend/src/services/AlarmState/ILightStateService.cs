@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AlarmClock.Backend.DataModels.AlarmCore;
 
 namespace AlarmClock.Backend.Services
 {
@@ -50,6 +51,17 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <returns>A DateTime representing the current scaled time.</returns>
         Task<DateTime> GetScaledTime();
+
+        /// <summary>
+        /// Get information about the currently applied override, if any
+        /// </summary>
+        /// <returns></returns>
+        Task<LightOverrideState> GetCurrentOverride();
+
+        /// <summary>
+        /// Get the current parameters of the configurable color picking service
+        /// </summary>
+        /// <returns></returns>
         Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters();
     }
 }

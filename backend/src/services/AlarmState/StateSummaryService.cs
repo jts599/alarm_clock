@@ -25,11 +25,13 @@ namespace AlarmClock.Backend.Services
         public async Task<AlarmStateSummary> GetAlarmStateSummaryAsync()
         {
             DateTime currentTime = await _lightStateService.GetScaledTime();
+            var currentOverride = await _lightStateService.GetCurrentOverride();
             AlarmStateSummary summary = new AlarmStateSummary
             {
                 // Example data; replace with actual logic to gather state summary
                 CurrentTime = currentTime,
                 NextAlarmEvent = (await _lightStateService.GetCurrentColorPickerCopy()).NextEvent(currentTime),
+                LightOverrideState = currentOverride,
                 NumberOfActiveBulbs = await _lifxService.GetNumberOfBulbsAsync(),
                 WeatherForecast = null // Placeholder; integrate with weather service as needed
             };

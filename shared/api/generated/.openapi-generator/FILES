@@ -13,9 +13,9 @@ docs/AlarmStatus.md
 docs/BackendApi.md
 docs/Color.md
 docs/CreateLightOverrideRequest.md
-docs/CreateLightOverrideResponse.md
 docs/DayOrNight.md
 docs/EventType.md
+docs/LightOverrideState.md
 docs/ProblemDetails.md
 docs/RemoveAlarmOverrideRequest.md
 docs/SingleDayForecast.md
@@ -30,9 +30,9 @@ models/AlarmStateSummary.ts
 models/AlarmStatus.ts
 models/Color.ts
 models/CreateLightOverrideRequest.ts
-models/CreateLightOverrideResponse.ts
 models/DayOrNight.ts
 models/EventType.ts
+models/LightOverrideState.ts
 models/ProblemDetails.ts
 models/RemoveAlarmOverrideRequest.ts
 models/SingleDayForecast.ts

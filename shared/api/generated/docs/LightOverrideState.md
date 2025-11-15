@@ -1,5 +1,5 @@
 
-# CreateLightOverrideResponse
+# LightOverrideState
 
 
 ## Properties
@@ -7,16 +7,18 @@
 Name | Type
 ------------ | -------------
 `overrideGuid` | string
+`isLightCurrentlyOn` | boolean
 
 ## Example
 
 ```typescript
-import type { CreateLightOverrideResponse } from ''
+import type { LightOverrideState } from ''
 
 // TODO: Update the object below with actual values
 const example = {
   "overrideGuid": null,
-} satisfies CreateLightOverrideResponse
+  "isLightCurrentlyOn": null,
+} satisfies LightOverrideState
 
 console.log(example)
 
@@ -25,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as CreateLightOverrideResponse
+const exampleParsed = JSON.parse(exampleJSON) as LightOverrideState
 console.log(exampleParsed)
 ```
 

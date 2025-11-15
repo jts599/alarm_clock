@@ -18,7 +18,7 @@ import type {
   AlarmEventInfo,
   AlarmStateSummary,
   CreateLightOverrideRequest,
-  CreateLightOverrideResponse,
+  LightOverrideState,
   ProblemDetails,
   RemoveAlarmOverrideRequest,
 } from '../models/index';
@@ -29,8 +29,8 @@ import {
     AlarmStateSummaryToJSON,
     CreateLightOverrideRequestFromJSON,
     CreateLightOverrideRequestToJSON,
-    CreateLightOverrideResponseFromJSON,
-    CreateLightOverrideResponseToJSON,
+    LightOverrideStateFromJSON,
+    LightOverrideStateToJSON,
     ProblemDetailsFromJSON,
     ProblemDetailsToJSON,
     RemoveAlarmOverrideRequestFromJSON,
@@ -166,7 +166,7 @@ export class AlarmStateApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiAlarmStateTurnOnUntilPostRaw(requestParameters: ApiAlarmStateTurnOnUntilPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateLightOverrideResponse>> {
+    async apiAlarmStateTurnOnUntilPostRaw(requestParameters: ApiAlarmStateTurnOnUntilPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LightOverrideState>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -184,12 +184,12 @@ export class AlarmStateApi extends runtime.BaseAPI {
             body: CreateLightOverrideRequestToJSON(requestParameters['createLightOverrideRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateLightOverrideResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => LightOverrideStateFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiAlarmStateTurnOnUntilPost(requestParameters: ApiAlarmStateTurnOnUntilPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateLightOverrideResponse> {
+    async apiAlarmStateTurnOnUntilPost(requestParameters: ApiAlarmStateTurnOnUntilPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LightOverrideState> {
         const response = await this.apiAlarmStateTurnOnUntilPostRaw(requestParameters, initOverrides);
         return await response.value();
     }

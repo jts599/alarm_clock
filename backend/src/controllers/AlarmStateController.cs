@@ -71,10 +71,10 @@ public class AlarmStateController : ControllerBase
     /// <response code="400">Bad request (invalid parameters).</response>
     /// <response code="500">Internal server error.</response>
     [HttpPost("turn-on-until")]
-    [ProducesResponseType(typeof(CreateLightOverrideResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LightOverrideState), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CreateLightOverrideResponse>> TurnLightOnUntil([FromBody] CreateLightOverrideRequest request)
+    public async Task<ActionResult<LightOverrideState>> TurnLightOnUntil([FromBody] CreateLightOverrideRequest request)
     {
         if (request == null)
         {
@@ -82,7 +82,7 @@ public class AlarmStateController : ControllerBase
         }
 
         string guid = await _lightStateService.AddOverride(request.EndTime, null);
-        return Ok(new CreateLightOverrideResponse
+        return Ok(new LightOverrideState
         {
             OverrideGuid = guid
         });
@@ -117,7 +117,7 @@ public class AlarmStateController : ControllerBase
     }
 
 
-    
+
     /// <summary>
     /// Get a combined state summary containing the next alarm event, bulb counts/status and current weather.
     /// </summary>

@@ -27,6 +27,13 @@ import {
     AlarmEventInfoToJSON,
     AlarmEventInfoToJSONTyped,
 } from './AlarmEventInfo';
+import type { LightOverrideState } from './LightOverrideState';
+import {
+    LightOverrideStateFromJSON,
+    LightOverrideStateFromJSONTyped,
+    LightOverrideStateToJSON,
+    LightOverrideStateToJSONTyped,
+} from './LightOverrideState';
 
 /**
  * 
@@ -58,6 +65,12 @@ export interface AlarmStateSummary {
      * @memberof AlarmStateSummary
      */
     weatherForecast?: WeatherResponse;
+    /**
+     * 
+     * @type {LightOverrideState}
+     * @memberof AlarmStateSummary
+     */
+    lightOverrideState?: LightOverrideState;
 }
 
 /**
@@ -81,6 +94,7 @@ export function AlarmStateSummaryFromJSONTyped(json: any, ignoreDiscriminator: b
         'currentTime': json['currentTime'] == null ? undefined : (new Date(json['currentTime'])),
         'nextAlarmEvent': json['nextAlarmEvent'] == null ? undefined : AlarmEventInfoFromJSON(json['nextAlarmEvent']),
         'weatherForecast': json['weatherForecast'] == null ? undefined : WeatherResponseFromJSON(json['weatherForecast']),
+        'lightOverrideState': json['lightOverrideState'] == null ? undefined : LightOverrideStateFromJSON(json['lightOverrideState']),
     };
 }
 
@@ -99,6 +113,7 @@ export function AlarmStateSummaryToJSONTyped(value?: AlarmStateSummary | null, i
         'currentTime': value['currentTime'] == null ? value['currentTime'] : value['currentTime'].toISOString(),
         'nextAlarmEvent': AlarmEventInfoToJSON(value['nextAlarmEvent']),
         'weatherForecast': WeatherResponseToJSON(value['weatherForecast']),
+        'lightOverrideState': LightOverrideStateToJSON(value['lightOverrideState']),
     };
 }
 

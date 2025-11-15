@@ -257,7 +257,7 @@ No authorization required
 
 ## apiAlarmStateTurnOnUntilPost
 
-> CreateLightOverrideResponse apiAlarmStateTurnOnUntilPost(createLightOverrideRequest)
+> LightOverrideState apiAlarmStateTurnOnUntilPost(createLightOverrideRequest)
 
 
 
@@ -300,7 +300,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateLightOverrideResponse**](CreateLightOverrideResponse.md)
+[**LightOverrideState**](LightOverrideState.md)
 
 ### Authorization
 

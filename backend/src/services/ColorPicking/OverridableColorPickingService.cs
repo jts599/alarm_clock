@@ -31,6 +31,29 @@ namespace AlarmClock.Backend.Services
             return _overrideColorPickers.Count;
         }
 
+        public LightOverrideState GetCurrentOverride()
+        {
+            if (_overrideColorPickers.Count == 0)
+            {
+                return null;
+            }
+
+            var activeOverride = _overrideColorPickers
+                .OrderByDescending(o => o.StartTime)
+                .FirstOrDefault();
+
+            if (activeOverride == null)
+            {
+                return null;
+            }
+
+            return new LightOverrideState
+            {
+                OverrideGuid = activeOverride.guid,
+                IsLightCurrentlyOn = activeOverride.IsLightOnAtTime(DateTime.Now)
+            };
+        }
+
         public void ClearAllOverrides()
         {
             _overrideColorPickers.Clear();

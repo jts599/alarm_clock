@@ -89,6 +89,9 @@ builder.Services.AddSingleton<LightStateService>();
 builder.Services.AddSingleton<ILightStateService>(provider => provider.GetService<LightStateService>());
 builder.Services.AddHostedService<LightStateService>(provider => provider.GetService<LightStateService>());
 
+// Register state summary service (singleton) so controllers can get a cheap snapshot of state
+builder.Services.AddSingleton<IStateSummaryService, StateSummaryService>();
+
 // Add CORS policy for development
 builder.Services.AddCors(options =>
 {

@@ -1,28 +1,26 @@
 
-# UserSettingsDto
+# AlarmEventInfo
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`alarmTimeInMinutesSinceMidnight` | number
-`transitionMinutes` | number
-`turnOffAfterMinutes` | number
-`enabledDaysOfWeek` | Array&lt;string&gt;
+`nextEventDayOfWeek` | string
+`nextEventTime` | string
+`nextEventType` | [EventType](EventType.md)
 
 ## Example
 
 ```typescript
-import type { UserSettingsDto } from ''
+import type { AlarmEventInfo } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "alarmTimeInMinutesSinceMidnight": null,
-  "transitionMinutes": null,
-  "turnOffAfterMinutes": null,
-  "enabledDaysOfWeek": null,
-} satisfies UserSettingsDto
+  "nextEventDayOfWeek": null,
+  "nextEventTime": null,
+  "nextEventType": null,
+} satisfies AlarmEventInfo
 
 console.log(example)
 
@@ -31,7 +29,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as UserSettingsDto
+const exampleParsed = JSON.parse(exampleJSON) as AlarmEventInfo
 console.log(exampleParsed)
 ```
 

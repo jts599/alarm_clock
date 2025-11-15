@@ -47,14 +47,15 @@ namespace Backend.Controllers
             int scaledRed = (int)(rgb[0] * currentColor.Color.R / 255.0);
             int scaledGreen = (int)(rgb[1] * currentColor.Color.G / 255.0);
             int scaledBlue = (int)(rgb[2] * currentColor.Color.B / 255.0);
+            DateTime scaledTime = await _lightStateService.GetScaledTime();
 
             return Ok(new
             {
                 red = scaledRed,
                 green = scaledGreen,
                 blue = scaledBlue,
-                currentTimeString = _lightStateService.GetScaledTime().ToString("HH:mm"),
-                currentDateString = _lightStateService.GetScaledTime().ToString("dddd MM-dd-yyyy")
+                currentTimeString = scaledTime.ToString("HH:mm"),
+                currentDateString = scaledTime.ToString("dddd MM-dd-yyyy")
             });
         }
 

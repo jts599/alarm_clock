@@ -585,8 +585,9 @@ dist/
 # package-lock.json
 # yarn.lock
 
-# AI/ML Models - DO NOT COMMIT TO GIT
-models/
+# AI/ML Models - DO NOT COMMIT TO GIT (only top-level)
+# Ignore only the repo-root models/ directory so generated/client models in other paths are not ignored
+/models/
 *.onnx
 *.bin
 *.safetensors

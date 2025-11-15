@@ -119,20 +119,21 @@ namespace AlarmClock.Backend.Services
             }
         }
 
-        public Task<AlarmClockColor> GetCurrentColor()
+        public async Task<AlarmClockColor> GetCurrentColor()
         {
-            DateTime scaledNow = GetScaledTime();
+            DateTime scaledNow = await GetScaledTime();
             lock (_colorPickerLock)
             {
-                return Task.FromResult(_colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default);
+                return _colorPicker?.GetColorForTime(scaledNow) ?? AlarmClockColor.Default;
             }
         }
 
-        public Task<bool> IsLightCurrentlyOn()
+        public async Task<bool> IsLightCurrentlyOn()
         {
+            DateTime scaledNow = await GetScaledTime();
             lock (_colorPickerLock)
             {
-                return Task.FromResult(_colorPicker?.IsLightOnAtTime(GetScaledTime()) ?? false);
+                return _colorPicker?.IsLightOnAtTime(scaledNow) ?? false;
             }
         }
 
@@ -200,13 +201,13 @@ namespace AlarmClock.Backend.Services
             }
         }
 
-        public DateTime GetScaledTime()
+        public Task<DateTime> GetScaledTime()
         {
             DateTime now = DateTime.Now;
             int secondsSinceStart = (int)(now - _trueStartTime).TotalSeconds;
             int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
             DateTime scaledNow = _startTime.AddSeconds(scaledSecondsSinceStart);
-            return scaledNow;
+            return Task.FromResult(scaledNow);
         }
 
         private async Task UpdateLightStateAsync()
@@ -224,7 +225,7 @@ namespace AlarmClock.Backend.Services
                 }
 
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
-                DateTime scaledNow = GetScaledTime();
+                DateTime scaledNow = await GetScaledTime();
                 //_logger.LogInformation($"Scaled time: {scaledNow}");
 
                 AlarmClockColor desiredColor;

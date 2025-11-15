@@ -34,9 +34,22 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         Task<int> GetOverrideCount();
 
+        /// <summary>
+        /// Get the current color of the light
+        /// </summary>
         Task<AlarmClockColor> GetCurrentColor();
+
+        /// <summary>
+        /// Check if the light is currently on
+        /// </summary>
+        /// <returns>true if the light is on, false otherwise</returns>
         Task<bool> IsLightCurrentlyOn();
-        DateTime GetScaledTime();
+
+        /// <summary>
+        /// Get the current scaled time used for light calculations. This may differ from system time if time scaling is active.
+        /// </summary>
+        /// <returns>A DateTime representing the current scaled time.</returns>
+        Task<DateTime> GetScaledTime();
         Task<IConfigurableColorPickingServiceParameters> GetCurrentParameters();
     }
 }

@@ -15,18 +15,18 @@
 
 import * as runtime from '../runtime';
 import type {
-  AlarmStatusDto,
-  UserSettingsDto,
+  AlarmStatus,
+  UserSettings,
 } from '../models/index';
 import {
-    AlarmStatusDtoFromJSON,
-    AlarmStatusDtoToJSON,
-    UserSettingsDtoFromJSON,
-    UserSettingsDtoToJSON,
+    AlarmStatusFromJSON,
+    AlarmStatusToJSON,
+    UserSettingsFromJSON,
+    UserSettingsToJSON,
 } from '../models/index';
 
 export interface ApiAlarmSettingsPutRequest {
-    userSettingsDto?: UserSettingsDto;
+    userSettings?: UserSettings;
 }
 
 /**
@@ -36,7 +36,7 @@ export class AlarmSettingsApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiAlarmSettingsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserSettingsDto>> {
+    async apiAlarmSettingsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserSettings>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -51,12 +51,12 @@ export class AlarmSettingsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserSettingsDtoFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserSettingsFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiAlarmSettingsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserSettingsDto> {
+    async apiAlarmSettingsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserSettings> {
         const response = await this.apiAlarmSettingsGetRaw(initOverrides);
         return await response.value();
     }
@@ -78,7 +78,7 @@ export class AlarmSettingsApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UserSettingsDtoToJSON(requestParameters['userSettingsDto']),
+            body: UserSettingsToJSON(requestParameters['userSettings']),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -92,7 +92,7 @@ export class AlarmSettingsApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiAlarmSettingsStatusGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlarmStatusDto>> {
+    async apiAlarmSettingsStatusGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlarmStatus>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -107,12 +107,12 @@ export class AlarmSettingsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AlarmStatusDtoFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AlarmStatusFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiAlarmSettingsStatusGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlarmStatusDto> {
+    async apiAlarmSettingsStatusGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlarmStatus> {
         const response = await this.apiAlarmSettingsStatusGetRaw(initOverrides);
         return await response.value();
     }

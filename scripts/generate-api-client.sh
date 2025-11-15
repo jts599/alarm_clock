@@ -41,6 +41,14 @@ cd ../shared
 # Create api directory if it doesn't exist
 mkdir -p api
 
+# Remove stale generated files to avoid leftover/removed endpoints lingering in the client
+GENERATED_DIR="$(pwd)/api/generated"
+if [ -d "$GENERATED_DIR" ]; then
+    echo "🧹 Removing stale generated client at $GENERATED_DIR"
+    rm -rf "$GENERATED_DIR"
+fi
+mkdir -p "$GENERATED_DIR"
+
 # Generate TypeScript client using npx (no global install needed)
 npx @openapitools/openapi-generator-cli generate \
   -i /tmp/api-spec.json \

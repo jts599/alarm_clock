@@ -1,28 +1,22 @@
 
-# ColorDto
+# WeatherResponse
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`r` | number
-`g` | number
-`b` | number
-`kelvin` | number
+`forecasts` | [Array&lt;SingleDayForecast&gt;](SingleDayForecast.md)
 
 ## Example
 
 ```typescript
-import type { ColorDto } from ''
+import type { WeatherResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "r": null,
-  "g": null,
-  "b": null,
-  "kelvin": null,
-} satisfies ColorDto
+  "forecasts": null,
+} satisfies WeatherResponse
 
 console.log(example)
 
@@ -31,7 +25,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as ColorDto
+const exampleParsed = JSON.parse(exampleJSON) as WeatherResponse
 console.log(exampleParsed)
 ```
 

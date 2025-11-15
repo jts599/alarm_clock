@@ -16,47 +16,47 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ColorDto
+ * @interface Color
  */
-export interface ColorDto {
+export interface Color {
     /**
      * 
      * @type {number}
-     * @memberof ColorDto
+     * @memberof Color
      */
     r?: number;
     /**
      * 
      * @type {number}
-     * @memberof ColorDto
+     * @memberof Color
      */
     g?: number;
     /**
      * 
      * @type {number}
-     * @memberof ColorDto
+     * @memberof Color
      */
     b?: number;
     /**
      * 
      * @type {number}
-     * @memberof ColorDto
+     * @memberof Color
      */
     kelvin?: number;
 }
 
 /**
- * Check if a given object implements the ColorDto interface.
+ * Check if a given object implements the Color interface.
  */
-export function instanceOfColorDto(value: object): value is ColorDto {
+export function instanceOfColor(value: object): value is Color {
     return true;
 }
 
-export function ColorDtoFromJSON(json: any): ColorDto {
-    return ColorDtoFromJSONTyped(json, false);
+export function ColorFromJSON(json: any): Color {
+    return ColorFromJSONTyped(json, false);
 }
 
-export function ColorDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ColorDto {
+export function ColorFromJSONTyped(json: any, ignoreDiscriminator: boolean): Color {
     if (json == null) {
         return json;
     }
@@ -69,11 +69,11 @@ export function ColorDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function ColorDtoToJSON(json: any): ColorDto {
-    return ColorDtoToJSONTyped(json, false);
+export function ColorToJSON(json: any): Color {
+    return ColorToJSONTyped(json, false);
 }
 
-export function ColorDtoToJSONTyped(value?: ColorDto | null, ignoreDiscriminator: boolean = false): any {
+export function ColorToJSONTyped(value?: Color | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

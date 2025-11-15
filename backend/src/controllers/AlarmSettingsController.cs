@@ -93,7 +93,7 @@ namespace AlarmClock.Backend.Controllers
         {
             try
             {
-                var currentTime = _lightStateService.GetScaledTime();
+                var currentTime = await _lightStateService.GetScaledTime();
                 var currentParameters = await _lightStateService.GetCurrentParameters();
                 var isLightOn = await _lightStateService.IsLightCurrentlyOn();
                 var currentColor = await _lightStateService.GetCurrentColor();

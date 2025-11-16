@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import './TimeComponent.css'
+import { useCurrentTime } from '../../hooks/useStateSummary'
+import { isARealError } from '../../clients/StateClient'
 
 export const TimeComponent: React.FC = () => {
-    const [currentTime, setCurrentTime] = useState<Date>(new Date())
-
-    useEffect(() => {
-        const updateTime = () => {
-            setCurrentTime(new Date())
-        }
-
-        // Update immediately
-        updateTime()
-
-        // Update every second
-        const timeInterval = setInterval(updateTime, 1000)
-
-        return () => clearInterval(timeInterval)
-    }, [])
+    const { data, isLoading, isError, error } = useCurrentTime(1000)
 
     const formatTime = (date: Date) => {
         const hours = date.getHours()
@@ -31,7 +19,15 @@ export const TimeComponent: React.FC = () => {
         }
     }
 
-    const { time, period } = formatTime(currentTime)
+    let time: string
+    let period: string
+
+    if (isLoading || isARealError(isError, error) || !data) {
+        ({time, period} = formatTime(new Date()))
+    }
+    else {
+        ({time, period} = formatTime(data))
+    }
 
     return (
         <div className="time-component">

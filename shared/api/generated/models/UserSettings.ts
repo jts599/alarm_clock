@@ -16,47 +16,47 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface UserSettingsDto
+ * @interface UserSettings
  */
-export interface UserSettingsDto {
+export interface UserSettings {
     /**
      * 
      * @type {number}
-     * @memberof UserSettingsDto
+     * @memberof UserSettings
      */
     alarmTimeInMinutesSinceMidnight?: number;
     /**
      * 
      * @type {number}
-     * @memberof UserSettingsDto
+     * @memberof UserSettings
      */
     transitionMinutes?: number;
     /**
      * 
      * @type {number}
-     * @memberof UserSettingsDto
+     * @memberof UserSettings
      */
     turnOffAfterMinutes?: number;
     /**
      * 
      * @type {Array<string>}
-     * @memberof UserSettingsDto
+     * @memberof UserSettings
      */
     enabledDaysOfWeek?: Array<string> | null;
 }
 
 /**
- * Check if a given object implements the UserSettingsDto interface.
+ * Check if a given object implements the UserSettings interface.
  */
-export function instanceOfUserSettingsDto(value: object): value is UserSettingsDto {
+export function instanceOfUserSettings(value: object): value is UserSettings {
     return true;
 }
 
-export function UserSettingsDtoFromJSON(json: any): UserSettingsDto {
-    return UserSettingsDtoFromJSONTyped(json, false);
+export function UserSettingsFromJSON(json: any): UserSettings {
+    return UserSettingsFromJSONTyped(json, false);
 }
 
-export function UserSettingsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserSettingsDto {
+export function UserSettingsFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserSettings {
     if (json == null) {
         return json;
     }
@@ -69,11 +69,11 @@ export function UserSettingsDtoFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function UserSettingsDtoToJSON(json: any): UserSettingsDto {
-    return UserSettingsDtoToJSONTyped(json, false);
+export function UserSettingsToJSON(json: any): UserSettings {
+    return UserSettingsToJSONTyped(json, false);
 }
 
-export function UserSettingsDtoToJSONTyped(value?: UserSettingsDto | null, ignoreDiscriminator: boolean = false): any {
+export function UserSettingsToJSONTyped(value?: UserSettings | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

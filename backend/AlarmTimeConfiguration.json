@@ -1,6 +1,6 @@
 {
   "AlarmTimeConfiguration": {
-    "StartTimeInMinutesSinceMidnight": 270,
+    "StartTimeInMinutesSinceMidnight": 395,
     "TransitionDurationInMinutes": 90,
     "StayOnTimeInMinutes": 60,
     "ActiveDays": [

@@ -1,29 +1,69 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using LifxNet;
 
 namespace AlarmClock.Backend.Services
 {
+    /// <summary>
+    /// NOT THREAD-SAFE. Caller must handle synchronization.
+    /// This class assumes it will only be accessed by one thread at a time.
+    /// </summary>
     public class OverrideableColorPickingService : ICompositeColorPickingService
     {
-
         private IBaseColorPickingService _baseColorPicker;
-        private IOverrideColorPickingService[] _overrideColorPickers;
+        private List<IOverrideColorPickingService> _overrideColorPickers;
 
         public OverrideableColorPickingService(IBaseColorPickingService baseColorPicker)
         {
             _baseColorPicker = baseColorPicker;
-            _overrideColorPickers = Array.Empty<IOverrideColorPickingService>();
+            _overrideColorPickers = new List<IOverrideColorPickingService>();
         }
 
         public void AddOverride(IOverrideColorPickingService overrideColorPicker)
         {
-            _overrideColorPickers = new[] { overrideColorPicker };
+            _overrideColorPickers.Add(overrideColorPicker);
         }
 
-        public void ClearOverride()
+        public int GetOverrideCount()
         {
-            _overrideColorPickers = Array.Empty<IOverrideColorPickingService>();
+            return _overrideColorPickers.Count;
+        }
+
+        public LightOverrideState GetCurrentOverride()
+        {
+            if (_overrideColorPickers.Count == 0)
+            {
+                return null;
+            }
+
+            var activeOverride = _overrideColorPickers
+                .OrderByDescending(o => o.StartTime)
+                .FirstOrDefault();
+
+            if (activeOverride == null)
+            {
+                return null;
+            }
+
+            return new LightOverrideState
+            {
+                OverrideGuid = activeOverride.guid,
+                IsLightCurrentlyOn = activeOverride.IsLightOnAtTime(DateTime.Now)
+            };
+        }
+
+        public void ClearAllOverrides()
+        {
+            _overrideColorPickers.Clear();
+        }
+
+        public void ClearOverrideByGuid(string overrideGuid)
+        {
+            _overrideColorPickers = _overrideColorPickers
+                .Where(o => o.guid != overrideGuid)
+                .ToList();
         }
 
         public AlarmClockColor GetColorForTime(DateTime time)
@@ -36,16 +76,21 @@ namespace AlarmClock.Backend.Services
             return GetActiveColorPicker(time).IsLightOnAtTime(time);
         }
 
-        public string Status(DateTime time)
+        public AlarmEventInfo NextEvent(DateTime time)
         {
-            return GetActiveColorPicker(time).Status(time);
+            return GetActiveColorPicker(time).NextEvent(time);
         }
 
+        /// <summary>
+        /// Reconstructs the composite color picking service with a new base color picker
+        /// </summary>
+        /// <param name="baseColorPicker">The new base color picker</param>
+        /// <returns></returns>
         public ICompositeColorPickingService ReconstructWithBase(IBaseColorPickingService baseColorPicker)
         {
             var newColorPicker = new OverrideableColorPickingService(baseColorPicker);
-            IOverrideColorPickingService[] overrides = _overrideColorPickers.Clone() as IOverrideColorPickingService[];
-            overrides = overrides.Reverse().ToArray();
+            var overrides = new List<IOverrideColorPickingService>(_overrideColorPickers);
+            overrides.Reverse();
 
             //add in reverse order to maintain priority
             foreach (var overridePicker in overrides)
@@ -53,6 +98,25 @@ namespace AlarmClock.Backend.Services
                 newColorPicker.AddOverride(overridePicker);
             }
             return newColorPicker;
+        }
+
+        public ICompositeColorPickingService Clone()
+        {
+            var clonedBase = _baseColorPicker.Clone();
+            var newColorPicker = new OverrideableColorPickingService(clonedBase);
+
+            // Add overrides in the same order to maintain priority
+            foreach (var overridePicker in _overrideColorPickers)
+            {
+                newColorPicker.AddOverride(overridePicker);
+            }
+            return newColorPicker;
+        }
+
+        // Explicit implementation of IBaseColorPickingService.Clone()
+        IBaseColorPickingService IBaseColorPickingService.Clone()
+        {
+            return _baseColorPicker.Clone();
         }
 
         /// <summary>
@@ -70,7 +134,7 @@ namespace AlarmClock.Backend.Services
         /// <param name="currentTime">Prunes overrides that have expired</param>
         private void PruneExpiredOverrides(DateTime currentTime)
         {
-            _overrideColorPickers = Array.FindAll(_overrideColorPickers, o => o.EndTime <= currentTime);
+            _overrideColorPickers = _overrideColorPickers.FindAll(o => o.EndTime > currentTime);
         }
 
         /// <summary>
@@ -81,6 +145,7 @@ namespace AlarmClock.Backend.Services
         private IColorPickingService GetActiveColorPicker(DateTime time)
         {
             PruneExpiredOverrides(time);
+
             foreach (var overrideColorPicker in _overrideColorPickers)
             {
                 if (overrideColorPicker != null &&
@@ -89,6 +154,7 @@ namespace AlarmClock.Backend.Services
                     return overrideColorPicker;
                 }
             }
+
             return _baseColorPicker;
         }
 

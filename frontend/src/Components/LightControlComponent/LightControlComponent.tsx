@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
-import { GetAlarmClient, IAlarmClient } from '../../Clients/AlarmClients'
+import { AlarmStateApi } from '../../../../shared/api/generated/apis/AlarmStateApi'
 import { Activities, IActivityProps } from '../../App'
 import './LightControlComponent.css'
+import { CreateLightOverrideRequest } from '../../../../shared/api/generated'
+import {  alarmApi } from '../../clients/StateClient'
 
 export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [duration, setDuration] = useState<number>(5) // Default 5 minutes
 
-    const alarmClient: IAlarmClient = GetAlarmClient()
-
     const handleTurnOnLight = async () => {
         try {
             setIsLoading(true)
-            const nextEventTime = new Date(Date.now() + duration * 60 * 1000) // duration in minutes
-            await alarmClient.turnLightOnUntil(nextEventTime)
+            
+            const turnOnUntilRequest: CreateLightOverrideRequest = {
+                minsToOverride: duration,
+            }
+            await alarmApi.apiAlarmStateTurnOnUntilPost({ createLightOverrideRequest: turnOnUntilRequest })
         } catch (err) {
             console.error('Failed to turn on light:', err)
         } finally {

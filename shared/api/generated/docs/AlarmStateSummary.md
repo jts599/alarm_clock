@@ -1,36 +1,30 @@
 
-# AlarmStatusDto
+# AlarmStateSummary
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`numberOfActiveBulbs` | number
 `currentTime` | Date
-`isLightCurrentlyOn` | boolean
-`currentColor` | [ColorDto](ColorDto.md)
-`nextAlarmTime` | Date
-`alarmTime` | string
-`transitionMinutes` | number
-`holdOnMinutes` | number
-`activeDays` | Array&lt;string&gt;
+`nextAlarmEvent` | [AlarmEventInfo](AlarmEventInfo.md)
+`weatherForecast` | [WeatherResponse](WeatherResponse.md)
+`lightOverrideState` | [LightOverrideState](LightOverrideState.md)
 
 ## Example
 
 ```typescript
-import type { AlarmStatusDto } from ''
+import type { AlarmStateSummary } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "numberOfActiveBulbs": null,
   "currentTime": null,
-  "isLightCurrentlyOn": null,
-  "currentColor": null,
-  "nextAlarmTime": null,
-  "alarmTime": null,
-  "transitionMinutes": null,
-  "holdOnMinutes": null,
-  "activeDays": null,
-} satisfies AlarmStatusDto
+  "nextAlarmEvent": null,
+  "weatherForecast": null,
+  "lightOverrideState": null,
+} satisfies AlarmStateSummary
 
 console.log(example)
 
@@ -39,7 +33,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as AlarmStatusDto
+const exampleParsed = JSON.parse(exampleJSON) as AlarmStateSummary
 console.log(exampleParsed)
 ```
 

@@ -12,7 +12,7 @@ All URIs are relative to *http://localhost*
 
 ## apiAlarmSettingsGet
 
-> UserSettingsDto apiAlarmSettingsGet()
+> UserSettings apiAlarmSettingsGet()
 
 
 
@@ -47,7 +47,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**UserSettingsDto**](UserSettingsDto.md)
+[**UserSettings**](UserSettings.md)
 
 ### Authorization
 
@@ -69,7 +69,7 @@ No authorization required
 
 ## apiAlarmSettingsPut
 
-> apiAlarmSettingsPut(userSettingsDto)
+> apiAlarmSettingsPut(userSettings)
 
 
 
@@ -87,8 +87,8 @@ async function example() {
   const api = new AlarmSettingsApi();
 
   const body = {
-    // UserSettingsDto (optional)
-    userSettingsDto: ...,
+    // UserSettings (optional)
+    userSettings: ...,
   } satisfies ApiAlarmSettingsPutRequest;
 
   try {
@@ -108,7 +108,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **userSettingsDto** | [UserSettingsDto](UserSettingsDto.md) |  | [Optional] |
+| **userSettings** | [UserSettings](UserSettings.md) |  | [Optional] |
 
 ### Return type
 
@@ -134,7 +134,7 @@ No authorization required
 
 ## apiAlarmSettingsStatusGet
 
-> AlarmStatusDto apiAlarmSettingsStatusGet()
+> AlarmStatus apiAlarmSettingsStatusGet()
 
 
 
@@ -169,7 +169,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**AlarmStatusDto**](AlarmStatusDto.md)
+[**AlarmStatus**](AlarmStatus.md)
 
 ### Authorization
 

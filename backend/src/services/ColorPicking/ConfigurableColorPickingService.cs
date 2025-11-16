@@ -6,6 +6,7 @@ using AlarmClock.Backend.Configuration;
 using LifxNet;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using AlarmClock.Backend.DataModels.AlarmCore;
 
 namespace AlarmClock.Backend.Services
 {
@@ -46,6 +47,17 @@ namespace AlarmClock.Backend.Services
                 HoldOnMinutes = defaultParams.HoldOnMinutes;
                 ActiveDays = defaultParams.ActiveDays;
             }
+        }
+
+        public ConfigurableColorPickingServiceConstructionParameters Clone()
+        {
+            return new ConfigurableColorPickingServiceConstructionParameters
+            {
+                AlarmTime = this.AlarmTime,
+                TransitionMinutes = this.TransitionMinutes,
+                HoldOnMinutes = this.HoldOnMinutes,
+                ActiveDays = (DayOfWeek[])this.ActiveDays.Clone()
+            };
         }
 
         public bool Validate(out string errorMessage)
@@ -163,6 +175,16 @@ namespace AlarmClock.Backend.Services
             _parameters = parameters;
         }
 
+        /// <summary>
+        /// Creates a clone of this ConfigurableColorPickingService
+        /// </summary>
+        /// <returns></returns>
+        public IBaseColorPickingService Clone()
+        {
+            var newParameters = _parameters.Clone();
+            return new ConfigurableColorPickingService(newParameters);
+        }
+
         private const int MaxKelvin = 4500;
         private const int MinKelvin = 1500;
 
@@ -209,9 +231,69 @@ namespace AlarmClock.Backend.Services
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public string Status(DateTime time)
+        public AlarmEventInfo NextEvent(DateTime time)
         {
-            return "Stubbed";
+            if (IsDuringLightsOffTime(time))
+            {
+                DateTime nextSunriseTime = GetNextSunriseTime(time);
+                return new AlarmEventInfo(nextSunriseTime, EventType.Sunrise);
+            }
+            else if (IsDuringTransitionToOnTime(time) || IsDuringHoldOnTime(time))
+            {
+                DateTime nextOffTime = GetNextOffTime(time);
+                return new AlarmEventInfo(nextOffTime, EventType.LightOff);
+
+            }
+            return new AlarmEventInfo
+            {
+                NextEventType = EventType.LightOff,
+                NextEventDayOfWeek = "-",
+                NextEventTime = "-"
+            };
+        }
+
+        /// <summary>
+        /// Next time the light is off after the given time.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private DateTime GetNextOffTime(DateTime time)
+        {
+            //TODO: This is an overly expensive way to do this. Optimize later if needed.
+
+            //Datetime is a struct so this effectively makes a deep copy
+            var newTime = time;
+            do
+            {
+                if (IsDuringLightsOffTime(newTime))
+                {
+                    break;
+                }
+                newTime = newTime.AddSeconds(1);
+            } while (true);
+            return newTime;
+        }
+
+        /// <summary>
+        /// Next time the sunrise starts after the given time.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private DateTime GetNextSunriseTime(DateTime time)
+        {
+            //TODO: This is an overly expensive way to do this. Optimize later if needed.
+
+            //Datetime is a struct so this effectively makes a deep copy
+            var newTime = time;
+            do
+            {
+                if (IsDuringTransitionToOnTime(newTime))
+                {
+                    break;
+                }
+                newTime = newTime.AddSeconds(1);
+            } while (true);
+            return newTime;
         }
 
         /// <summary>

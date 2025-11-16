@@ -13,82 +13,82 @@
  */
 
 import { mapValues } from '../runtime';
-import type { ColorDto } from './ColorDto';
+import type { Color } from './Color';
 import {
-    ColorDtoFromJSON,
-    ColorDtoFromJSONTyped,
-    ColorDtoToJSON,
-    ColorDtoToJSONTyped,
-} from './ColorDto';
+    ColorFromJSON,
+    ColorFromJSONTyped,
+    ColorToJSON,
+    ColorToJSONTyped,
+} from './Color';
 
 /**
  * 
  * @export
- * @interface AlarmStatusDto
+ * @interface AlarmStatus
  */
-export interface AlarmStatusDto {
+export interface AlarmStatus {
     /**
      * 
      * @type {Date}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     currentTime?: Date;
     /**
      * 
      * @type {boolean}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     isLightCurrentlyOn?: boolean;
     /**
      * 
-     * @type {ColorDto}
-     * @memberof AlarmStatusDto
+     * @type {Color}
+     * @memberof AlarmStatus
      */
-    currentColor?: ColorDto;
+    currentColor?: Color;
     /**
      * 
      * @type {Date}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     nextAlarmTime?: Date;
     /**
      * 
      * @type {string}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     alarmTime?: string;
     /**
      * 
      * @type {number}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     transitionMinutes?: number;
     /**
      * 
      * @type {number}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     holdOnMinutes?: number;
     /**
      * 
      * @type {Array<string>}
-     * @memberof AlarmStatusDto
+     * @memberof AlarmStatus
      */
     activeDays?: Array<string> | null;
 }
 
 /**
- * Check if a given object implements the AlarmStatusDto interface.
+ * Check if a given object implements the AlarmStatus interface.
  */
-export function instanceOfAlarmStatusDto(value: object): value is AlarmStatusDto {
+export function instanceOfAlarmStatus(value: object): value is AlarmStatus {
     return true;
 }
 
-export function AlarmStatusDtoFromJSON(json: any): AlarmStatusDto {
-    return AlarmStatusDtoFromJSONTyped(json, false);
+export function AlarmStatusFromJSON(json: any): AlarmStatus {
+    return AlarmStatusFromJSONTyped(json, false);
 }
 
-export function AlarmStatusDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): AlarmStatusDto {
+export function AlarmStatusFromJSONTyped(json: any, ignoreDiscriminator: boolean): AlarmStatus {
     if (json == null) {
         return json;
     }
@@ -96,7 +96,7 @@ export function AlarmStatusDtoFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'currentTime': json['currentTime'] == null ? undefined : (new Date(json['currentTime'])),
         'isLightCurrentlyOn': json['isLightCurrentlyOn'] == null ? undefined : json['isLightCurrentlyOn'],
-        'currentColor': json['currentColor'] == null ? undefined : ColorDtoFromJSON(json['currentColor']),
+        'currentColor': json['currentColor'] == null ? undefined : ColorFromJSON(json['currentColor']),
         'nextAlarmTime': json['nextAlarmTime'] == null ? undefined : (new Date(json['nextAlarmTime'])),
         'alarmTime': json['alarmTime'] == null ? undefined : json['alarmTime'],
         'transitionMinutes': json['transitionMinutes'] == null ? undefined : json['transitionMinutes'],
@@ -105,11 +105,11 @@ export function AlarmStatusDtoFromJSONTyped(json: any, ignoreDiscriminator: bool
     };
 }
 
-export function AlarmStatusDtoToJSON(json: any): AlarmStatusDto {
-    return AlarmStatusDtoToJSONTyped(json, false);
+export function AlarmStatusToJSON(json: any): AlarmStatus {
+    return AlarmStatusToJSONTyped(json, false);
 }
 
-export function AlarmStatusDtoToJSONTyped(value?: AlarmStatusDto | null, ignoreDiscriminator: boolean = false): any {
+export function AlarmStatusToJSONTyped(value?: AlarmStatus | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }
@@ -118,7 +118,7 @@ export function AlarmStatusDtoToJSONTyped(value?: AlarmStatusDto | null, ignoreD
         
         'currentTime': value['currentTime'] == null ? value['currentTime'] : value['currentTime'].toISOString(),
         'isLightCurrentlyOn': value['isLightCurrentlyOn'],
-        'currentColor': ColorDtoToJSON(value['currentColor']),
+        'currentColor': ColorToJSON(value['currentColor']),
         'nextAlarmTime': value['nextAlarmTime'] == null ? value['nextAlarmTime'] : value['nextAlarmTime'].toISOString(),
         'alarmTime': value['alarmTime'],
         'transitionMinutes': value['transitionMinutes'],

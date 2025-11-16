@@ -22,7 +22,6 @@ namespace AlarmClock.Backend.Services
 
         private int NumberOfBulbs => Bulbs?.Count() ?? 0;
         private IEnumerable<LightBulb> Bulbs => _client?.Devices.OfType<LightBulb>();
-        private readonly ConcurrentDictionary<string, LightBulb> _bulbs = new();
 
         private const int DiscoveryDelayMilliseconds = 2500;
 
@@ -34,34 +33,7 @@ namespace AlarmClock.Backend.Services
 
         public async Task InitializeAsync()
         {
-            // Log network interfaces for debugging
-            LogNetworkInterfaces();
             await GetOrCreateClientAsync();
-        }
-
-        private void LogNetworkInterfaces()
-        {
-            try
-            {
-                _logger.LogInformation("Available network interfaces:");
-                var interfaces = NetworkInterface.GetAllNetworkInterfaces()
-                    .Where(ni => ni.OperationalStatus == OperationalStatus.Up)
-                    .Where(ni => ni.NetworkInterfaceType != NetworkInterfaceType.Loopback);
-
-                foreach (var ni in interfaces)
-                {
-                    var ipProps = ni.GetIPProperties();
-                    var ipv4Addresses = ipProps.UnicastAddresses
-                        .Where(addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        .Select(addr => addr.Address.ToString());
-
-                    _logger.LogInformation($"  {ni.Name} ({ni.NetworkInterfaceType}): {string.Join(", ", ipv4Addresses)}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to enumerate network interfaces");
-            }
         }
 
         private async Task<LifxClient> GetOrCreateClientAsync()
@@ -144,12 +116,11 @@ namespace AlarmClock.Backend.Services
             {
                 await GetClientAsync();
                 var bulbCount = NumberOfBulbs;
-                _logger.LogInformation($"Current number of bulbs: {bulbCount}");
                 return bulbCount;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError(ex, "Error getting number of bulbs");
+                _logger.LogError(e, "Error getting number of bulbs: {Message}", e.Message);
                 throw;
             }
             finally
@@ -167,7 +138,6 @@ namespace AlarmClock.Backend.Services
                 var client = await GetClientAsync();
                 if (Bulbs.Count() == 0)
                 {
-                    _logger.LogInformation("No bulbs found to control");
                     return true;
                 }
 
@@ -177,8 +147,6 @@ namespace AlarmClock.Backend.Services
 
                 await Task.WhenAll(tasks);
 
-                var action = powerOn ? "turned on" : "turned off";
-                _logger.LogInformation($"All {Bulbs.Count()} bulbs {action}");
                 return true;
             }
             catch (Exception ex)
@@ -197,14 +165,10 @@ namespace AlarmClock.Backend.Services
             await ClientLock.WaitAsync();
             try
             {
+                _logger.LogInformation("Refreshing available bulbs...");
                 var client = await GetClientAsync();
-                if (Bulbs.Count() == 0)
-                {
-                    _logger.LogInformation("Refreshing Bulbs");
-                    return;
-                }
-
                 await client.RefreshDevicesAsync();
+                _logger.LogInformation("Refresh complete. {BulbCount} bulbs available.", NumberOfBulbs);
             }
             catch (Exception ex)
             {
@@ -226,13 +190,12 @@ namespace AlarmClock.Backend.Services
                 var client = await GetClientAsync();
                 if (Bulbs.Count() == 0)
                 {
-                    _logger.LogInformation("No bulbs found to control");
                     return true;
                 }
-                Bulbs.ToList().ForEach(bulb =>
+                Bulbs.ToList().ForEach(async bulb =>
                 {
-                    _logger.LogInformation($"Setting color of bulb {bulb.ToString()} to {color}");
-                    client.SetColorAsync(bulb, color, kelvin, TimeSpan.FromSeconds(transitionTime)).Wait();
+                    //I am afraid of using Task.WhenAll here because LifxNet might not support multiple concurrent commands well
+                    await client.SetColorAsync(bulb, color, kelvin, TimeSpan.FromSeconds(transitionTime));
                 });
                 return true;
             }

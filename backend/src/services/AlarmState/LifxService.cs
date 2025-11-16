@@ -168,6 +168,7 @@ namespace AlarmClock.Backend.Services
                 _logger.LogInformation("Refreshing available bulbs...");
                 var client = await GetClientAsync();
                 await client.RefreshDevicesAsync();
+                _logger.LogInformation("Refresh complete. {BulbCount} bulbs available.", NumberOfBulbs);
             }
             catch (Exception ex)
             {

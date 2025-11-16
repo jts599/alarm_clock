@@ -4,6 +4,7 @@ namespace AlarmClock.Backend.DataModels.AlarmCore
 {
     public class CreateLightOverrideRequest
     {
-        public DateTime EndTime { get; set; }
+        public int MinsToOverride { get; set; }
+
     }
 }

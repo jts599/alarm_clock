@@ -15,7 +15,6 @@
 
 import * as runtime from '../runtime';
 import type {
-  AlarmEventInfo,
   AlarmStateSummary,
   CreateLightOverrideRequest,
   LightOverrideState,
@@ -23,8 +22,6 @@ import type {
   RemoveAlarmOverrideRequest,
 } from '../models/index';
 import {
-    AlarmEventInfoFromJSON,
-    AlarmEventInfoToJSON,
     AlarmStateSummaryFromJSON,
     AlarmStateSummaryToJSON,
     CreateLightOverrideRequestFromJSON,
@@ -49,33 +46,6 @@ export interface ApiAlarmStateTurnOnUntilPostRequest {
  * 
  */
 export class AlarmStateApi extends runtime.BaseAPI {
-
-    /**
-     */
-    async apiAlarmStateNextEventGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlarmEventInfo>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/AlarmState/next-event`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => AlarmEventInfoFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async apiAlarmStateNextEventGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlarmEventInfo> {
-        const response = await this.apiAlarmStateNextEventGetRaw(initOverrides);
-        return await response.value();
-    }
 
     /**
      */

@@ -82,13 +82,14 @@ namespace AlarmClock.Backend.Services
             }
         }
 
-        public Task<string> AddOverride(DateTime endTime, AlarmClockColor color = null)
+        public async Task<string> AddOverride(DateTime endTime, AlarmClockColor color = null)
         {
+            var startTime = await GetScaledTime();
             lock (_colorPickerLock)
             {
-                var overrideService = new LightOnOverrideColorPickingService(endTime, color);
+                var overrideService = new LightOnOverrideColorPickingService(startTime, endTime, color);
                 _colorPicker?.AddOverride(overrideService);
-                return Task.FromResult(overrideService.guid);
+                return overrideService.guid;
             }
         }
 

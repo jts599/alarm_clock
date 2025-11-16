@@ -62,3 +62,15 @@ export function useOverrideStatus(pollIntervalMs = 1000): UseQueryResult<LightOv
     } as UseQueryOptions<AlarmStateSummary, Error, LightOverrideState | undefined, readonly ['stateSummary']>)
   )
 }
+
+  export function useCurrentTime(pollIntervalMs = 1000): UseQueryResult<Date | undefined, Error> {
+    return useQuery<AlarmStateSummary, Error, Date | undefined, readonly ['stateSummary']>(
+      ({
+        queryKey: ['stateSummary'] as const,
+        queryFn: fetchStateSummary,
+        refetchInterval: pollIntervalMs,
+        select: (data: AlarmStateSummary | undefined) => data?.currentTime as Date | undefined,
+        keepPreviousData: true,
+      } as UseQueryOptions<AlarmStateSummary, Error, Date | undefined, readonly ['stateSummary']>)
+    )
+}

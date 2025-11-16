@@ -2,7 +2,7 @@ import { AlarmStateApi, Configuration, ResponseError } from '../../../shared/api
 import type { AlarmStateSummary } from '../../../shared/api/generated/models/AlarmStateSummary'
 
 const apiConfig = new Configuration({ basePath: '' })
-const alarmApi = new AlarmStateApi(apiConfig)
+export const alarmApi = new AlarmStateApi(apiConfig)
 
 export async function fetchStateSummary(): Promise<AlarmStateSummary> {
   try {
@@ -14,4 +14,23 @@ export async function fetchStateSummary(): Promise<AlarmStateSummary> {
     }
     throw e
   }
+}
+
+/**
+ * Utility to check if an error is a Not Modified error
+ * @param error 
+ * @returns 
+ */
+export function isNotModifiedError(error?: Error | null): boolean {
+  return error?.message === 'Not Modified'
+}
+
+/**
+ * Helper to determine if an error is a "real" error (not a Not Modified error)
+ * @param isError - IsError flag
+ * @param error - error result
+ * @returns 
+ */
+export function isARealError(isError: boolean, error?: Error | null): boolean {
+  return isError && !isNotModifiedError(error)
 }

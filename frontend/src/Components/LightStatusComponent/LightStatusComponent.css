@@ -79,7 +79,3 @@
 .light-status-component {
     transition: box-shadow 0.3s ease;
 }
-
-.light-status-component:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(253, 203, 110, 0.3);
-}

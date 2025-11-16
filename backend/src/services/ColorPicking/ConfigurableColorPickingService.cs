@@ -259,7 +259,10 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         private DateTime GetNextOffTime(DateTime time)
         {
-            var newTime = new DateTime(time.ToFileTime(), DateTimeKind.Local);
+            //TODO: This is an overly expensive way to do this. Optimize later if needed.
+
+            //Datetime is a struct so this effectively makes a deep copy
+            var newTime = time;
             do
             {
                 if (IsDuringLightsOffTime(newTime))
@@ -278,7 +281,10 @@ namespace AlarmClock.Backend.Services
         /// <returns></returns>
         private DateTime GetNextSunriseTime(DateTime time)
         {
-            var newTime = new DateTime(time.ToFileTime(), DateTimeKind.Local);
+            //TODO: This is an overly expensive way to do this. Optimize later if needed.
+
+            //Datetime is a struct so this effectively makes a deep copy
+            var newTime = time;
             do
             {
                 if (IsDuringTransitionToOnTime(newTime))

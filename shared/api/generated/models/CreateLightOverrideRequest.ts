@@ -21,10 +21,10 @@ import { mapValues } from '../runtime';
 export interface CreateLightOverrideRequest {
     /**
      * 
-     * @type {Date}
+     * @type {number}
      * @memberof CreateLightOverrideRequest
      */
-    endTime?: Date;
+    minsToOverride?: number;
 }
 
 /**
@@ -44,7 +44,7 @@ export function CreateLightOverrideRequestFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'endTime': json['endTime'] == null ? undefined : (new Date(json['endTime'])),
+        'minsToOverride': json['minsToOverride'] == null ? undefined : json['minsToOverride'],
     };
 }
 
@@ -59,7 +59,7 @@ export function CreateLightOverrideRequestToJSONTyped(value?: CreateLightOverrid
 
     return {
         
-        'endTime': value['endTime'] == null ? value['endTime'] : value['endTime'].toISOString(),
+        'minsToOverride': value['minsToOverride'],
     };
 }
 

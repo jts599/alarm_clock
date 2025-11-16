@@ -43,26 +43,6 @@ public class AlarmStateController : ControllerBase
     }
 
     /// <summary>
-    /// Get information about the next scheduled alarm event.
-    /// </summary>
-    /// <returns>Details about the next alarm event.</returns>
-    /// <response code="200">Returns the next alarm event info.</response>
-    /// <response code="500">Internal server error.</response>
-    [HttpGet("next-event")]
-    [ProducesResponseType(typeof(AlarmEventInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<ActionResult<AlarmEventInfo>> GetNextAlarmEventInfo()
-    {
-        // TODO: Implement actual logic to get next alarm event info
-        return Task.FromResult<ActionResult<AlarmEventInfo>>(Ok(new AlarmEventInfo
-        {
-            NextEventDayOfWeek = "Monday",
-            NextEventTime = "07:00 AM",
-            NextEventType = EventType.Sunrise
-        }));
-    }
-
-    /// <summary>
     /// Turn the light on until the specified end time by creating a temporary override.
     /// </summary>
     /// <param name="request">Request containing the EndTime for the override.</param>
@@ -81,7 +61,10 @@ public class AlarmStateController : ControllerBase
             return BadRequest("Request cannot be null");
         }
 
-        string guid = await _lightStateService.AddOverride(request.EndTime, null);
+        DateTime endTime = await _lightStateService.GetScaledTime();
+        endTime = endTime.AddMinutes(request.MinsToOverride);
+
+        string guid = await _lightStateService.AddOverride(endTime, null);
         return Ok(new LightOverrideState
         {
             OverrideGuid = guid

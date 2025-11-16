@@ -11,10 +11,10 @@ namespace AlarmClock.Backend.Services
 
         private readonly AlarmClockColor _onColor;
 
-        public LightOnOverrideColorPickingService(DateTime endTime, AlarmClockColor onColor = null)
+        public LightOnOverrideColorPickingService(DateTime startTime, DateTime endTime, AlarmClockColor onColor = null)
         {
             guid = Guid.NewGuid().ToString();
-            StartTime = DateTime.Now;
+            StartTime = startTime;
             EndTime = endTime;
 
             // Use a warm white color for the override if none is provided

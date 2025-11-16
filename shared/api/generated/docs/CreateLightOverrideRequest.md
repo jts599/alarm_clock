@@ -6,7 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`endTime` | Date
+`minsToOverride` | number
 
 ## Example
 
@@ -15,7 +15,7 @@ import type { CreateLightOverrideRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "endTime": null,
+  "minsToOverride": null,
 } satisfies CreateLightOverrideRequest
 
 console.log(example)

@@ -144,12 +144,10 @@ namespace AlarmClock.Backend.Services
             {
                 await GetClientAsync();
                 var bulbCount = NumberOfBulbs;
-                _logger.LogInformation($"Current number of bulbs: {bulbCount}");
                 return bulbCount;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting number of bulbs");
                 throw;
             }
             finally

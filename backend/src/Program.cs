@@ -3,12 +3,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using AlarmClock.Backend.Services;
 using AlarmClock.Backend.Services.Stubs;
 using AlarmClock.Backend.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging with timestamps
+builder.Logging.ClearProviders();
+builder.Logging.AddSystemdConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+});
 
 // Bind configuration sections
 // Load runtime-updatable alarm configuration from a separate JSON file.

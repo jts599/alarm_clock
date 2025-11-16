@@ -183,7 +183,6 @@ namespace AlarmClock.Backend.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Light State Service started");
 
             // Initialize the LIFX service
             await _lifxService.InitializeAsync();
@@ -236,7 +235,6 @@ namespace AlarmClock.Backend.Services
 
                 int scaledSecondsSinceStart = secondsSinceStart * _secondsStepInterval;
                 DateTime scaledNow = await GetScaledTime();
-                //_logger.LogInformation($"Scaled time: {scaledNow}");
 
                 AlarmClockColor desiredColor;
                 bool desiredOnState;
@@ -258,7 +256,6 @@ namespace AlarmClock.Backend.Services
                 }
                 if (IsChosenColorDifferent(desiredColor) || forceUpdate)
                 {
-                    _logger.LogInformation($"Changing light color to: {desiredColor}. Transition time: {transitionTime} seconds");
                     await _lifxService.SetColorAllAsync(desiredColor.Color, desiredColor.Kelvin, transitionTime);
                     _lastSetColor = desiredColor;
 
@@ -266,7 +263,10 @@ namespace AlarmClock.Backend.Services
 
                 if (IsChosenOnStateDifferent(desiredOnState) || forceUpdate)
                 {
-                    _logger.LogInformation($"Changing light on state to: {desiredOnState}");
+                    if (IsChosenOnStateDifferent(desiredOnState))
+                    {
+                        _logger.LogInformation($"Changing light on state to: {desiredOnState}");
+                    }
                     await _lifxService.SetAllBulbsPowerAsync(desiredOnState);
                     _lastSetOnState = desiredOnState;
                 }

@@ -1,10 +1,11 @@
 import React from 'react'
-import { Activities, IActivityProps } from '../../App'
 import './ScreenSaverActivity.css'
+import { useViewController, Activities } from '../../contexts'
 
-export const ScreenSaverActivity: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
+export const ScreenSaverActivity: React.FC = () => {
+  const { navigateTo } = useViewController()
   const handleBackClick = () => {
-    activeActivitySetter(Activities.main)
+    navigateTo(Activities.main)
   }
 
   return (

@@ -1,36 +1,28 @@
-import React, { useState } from 'react'
+import React from 'react'
 import MainActivity from './Activities/Main/MainActivity'
 import SettingsActivity from './Activities/Settings/SettingsActivity'
 import ScreenSaverActivity from './Activities/ScreenSaver/ScreenSaverActivity'
+import { ViewProvider, useViewController, Activities } from './contexts/ViewContext'
 
-export enum Activities {
-    main,
-    settings,
-    screensaver
-}
-
+// Keep the interface for backward compatibility with existing Activities
 export interface IActivityProps {
-    activeActivitySetter: React.Dispatch<React.SetStateAction<Activities>>
+    activeActivitySetter?: React.Dispatch<React.SetStateAction<Activities>>
 }
 
-
-export default function App() {
-    const [activeActivity, setActiveActivity] = useState(Activities.main)
+function AppContent() {
+    const { currentView } = useViewController()
 
     const renderActivity = () => {
-        const activityProps: IActivityProps = {
-            activeActivitySetter: setActiveActivity
-        }
 
-        switch (activeActivity) {
+        switch (currentView) {
             case Activities.main:
-                return <MainActivity {...activityProps} />
+                return <MainActivity  />
             case Activities.settings:
-                return <SettingsActivity {...activityProps} />
+                return <SettingsActivity />
             case Activities.screensaver:
-                return <ScreenSaverActivity {...activityProps} />
+                return <ScreenSaverActivity  />
             default:
-                return <MainActivity {...activityProps} />
+                return <MainActivity />
         }
     }
 
@@ -55,5 +47,13 @@ export default function App() {
                 {renderActivity()}
             </div>
         </div>
+    )
+}
+
+export default function App() {
+    return (
+        <ViewProvider initialView={Activities.main}>
+            <AppContent />
+        </ViewProvider>
     )
 }

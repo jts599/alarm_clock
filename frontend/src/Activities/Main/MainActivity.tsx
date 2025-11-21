@@ -4,10 +4,9 @@ import NextEventComponent from '../../Components/NextEventComponent'
 import LightStatusComponent from '../../Components/LightStatusComponent'
 import TimeComponent from '../../Components/TimeComponent'
 import LightControlComponent from '../../Components/LightControlComponent'
-import { IActivityProps } from '../../App'
 import './MainActivity.css'
 
-export const MainActivity: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
+export const MainActivity: React.FC = () => {
   return (
     <div className="main-activity">
       {/* Main time display - center of screen */}
@@ -27,7 +26,7 @@ export const MainActivity: React.FC<IActivityProps> = ({ activeActivitySetter })
           <NextEventComponent />
         </div>
         <div className="light-control-container">
-          <LightControlComponent activeActivitySetter={activeActivitySetter} />
+          <LightControlComponent />
         </div>
       </div>
     </div>

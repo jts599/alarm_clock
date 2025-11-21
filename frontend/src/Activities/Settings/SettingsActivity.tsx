@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Activities, IActivityProps } from '../../App'
+import { useViewController, Activities } from '../../contexts'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker'
@@ -10,7 +10,8 @@ import DurationInputs from '../../Components/SettingsControls/DurationInputs'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
 import './SettingsActivity.css'
 
-export const SettingsActivity: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
+export const SettingsActivity: React.FC = () => {
+  const { navigateTo } = useViewController()
   const [alarmTime, setAlarmTime] = useState<Dayjs | null>(dayjs().hour(7).minute(0))
   const [selectedDays, setSelectedDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
   const [transitionLength, setTransitionLength] = useState<number>(30)
@@ -48,7 +49,7 @@ export const SettingsActivity: React.FC<IActivityProps> = ({ activeActivitySette
   }, [])
 
   const handleBackClick = () => {
-    activeActivitySetter(Activities.main)
+    navigateTo(Activities.main)
   }
 
   const handleTimeChange = (newTime: Dayjs | null) => {
@@ -100,7 +101,7 @@ export const SettingsActivity: React.FC<IActivityProps> = ({ activeActivitySette
       await settingsClient.updateUserSettings(settings)
       
       // Navigate back to main activity on successful save
-      activeActivitySetter(Activities.main)
+      navigateTo(Activities.main)
     } catch (error) {
       console.error('Failed to save settings:', error)
       // TODO: Show error message to user

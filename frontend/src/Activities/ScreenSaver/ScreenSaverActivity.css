@@ -1,6 +1,7 @@
 @import '../../shared.css';
 
 .screensaver-activity {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,11 +10,27 @@
   background: var(--bg-screensaver);
   color: var(--text-primary);
   cursor: pointer;
-  border-radius: var(--radius-md);
 }
 
 .screensaver-content {
-  text-align: center;
+  position: relative;
+  display: flex;
+}
+
+.screensaver-clock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11vw;
+  font-weight: 500;
+  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
+  color: #050047;
+  overflow: visible;
+  box-sizing: border-box;
+  padding: 1rem;
+  white-space: nowrap;
+  transition: left 5s ease-in-out, top 5s ease-in-out;
+  
 }
 
 .screensaver-content p:first-child {

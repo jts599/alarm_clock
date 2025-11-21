@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { AlarmStateApi } from '../../../../shared/api/generated/apis/AlarmStateApi'
-import { Activities, IActivityProps } from '../../App'
+import { useViewController, Activities } from '../../contexts'
 import './LightControlComponent.css'
 import { CreateLightOverrideRequest } from '../../../../shared/api/generated'
 import {  alarmApi } from '../../clients/StateClient'
 
-export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
+export const LightControlComponent: React.FC = () => {
+    const { navigateTo } = useViewController()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [duration, setDuration] = useState<number>(5) // Default 5 minutes
 
@@ -25,7 +26,7 @@ export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivity
     }
 
     const handleSettings = () => {
-        activeActivitySetter(Activities.settings)
+        navigateTo(Activities.settings)
     }
 
     const handleDurationAdjust = () => {

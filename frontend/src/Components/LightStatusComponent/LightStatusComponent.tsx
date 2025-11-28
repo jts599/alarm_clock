@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './LightStatusComponent.css'
 import { useActiveBulbsCount, useNextAlarmEvent } from '../../hooks/useStateSummary'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 
 export const LightStatusComponent: React.FC = () => {
 

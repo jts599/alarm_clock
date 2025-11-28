@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult, UseQueryOptions } from '@tanstack/react-query'
-import { fetchStateSummary } from '../clients/StateClient'
+import { fetchStateSummary } from '../Clients/StateClient'
 import { AlarmStateSummary, AlarmEventInfo, WeatherResponse, LightOverrideState } from '../../../shared/api/generated/models'
 
 export function useStateSummary(pollIntervalMs = 1000): UseQueryResult<AlarmStateSummary, Error> {

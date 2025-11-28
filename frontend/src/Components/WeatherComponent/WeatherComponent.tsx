@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useWeather } from '../../hooks/useStateSummary'
 import './WeatherComponent.css'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 import { SingleDayForecast, WeatherResponse } from '../../../../shared/api/generated'
 import { Icon } from '../Icon'
 

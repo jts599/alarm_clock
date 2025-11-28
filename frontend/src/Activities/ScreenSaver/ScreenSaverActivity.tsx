@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react'
 import './ScreenSaverActivity.css'
 import { useViewController, Activities } from '../../contexts'
 import { useCurrentTime } from '../../hooks/useStateSummary'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 
 export const ScreenSaverActivity: React.FC = () => {
   const { navigateTo } = useViewController()

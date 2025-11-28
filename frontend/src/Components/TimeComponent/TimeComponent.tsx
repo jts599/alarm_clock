@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './TimeComponent.css'
 import { useCurrentTime } from '../../hooks/useStateSummary'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 
 export const TimeComponent: React.FC = () => {
     const { data, isLoading, isError, error } = useCurrentTime(1000)

@@ -3,7 +3,7 @@ import { AlarmStateApi } from '../../../../shared/api/generated/apis/AlarmStateA
 import { useViewController, Activities } from '../../contexts'
 import './LightControlComponent.css'
 import { CreateLightOverrideRequest } from '../../../../shared/api/generated'
-import {  alarmApi } from '../../clients/StateClient'
+import {  alarmApi } from '../../Clients/StateClient'
 
 export const LightControlComponent: React.FC = () => {
     const { navigateTo } = useViewController()

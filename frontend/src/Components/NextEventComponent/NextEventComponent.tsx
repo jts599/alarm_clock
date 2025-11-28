@@ -1,7 +1,7 @@
 import { useNextAlarmEvent } from '../../hooks/useStateSummary'
 import './NextEventComponent.css'
 import { AlarmEventInfo, EventType } from '../../../../shared/api/generated'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 
 export const NextEventComponent: React.FC = () => {
     const { data: eventInfo, isLoading, isError, error } = useNextAlarmEvent(1000)

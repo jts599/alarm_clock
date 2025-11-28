@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using AlarmClock.Backend.Services;
-using AlarmClock.Backend.Services.Stubs;
 using AlarmClock.Backend.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,16 +54,6 @@ if (runConfig?.StubLifx == true)
 else
 {
     builder.Services.AddSingleton<ILifxService, LifxService>();
-}
-
-// Register LLM service conditionally based on configuration
-if (runConfig?.StubLifx == true) // Use same flag for simplicity, or add separate StubLlm flag
-{
-    builder.Services.AddSingleton<ILlmService, StubLlmService>();
-}
-else
-{
-    builder.Services.AddSingleton<ILlmService, LlmService>();
 }
 
 // Register ConfigurableColorPickingServiceConstructionParameters to be created via DI

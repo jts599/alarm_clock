@@ -9,7 +9,6 @@ Name | Type
 `numberOfActiveBulbs` | number
 `currentTime` | Date
 `nextAlarmEvent` | [AlarmEventInfo](AlarmEventInfo.md)
-`weatherForecast` | [WeatherResponse](WeatherResponse.md)
 `lightOverrideState` | [LightOverrideState](LightOverrideState.md)
 
 ## Example
@@ -22,7 +21,6 @@ const example = {
   "numberOfActiveBulbs": null,
   "currentTime": null,
   "nextAlarmEvent": null,
-  "weatherForecast": null,
   "lightOverrideState": null,
 } satisfies AlarmStateSummary
 

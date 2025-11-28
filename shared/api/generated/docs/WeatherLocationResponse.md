@@ -1,22 +1,24 @@
 
-# WeatherResponse
+# WeatherLocationResponse
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`forecasts` | [Array&lt;SingleDayForecast&gt;](SingleDayForecast.md)
+`longitude` | number
+`latitude` | number
 
 ## Example
 
 ```typescript
-import type { WeatherResponse } from ''
+import type { WeatherLocationResponse } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "forecasts": null,
-} satisfies WeatherResponse
+  "longitude": null,
+  "latitude": null,
+} satisfies WeatherLocationResponse
 
 console.log(example)
 
@@ -25,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as WeatherResponse
+const exampleParsed = JSON.parse(exampleJSON) as WeatherLocationResponse
 console.log(exampleParsed)
 ```
 

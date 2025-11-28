@@ -37,19 +37,25 @@ const ScreensaverClock: React.FC = () => {
   const formatTime = (date: Date) => {
     const hours = date.getHours()
     const minutes = date.getMinutes()
-    const isPM = hours >= 12
     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours
     const displayMinutes = minutes.toString().padStart(2, '0')
     
-    return `${displayHours}:${displayMinutes} ${isPM ? 'PM' : 'AM'}`
+    return `${displayHours}:${displayMinutes}`
+  }
+
+  const amPm = (date: Date) => {
+    return date.getHours() >= 12 ? 'PM' : 'AM'
   }
 
   let timeString: string
+  let amPmString: string
 
   if (isLoading || isARealError(isError, error) || !data) {
     timeString = formatTime(new Date())
+    amPmString = amPm(new Date())
   } else {
     timeString = formatTime(data)
+    amPmString = amPm(data)
   }
 
   useEffect(() => {
@@ -65,7 +71,10 @@ const ScreensaverClock: React.FC = () => {
 
   return (
       <div className="screensaver-clock" style={{ position: 'absolute', left: `${position.xPos}%`, top: `${position.yPos}%`, width: "75%", height: "75%" }}>
-        {timeString}
+        <div>
+          <span>{timeString}</span>
+          <span style={{ fontSize: '0.4em', marginLeft: '0.3em', alignSelf: 'flex-end', marginBottom: '0.1em' }}>{amPmString}</span>
+        </div>
       </div>
   )
 }

@@ -19,12 +19,19 @@ export const ScreenSaverActivity: React.FC = () => {
   )
 }
 
+const randomPosition = () => {
+  return {
+    x: Math.random() * 20 + 5, // between 5% and 25%
+    y: Math.random() * 20 + 5  // between 5% and 25%
+  }
+}
 
 const ScreensaverClock: React.FC = () => { 
   const { data, isLoading, isError, error } = useCurrentTime(1000)
+  const initialPosition = useMemo(() => randomPosition(), [])
   const [position, setPosition] = React.useState({ 
-    xPos: Math.random() * 40 + 10, 
-    yPos: Math.random() * 40 + 10 
+    xPos: initialPosition.x, 
+    yPos: initialPosition.y 
   })
 
   const formatTime = (date: Date) => {
@@ -48,15 +55,16 @@ const ScreensaverClock: React.FC = () => {
   useEffect(() => {
     // Update position when the time string changes (every minute)
     if (timeString && timeString.includes("00")) {
+      const newPosition = randomPosition()
       setPosition({
-        xPos: Math.random() * 40 + 10,
-        yPos: Math.random() * 40 + 10
+        xPos: newPosition.x,
+        yPos: newPosition.y
       })
     }
   }, [timeString])
 
   return (
-      <div className="screensaver-clock" style={{ position: 'absolute', left: `${position.xPos}%`, top: `${position.yPos}%`, width: "50%", height: "50%" }}>
+      <div className="screensaver-clock" style={{ position: 'absolute', left: `${position.xPos}%`, top: `${position.yPos}%`, width: "75%", height: "75%" }}>
         {timeString}
       </div>
   )

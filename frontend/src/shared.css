@@ -2,6 +2,9 @@
    SHARED STYLES - ALARM FRONTEND
    ======================================== */
 
+/* Import Fonts */
+@import './assets/fonts/fonts.css';
+
 /* Color Variables */
 :root {
   /* Background Colors */

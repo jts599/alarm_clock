@@ -4,6 +4,7 @@ import { useViewController, Activities } from '../../contexts'
 import './LightControlComponent.css'
 import { CreateLightOverrideRequest } from '../../../../shared/api/generated'
 import {  alarmApi } from '../../Clients/StateClient'
+import { Icon, Icons } from '../Icon'
 
 export const LightControlComponent: React.FC = () => {
     const { navigateTo } = useViewController()
@@ -37,6 +38,8 @@ export const LightControlComponent: React.FC = () => {
         setDuration(durations[nextIndex])
     }
 
+    const lightIconName = Icons.Lights.LIGHTS_ON
+
     return (
         <div className="light-control-component">
             <div className="control-container">
@@ -45,7 +48,9 @@ export const LightControlComponent: React.FC = () => {
                     onClick={handleTurnOnLight}
                     disabled={isLoading}
                 >
-                    <div className="button-icon">💡</div>
+                    <div className="button-icon">
+                        <Icon name={lightIconName} size={64} />
+                    </div>
                 </button>
 
                 <div className="right-buttons">
@@ -53,7 +58,9 @@ export const LightControlComponent: React.FC = () => {
                         className="settings-button"
                         onClick={handleSettings}
                     >
-                        <div className="button-icon">⚙️</div>
+                        <div className="button-icon">
+                            <Icon name={Icons.SETTINGS} size={48} />
+                        </div>
                     </button>
 
                     <button 

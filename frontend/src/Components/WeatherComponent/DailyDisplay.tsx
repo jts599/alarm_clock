@@ -58,13 +58,10 @@ export const StandaloneForecast: React.FC<ISingleDayForecastProps> = (props) => 
     const { iconName, precipProbability, temperatureHigh, temperatureLow, dayOfWeek, dateString } = props;
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <div>
-                {dayOfWeek}, {dateString}
-            </div>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
                 {/*Side by side*/}
                 <div>
-                    <Icon name={iconName} size={48} />
+                    <Icon name={iconName} size={64} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {/*Stack*/}
@@ -74,7 +71,7 @@ export const StandaloneForecast: React.FC<ISingleDayForecastProps> = (props) => 
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.25rem' }}>
                         {/*Side by side*/}
                         <div>
-                            <Icon name={Icons.Weather.RAINDROPS} size={16} />
+                            <Icon name={Icons.Weather.RAINDROP} size={20} />
                         </div>
                         <div>{precipProbability}%</div>
                     </div>

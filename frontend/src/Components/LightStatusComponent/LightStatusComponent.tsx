@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './LightStatusComponent.css'
 import { useActiveBulbsCount, useNextAlarmEvent } from '../../hooks/useStateSummary'
 import { isARealError } from '../../Clients/StateClient'
+import { Icon, Icons } from '../Icon'
 
 export const LightStatusComponent: React.FC = () => {
 
@@ -43,7 +44,7 @@ const LightStatusComponentDisplay: React.FC<{ nBulbs: number }> = ({ nBulbs }) =
     return (
         <div className="light-status-content">
             <div className="light-icon">
-                💡
+                <Icon name={Icons.Lights.LIGHTBULB} size={32} />
             </div>
             <div className="light-count">
                 {nBulbs}

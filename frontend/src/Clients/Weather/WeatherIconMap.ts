@@ -16,15 +16,14 @@
 import { Icons } from '../../Components/Icon'
 
 
-export function MapWeatherCodeToIcon(weatherCode: number, time: Date): string {
+export function MapWeatherCodeToIcon(weatherCode: number, time: Date, sunriseTime: Date, sunsetTime: Date): string {
     // Mapping based on Open-Meteo weather codes
-    const useNightIcon = (date: Date): boolean => {
-        const hour = date.getHours();
-        return hour < 6 || hour >= 18;
+    const useNightIcon = (date: Date, sunriseTime: Date, sunsetTime: Date): boolean => {
+        return date < sunriseTime || date >= sunsetTime;
     }
 
    
-    if (useNightIcon(time)) {
+    if (useNightIcon(time, sunriseTime, sunsetTime)) {
         return nightTimeWeatherCodeMap[weatherCode] || Icons.Weather.NA
     } else {
         return DayTimeWeatherCodeMap[weatherCode] || Icons.Weather.NA

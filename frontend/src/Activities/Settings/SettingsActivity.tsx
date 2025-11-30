@@ -5,10 +5,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker'
 import { ThemeProvider, createTheme } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
-import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker'
-import DurationInputs from '../../Components/SettingsControls/DurationInputs'
+import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker/DaysOfWeekPicker'
+import DurationInputs from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
 import './SettingsActivity.css'
+import { Icon, Icons } from '../../Components/Icon'
 
 export const SettingsActivity: React.FC = () => {
   const { navigateTo } = useViewController()
@@ -56,26 +57,23 @@ export const SettingsActivity: React.FC = () => {
     setAlarmTime(newTime)
     if (newTime) {
       console.log('New alarm time:', newTime.format('HH:mm'))
-      // TODO: Save to settings client
     }
   }
 
   const handleDaysChange = (days: string[]) => {
     setSelectedDays(days)
     console.log('Selected days:', days)
-    // TODO: Save to settings client
   }
 
   const handleTransitionLengthChange = (value: number) => {
     setTransitionLength(value)
     console.log('Transition length:', value, 'minutes')
-    // TODO: Save to settings client
+
   }
 
   const handleDaylightTimeChange = (value: number) => {
     setDaylightTime(value)
     console.log('Daylight time:', value, 'minutes')
-    // TODO: Save to settings client
   }
 
   const handleSave = async () => {
@@ -104,7 +102,6 @@ export const SettingsActivity: React.FC = () => {
       navigateTo(Activities.main)
     } catch (error) {
       console.error('Failed to save settings:', error)
-      // TODO: Show error message to user
     } finally {
       setIsSaving(false)
     }
@@ -181,9 +178,14 @@ export const SettingsActivity: React.FC = () => {
       
       <div className="settings-content">
         {isLoading ? (
-          <div className="loading-container" style={{ textAlign: 'center', padding: '2rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-            <div>Loading settings...</div>
+          <div className="loading-container" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '100%', 
+            width: '100%' 
+          }}>
+            <Icon name={Icons.LOADING} size={400} />
           </div>
         ) : (
           <>
@@ -191,16 +193,18 @@ export const SettingsActivity: React.FC = () => {
               <h2 className="centered-title">Alarm Time</h2>
               <ThemeProvider theme={darkTheme}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <StaticTimePicker
-                    value={alarmTime}
-                    onChange={handleTimeChange}
-                    ampm={true}
-                    views={['hours', 'minutes']}
-                    openTo="hours"
-                    slotProps={{
-                      actionBar: { actions: [] }
-                    }}
-                  />
+                  <div style={{ transform: 'scale(1.5)', transformOrigin: 'center top' }}>
+                    <StaticTimePicker
+                      value={alarmTime}
+                      onChange={handleTimeChange}
+                      ampm={true}
+                      views={['hours', 'minutes']}
+                      openTo="hours"
+                      slotProps={{
+                        actionBar: { actions: [] }
+                      }}
+                    />
+                  </div>
                 </LocalizationProvider>
               </ThemeProvider>
             </div>
@@ -227,11 +231,18 @@ export const SettingsActivity: React.FC = () => {
       
       <div className="action-buttons">
         <button className="cancel-button" onClick={handleBackClick} disabled={isSaving}>
-          <span className="button-icon">✕</span>
+          <span className="button-icon">
+            <Icon name={Icons.CANCEL} />
+            </span>
           <span className="button-text">Cancel</span>
         </button>
         <button className="save-button" onClick={handleSave} disabled={isSaving || isLoading}>
-          <span className="button-icon">{isSaving ? '⏳' : '💾'}</span>
+          <span className="button-icon">
+            {isSaving ? 
+              <Icon name={Icons.LOADING}  /> : 
+              <Icon name={Icons.SAVE}  />
+            }
+          </span>
           <span className="button-text">{isSaving ? 'Saving...' : 'Save'}</span>
         </button>
       </div>

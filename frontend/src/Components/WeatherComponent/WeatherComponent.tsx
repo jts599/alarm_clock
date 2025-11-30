@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { useWeather } from '../../hooks/useStateSummary'
+import React from 'react'
 import './WeatherComponent.css'
-import { isARealError } from '../../clients/StateClient'
-import { SingleDayForecast, WeatherResponse } from '../../../../shared/api/generated'
-import { Icon } from '../Icon'
+import { isARealError } from '../../Clients/StateClient'
+import { useWeatherForecast } from '../../hooks/useWeatherForecast'
+import { SingleDayDisplay, DailyDisplayMode } from './DailyDisplay'
 
 export const WeatherComponent: React.FC = () => {
-    const { data: forecast, isLoading, isError, error } = useWeather()
+    const { data: forecast, isLoading, isError, error } = useWeatherForecast()
 
     if (isLoading) {
         return (
@@ -16,48 +15,22 @@ export const WeatherComponent: React.FC = () => {
         )
     }
 
-
-    if (shouldShowErrorCase(isError, error, forecast)) {
-        console.error('Error fetching weather data:', error);
-        return <></>;
+    if (isARealError(isError, error) || !forecast) {
+        console.error('Error fetching weather data:', error)
+        return <></>
     }
 
-    //The bang operator is safe here because of the check above
-    const todaysForecast: SingleDayForecast | undefined | null = forecast?.forecasts![0];
+    const todaysForecast = forecast.dailyForecasts[0]
 
     if (!todaysForecast) {
-        return <></>;
+        return <></>
     }
 
     return (
         <div className="weather-component">
-            <div className="weather-content">
-                <div className="weather-icon">
-                    <Icon name={todaysForecast.iconName!} size={48} />
-                </div>
-
-                <div className="weather-details">
-                    <div className="temperature-range">
-                        <span className="high-temp">{todaysForecast.highTemperatureF}°</span>
-                        <span className="temp-separator">/</span>
-                        <span className="low-temp">{todaysForecast.lowTemperatureF}°</span>
-                    </div>
-
-                    <div className="precipitation">
-                        <span className="precipitation-icon">🌧️</span>
-                        <span className="precipitation-chance">00%</span>
-                    </div>
-                </div>
-            </div>
+            <SingleDayDisplay singleDayForecast={todaysForecast} displayMode={DailyDisplayMode.StandaloneForecast} />
         </div>
     )
-}
-
-function shouldShowErrorCase(isError: boolean, error: Error | null, forecast: WeatherResponse | undefined): boolean {
-    if (isARealError(isError, error) || forecast === undefined || forecast.forecasts?.length === 0) {
-        return true;
-    }
-    return false;
 }
 
 export default WeatherComponent

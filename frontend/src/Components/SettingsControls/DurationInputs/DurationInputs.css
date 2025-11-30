@@ -1,4 +1,4 @@
-@import '../../shared.css';
+@import '../../../shared.css';
 
 .duration-inputs {
   display: flex;
@@ -67,6 +67,14 @@
   width: 60px;
   outline: none;
   text-align: center;
+}
+
+.duration-input-readonly {
+  cursor: pointer;
+}
+
+.duration-input-readonly:hover {
+  color: var(--primary-color, #4a90e2);
 }
 
 .duration-input::-webkit-outer-spin-button,

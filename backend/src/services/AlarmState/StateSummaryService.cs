@@ -32,8 +32,7 @@ namespace AlarmClock.Backend.Services
                 CurrentTime = currentTime,
                 NextAlarmEvent = (await _lightStateService.GetCurrentColorPickerCopy()).NextEvent(currentTime),
                 LightOverrideState = currentOverride,
-                NumberOfActiveBulbs = await _lifxService.GetNumberOfBulbsAsync(),
-                WeatherForecast = null // Placeholder; integrate with weather service as needed
+                NumberOfActiveBulbs = await _lifxService.GetNumberOfBulbsAsync()
             };
             return summary;
         }

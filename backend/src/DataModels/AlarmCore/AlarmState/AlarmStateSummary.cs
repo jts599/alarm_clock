@@ -20,10 +20,6 @@ namespace AlarmClock.Backend.DataModels.AlarmCore
         /// </summary>
         public AlarmEventInfo NextAlarmEvent { get; set; }
 
-        /// <summary>
-        /// Weather forecast information
-        /// </summary>
-        public WeatherResponse WeatherForecast { get; set; }
 
         /// <summary>
         /// Info about currently applied override and whether the light is currently on

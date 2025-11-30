@@ -3,7 +3,7 @@
 .weather-component {
     background: var(--bg-transparent);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     color: var(--text-primary);
     min-width: 180px;
     max-width: 220px;

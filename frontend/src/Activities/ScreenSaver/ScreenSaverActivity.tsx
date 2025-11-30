@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react'
 import './ScreenSaverActivity.css'
 import { useViewController, Activities } from '../../contexts'
 import { useCurrentTime } from '../../hooks/useStateSummary'
-import { isARealError } from '../../clients/StateClient'
+import { isARealError } from '../../Clients/StateClient'
 
 export const ScreenSaverActivity: React.FC = () => {
   const { navigateTo } = useViewController()
@@ -19,45 +19,62 @@ export const ScreenSaverActivity: React.FC = () => {
   )
 }
 
+const randomPosition = () => {
+  return {
+    x: Math.random() * 20 + 5, // between 5% and 25%
+    y: Math.random() * 20 + 5  // between 5% and 25%
+  }
+}
 
 const ScreensaverClock: React.FC = () => { 
   const { data, isLoading, isError, error } = useCurrentTime(1000)
+  const initialPosition = useMemo(() => randomPosition(), [])
   const [position, setPosition] = React.useState({ 
-    xPos: Math.random() * 40 + 10, 
-    yPos: Math.random() * 40 + 10 
+    xPos: initialPosition.x, 
+    yPos: initialPosition.y 
   })
 
   const formatTime = (date: Date) => {
     const hours = date.getHours()
     const minutes = date.getMinutes()
-    const isPM = hours >= 12
     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours
     const displayMinutes = minutes.toString().padStart(2, '0')
     
-    return `${displayHours}:${displayMinutes} ${isPM ? 'PM' : 'AM'}`
+    return `${displayHours}:${displayMinutes}`
+  }
+
+  const amPm = (date: Date) => {
+    return date.getHours() >= 12 ? 'PM' : 'AM'
   }
 
   let timeString: string
+  let amPmString: string
 
   if (isLoading || isARealError(isError, error) || !data) {
     timeString = formatTime(new Date())
+    amPmString = amPm(new Date())
   } else {
     timeString = formatTime(data)
+    amPmString = amPm(data)
   }
 
   useEffect(() => {
     // Update position when the time string changes (every minute)
     if (timeString && timeString.includes("00")) {
+      const newPosition = randomPosition()
       setPosition({
-        xPos: Math.random() * 40 + 10,
-        yPos: Math.random() * 40 + 10
+        xPos: newPosition.x,
+        yPos: newPosition.y
       })
     }
   }, [timeString])
 
   return (
-      <div className="screensaver-clock" style={{ position: 'absolute', left: `${position.xPos}%`, top: `${position.yPos}%`, width: "50%", height: "50%" }}>
-        {timeString}
+      <div className="screensaver-clock" style={{ position: 'absolute', left: `${position.xPos}%`, top: `${position.yPos}%`, width: "75%", height: "75%" }}>
+        <div>
+          <span>{timeString}</span>
+          <span style={{ fontSize: '0.4em', marginLeft: '0.3em', alignSelf: 'flex-end', marginBottom: '0.1em' }}>{amPmString}</span>
+        </div>
       </div>
   )
 }

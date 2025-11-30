@@ -33,6 +33,7 @@
   flex-direction: column;
   animation: slideUp 0.3s ease-out;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 @keyframes slideUp {
@@ -95,7 +96,7 @@
   flex-shrink: 1;
   min-height: 0;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .numpad-button {

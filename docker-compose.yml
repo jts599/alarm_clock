@@ -47,6 +47,7 @@ services:
       - models-data:/app/models # Persistent models volume
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /sys/class/backlight:/sys/class/backlight
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000

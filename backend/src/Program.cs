@@ -56,6 +56,16 @@ else
     builder.Services.AddSingleton<ILifxService, LifxService>();
 }
 
+// Register Brightness service conditionally based on configuration
+if (runConfig?.StubBrightness == true)
+{
+    builder.Services.AddSingleton<IBrightnessService, MockBrightnessService>();
+}
+else
+{
+    builder.Services.AddSingleton<IBrightnessService, RaspberryPiBrightnessService>();
+}
+
 // Register ConfigurableColorPickingServiceConstructionParameters to be created via DI
 builder.Services.AddTransient<ConfigurableColorPickingServiceConstructionParameters>();
 

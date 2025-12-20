@@ -53,6 +53,7 @@ services:
       - models-data:/app/models
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /sys/class/backlight:/sys/class/backlight
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:5000

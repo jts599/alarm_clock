@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 using AlarmClock.Backend.Services;
 
 namespace Backend.Controllers
@@ -37,22 +38,24 @@ namespace Backend.Controllers
         }
 
         [HttpGet("color")]
-        public IActionResult GetColorSimulation()
+        public async Task<IActionResult> GetColorSimulation()
         {
             // Get the current color from the LightStateService
-            var currentColor = _lightStateService.GetCurrentColor();
+            var currentColor = await _lightStateService.GetCurrentColor();
             int[] rgb = ColorUtils.GetRgbFromTemperature(currentColor.Kelvin);
 
             int scaledRed = (int)(rgb[0] * currentColor.Color.R / 255.0);
             int scaledGreen = (int)(rgb[1] * currentColor.Color.G / 255.0);
             int scaledBlue = (int)(rgb[2] * currentColor.Color.B / 255.0);
+            DateTime scaledTime = await _lightStateService.GetScaledTime();
 
             return Ok(new
             {
                 red = scaledRed,
                 green = scaledGreen,
                 blue = scaledBlue,
-                currentTimeString = _lightStateService.GetScaledTime().ToString("HH:mm")
+                currentTimeString = scaledTime.ToString("HH:mm"),
+                currentDateString = scaledTime.ToString("dddd MM-dd-yyyy")
             });
         }
 
@@ -91,7 +94,7 @@ namespace Backend.Controllers
                                 const response = await fetch('/api/status/color');
                                 const data = await response.json();
                                 document.body.style.backgroundColor = `rgb(${data.red}, ${data.green}, ${data.blue})`;
-                                document.getElementById('status').innerText = `Current Time: ${data.currentTimeString} | Color RGB(${data.red}, ${data.green}, ${data.blue})`;
+                                document.getElementById('status').innerText = ` ${data.currentTimeString} | ${data.currentDateString} | Color RGB(${data.red}, ${data.green}, ${data.blue})`;
                             } catch (error) {
                                 console.error('Error fetching bulb color:', error);
                             }

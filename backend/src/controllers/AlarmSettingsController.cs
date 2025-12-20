@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using AlarmClock.Backend.Services;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlarmClock.Backend.Controllers
 {
@@ -17,13 +19,13 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpGet]
-        public ActionResult<UserSettingsDto> GetUserSettings()
+        public async Task<ActionResult<UserSettings>> GetUserSettings()
         {
             try
             {
-                var currentParameters = _lightStateService.GetCurrentParameters();
+                var currentParameters = await _lightStateService.GetCurrentParameters();
 
-                var settings = new UserSettingsDto
+                var settings = new UserSettings
                 {
                     AlarmTimeInMinutesSinceMidnight = currentParameters.AlarmTime.Hour * 60 + currentParameters.AlarmTime.Minute,
                     TransitionMinutes = currentParameters.TransitionMinutes,
@@ -40,7 +42,7 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpPut]
-        public ActionResult UpdateUserSettings([FromBody] UserSettingsDto settings)
+        public async Task<ActionResult> UpdateUserSettings([FromBody] UserSettings settings)
         {
             try
             {
@@ -72,7 +74,7 @@ namespace AlarmClock.Backend.Controllers
                 var newColorPickingService = new ConfigurableColorPickingService(newParameters);
 
                 // Swap the base color picker in the light state service
-                _lightStateService.SwapBaseColorPicker(newColorPickingService);
+                await _lightStateService.SwapBaseColorPicker(newColorPickingService);
 
                 return Ok(new { message = "Settings updated successfully" });
             }
@@ -87,20 +89,20 @@ namespace AlarmClock.Backend.Controllers
         }
 
         [HttpGet("status")]
-        public ActionResult<AlarmStatusDto> GetAlarmStatus()
+        public async Task<ActionResult<AlarmStatus>> GetAlarmStatus()
         {
             try
             {
-                var currentTime = _lightStateService.GetScaledTime();
-                var currentParameters = _lightStateService.GetCurrentParameters();
-                var isLightOn = _lightStateService.isLightCurrentlyOn();
-                var currentColor = _lightStateService.GetCurrentColor();
+                var currentTime = await _lightStateService.GetScaledTime();
+                var currentParameters = await _lightStateService.GetCurrentParameters();
+                var isLightOn = await _lightStateService.IsLightCurrentlyOn();
+                var currentColor = await _lightStateService.GetCurrentColor();
 
-                var status = new AlarmStatusDto
+                var status = new AlarmStatus
                 {
                     CurrentTime = currentTime,
                     IsLightCurrentlyOn = isLightOn,
-                    CurrentColor = new ColorDto
+                    CurrentColor = new Color
                     {
                         R = currentColor.Color.R,
                         G = currentColor.Color.G,
@@ -142,34 +144,5 @@ namespace AlarmClock.Backend.Controllers
 
             return alarmTimeToday;
         }
-    }
-
-    // DTOs matching the frontend interface
-    public class UserSettingsDto
-    {
-        public int AlarmTimeInMinutesSinceMidnight { get; set; }
-        public int TransitionMinutes { get; set; }
-        public int TurnOffAfterMinutes { get; set; }
-        public string[] EnabledDaysOfWeek { get; set; }
-    }
-
-    public class AlarmStatusDto
-    {
-        public DateTime CurrentTime { get; set; }
-        public bool IsLightCurrentlyOn { get; set; }
-        public ColorDto CurrentColor { get; set; }
-        public DateTime NextAlarmTime { get; set; }
-        public TimeOnly AlarmTime { get; set; }
-        public int TransitionMinutes { get; set; }
-        public int HoldOnMinutes { get; set; }
-        public string[] ActiveDays { get; set; }
-    }
-
-    public class ColorDto
-    {
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
-        public ushort Kelvin { get; set; }
     }
 }

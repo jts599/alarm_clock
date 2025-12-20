@@ -1,4 +1,5 @@
 using System;
+using AlarmClock.Backend.DataModels.AlarmCore;
 using Microsoft.Identity.Client;
 namespace AlarmClock.Backend.Services
 {
@@ -72,7 +73,7 @@ namespace AlarmClock.Backend.Services
         /// e.g. "On until 7:30 AM" or "Next Alarm at 6:30 AM"
         /// </summary>
         /// <returns></returns>
-        string Status(DateTime time);
+        AlarmEventInfo NextEvent(DateTime time);
     }
 
     public interface IOverrideColorPickingService : IColorPickingService
@@ -102,7 +103,16 @@ namespace AlarmClock.Backend.Services
         /// <param name="colorPicker">The override color picker to add</param>
         void AddOverride(IOverrideColorPickingService colorPicker);
 
+        void ClearOverrideByGuid(string overrideGuid);
+
+        void ClearAllOverrides();
+
+        int GetOverrideCount();
+
+        LightOverrideState GetCurrentOverride();
+
         ICompositeColorPickingService ReconstructWithBase(IBaseColorPickingService baseColorPicker);
+        new ICompositeColorPickingService Clone();
     }
 
     public interface IConfigurableColorPickingServiceParameters
@@ -115,6 +125,7 @@ namespace AlarmClock.Backend.Services
 
     public interface IBaseColorPickingService : IColorPickingService
     {
+        IBaseColorPickingService Clone();
         IConfigurableColorPickingServiceParameters GetParameters();
     }
 

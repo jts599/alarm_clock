@@ -1,28 +1,90 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  # Model downloader - runs once to ensure models exist
+  model-init:
+    image: curlimages/curl:latest
+    volumes:
+      - models-data:/models
+    command: >
+      sh -c "
+        if [ ! -f /models/tinyllama-1.1b-chat.onnx ]; then
+          echo 'Downloading TinyLlama model...';
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/microsoft/TinyLlama-1.1B-Chat-v1.0-onnx/resolve/main/model.onnx' ||
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0/resolve/main/pytorch_model.bin';
+          echo 'Model downloaded successfully';
+        else
+          echo 'Model already exists, skipping download';
+        fi
+      "
+    restart: "no" # Only run once
+
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:${IMAGE_TAG:-latest}
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      model-init:
+        condition: service_completed_successfully
+      backend:
+        condition: service_started
     environment:
       - NODE_ENV=production
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}
+    network_mode: host
     volumes:
       - ./shared:/app/shared
+      - models-data:/app/models # Persistent models volume
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - TZ=${TZ:-UTC}
+      - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
+      - Llm__EnableLlm=true
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # Check for updates every 5 minutes (300 seconds)
+      - WATCHTOWER_POLL_INTERVAL=300
+      # Clean up old images after updating
+      - WATCHTOWER_CLEANUP=true
+      # Only update containers with the label
+      - WATCHTOWER_LABEL_ENABLE=true
+      # Include stopped containers
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    command: --interval 300 --cleanup
+
+volumes:
+  models-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/alarm-clock/models # Persistent location on Pi
 
 networks:
   default:

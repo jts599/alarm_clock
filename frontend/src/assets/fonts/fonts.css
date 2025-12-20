@@ -1,0 +1,8 @@
+/* 7-Segment Display Font */
+@font-face {
+  font-family: 'SevenSegment';
+  src: url('./Seven Segment.ttf') format('truetype');
+  font-weight: 1000;
+  font-style: normal;
+  font-display: swap;
+}

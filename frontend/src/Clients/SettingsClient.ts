@@ -1,6 +1,6 @@
 
 
-import { AlarmSettingsApi, UserSettingsDto, Configuration } from '../../../shared/api/generated'
+import { AlarmSettingsApi, UserSettings, Configuration } from '../../../shared/api/generated'
 
 export function GetSettingsClient(): ISettingsClient {
     return new RealSettingsClient()
@@ -36,10 +36,10 @@ export class RealSettingsClient implements ISettingsClient {
 
     async updateUserSettings(settings: IUserSettings): Promise<void> {
         const dto = this.mapUserSettingsToDto(settings)
-        await this.api.apiAlarmSettingsPut({ userSettingsDto: dto })
+        await this.api.apiAlarmSettingsPut({ userSettings: dto })
     }
 
-    private mapDtoToUserSettings(dto: UserSettingsDto): IUserSettings {
+    private mapDtoToUserSettings(dto: UserSettings): IUserSettings {
         return {
             AlarmTimeInMinutesSinceMidnight: dto.alarmTimeInMinutesSinceMidnight ?? 0,
             transitionMinutes: dto.transitionMinutes ?? 0,
@@ -48,7 +48,7 @@ export class RealSettingsClient implements ISettingsClient {
         }
     }
 
-    private mapUserSettingsToDto(settings: IUserSettings): UserSettingsDto {
+    private mapUserSettingsToDto(settings: IUserSettings): UserSettings {
         return {
             alarmTimeInMinutesSinceMidnight: settings.AlarmTimeInMinutesSinceMidnight,
             transitionMinutes: settings.transitionMinutes,

@@ -2,12 +2,15 @@
    SHARED STYLES - ALARM FRONTEND
    ======================================== */
 
+/* Import Fonts */
+@import './assets/fonts/fonts.css';
+
 /* Color Variables */
 :root {
   /* Background Colors */
   --bg-primary: #2d2d2d;
   --bg-secondary: #1a1a1a;
-  --bg-screensaver: #1a1a1a;
+  --bg-screensaver: #000000;
   --bg-transparent: transparent;
   
   /* Text Colors */

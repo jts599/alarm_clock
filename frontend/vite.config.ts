@@ -18,5 +18,18 @@ export default defineConfig({
   preview: {
     port: 4173,
     host: true
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@mui')) return 'vendor-mui'
+            if (id.includes('lodash')) return 'vendor-lodash'
+            return 'vendor'
+          }
+        }
+      }
+    }
   }
 })

@@ -1,62 +1,53 @@
 import React, { useState, useEffect } from 'react'
-import { GetAlarmClient, IAlarmClient } from '../../Clients/AlarmClients'
 import './LightStatusComponent.css'
+import { useActiveBulbsCount, useNextAlarmEvent } from '../../hooks/useStateSummary'
+import { isARealError } from '../../Clients/StateClient'
+import { Icon, Icons } from '../Icon'
 
 export const LightStatusComponent: React.FC = () => {
-    const [activeBulbs, setActiveBulbs] = useState<number | null>(null)
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [error, setError] = useState<string | null>(null)
 
-    const alarmClient: IAlarmClient = GetAlarmClient()
+    const { data, error, isError, isLoading} = useActiveBulbsCount(1000);
 
-    useEffect(() => {
-        const fetchLightStatus = async () => {
-            try {
-                setIsLoading(true)
-                setError(null)
-                const bulbCount = await alarmClient.getNumberOfActiveBulbs()
-                setActiveBulbs(bulbCount)
-            } catch (err) {
-                setError('Failed to load light status')
-                console.error('Light status fetch error:', err)
-            } finally {
-                setIsLoading(false)
-            }
+    if (isARealError(isError, error)) {
+        if (error) {
+            console.error('Error fetching active bulbs count:', error);
         }
-
-        fetchLightStatus()
-
-        // Refresh light status every 30 seconds
-        const refreshInterval = setInterval(fetchLightStatus, 30 * 1000)
-
-        return () => clearInterval(refreshInterval)
-    }, [])
-
-    if (isLoading) {
         return (
-            <div className="light-status-component loading">
-                <div className="light-status-loading">Loading...</div>
-            </div>
+            <></>
         )
     }
+    return (
+        <LightStatusComponentContainer isLoading={isLoading} nBulbs={data ?? 0} />
+    )
+}
 
-    if (error) {
-        return (
-            <div className="light-status-component error">
-                <div className="light-status-error">{error}</div>
-            </div>
-        )
-    }
-
+/**
+ * Component container for light status
+ * @param param0 isLoading and number of bulbs
+ * @returns 
+ */
+const LightStatusComponentContainer: React.FC<{ isLoading: boolean; nBulbs: number }> = ({ isLoading, nBulbs }) => {
     return (
         <div className="light-status-component">
-            <div className="light-status-content">
-                <div className="light-icon">
-                    💡
+            {isLoading ? (
+                <div className="light-status-content">
+                    Loading... {/*TODO: Add spinner */}
                 </div>
-                <div className="light-count">
-                    {activeBulbs}
-                </div>
+            ) : (
+                <LightStatusComponentDisplay nBulbs={nBulbs} />
+            )}
+        </div>
+    )
+}
+
+const LightStatusComponentDisplay: React.FC<{ nBulbs: number }> = ({ nBulbs }) => {
+    return (
+        <div className="light-status-content">
+            <div className="light-icon">
+                <Icon name={Icons.Lights.LIGHTBULB} size={32} />
+            </div>
+            <div className="light-count">
+                {nBulbs}
             </div>
         </div>
     )

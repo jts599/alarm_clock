@@ -1,0 +1,98 @@
+version: "3.8"
+
+# Development/staging configuration for dev branch
+# Use with: docker-compose -f docker-compose.dev.yml up -d
+
+services:
+  # Model downloader - runs once to ensure models exist
+  model-init:
+    image: curlimages/curl:latest
+    volumes:
+      - models-data:/models
+    command: >
+      sh -c "
+        if [ ! -f /models/tinyllama-1.1b-chat.onnx ]; then
+          echo 'Downloading TinyLlama model...';
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/microsoft/TinyLlama-1.1B-Chat-v1.0-onnx/resolve/main/model.onnx' ||
+          curl -L -o /models/tinyllama-1.1b-chat.onnx 
+            'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0/resolve/main/pytorch_model.bin';
+          echo 'Model downloaded successfully';
+        else
+          echo 'Model already exists, skipping download';
+        fi
+      "
+    restart: "no"
+
+  frontend:
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:dev
+    container_name: alarm-clock-frontend-dev
+    ports:
+      - "3001:80" # Different port for dev
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+      backend:
+        condition: service_started
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  backend:
+    image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:dev
+    container_name: alarm-clock-backend-dev
+    ports:
+      - "5001:5000" # Different port for dev
+    volumes:
+      - ./shared:/app/shared
+      - models-data:/app/models
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - TZ=${TZ:-UTC}
+      - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
+      - Llm__EnableLlm=true
+      - Weather__Longitude=${WEATHER_LONGITUDE:--74.0060}
+      - Weather__Latitude=${WEATHER_LATITUDE:-40.7128}
+      - RunConfiguration__StubLifx=${STUB_LIFX:-true}
+      - RunConfiguration__FastTimescale=${FAST_TIMESCALE:-true}
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower-dev
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+    command: --interval 300 --cleanup
+
+volumes:
+  models-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/alarm-clock-dev/models
+
+networks:
+  default:
+    driver: bridge

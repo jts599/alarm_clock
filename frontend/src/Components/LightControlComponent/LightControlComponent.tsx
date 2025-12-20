@@ -1,28 +1,56 @@
 import React, { useState } from 'react'
-import { GetAlarmClient, IAlarmClient } from '../../Clients/AlarmClients'
-import { Activities, IActivityProps } from '../../App'
+import { AlarmStateApi } from '../../../../shared/api/generated/apis/AlarmStateApi'
+import { useViewController, Activities } from '../../contexts'
 import './LightControlComponent.css'
+import { CreateLightOverrideRequest } from '../../../../shared/api/generated'
+import {  alarmApi } from '../../Clients/StateClient'
+import { Icon, Icons } from '../Icon'
+import { useActiveBulbsCount, useOverrideStatus } from '../../hooks/useStateSummary'
 
-export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivitySetter }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+export const LightControlComponent: React.FC = () => {
+    const { navigateTo } = useViewController()
     const [duration, setDuration] = useState<number>(5) // Default 5 minutes
+    const [expectedOverrideId, setExpectedOverrideId] = useState<string | null | undefined>(undefined)
 
-    const alarmClient: IAlarmClient = GetAlarmClient()
+    const state = useOverrideStatus(1000)
+    const currentOverrideId = state.data?.overrideGuid ?? null
+
+    // Clear the loading state once the polled state matches our expectation
+    React.useEffect(() => {
+        if (expectedOverrideId !== undefined && currentOverrideId === expectedOverrideId) {
+            setExpectedOverrideId(undefined)
+        }
+    }, [currentOverrideId, expectedOverrideId])
+
+    const isLoading = expectedOverrideId !== undefined
 
     const handleTurnOnLight = async () => {
         try {
-            setIsLoading(true)
-            const nextEventTime = new Date(Date.now() + duration * 60 * 1000) // duration in minutes
-            await alarmClient.turnLightOnUntil(nextEventTime)
+            const turnOnUntilRequest: CreateLightOverrideRequest = {
+                minsToOverride: duration,
+            }
+            const response = await alarmApi.apiAlarmStateTurnOnUntilPost({ createLightOverrideRequest: turnOnUntilRequest })
+            setExpectedOverrideId(response.overrideGuid ?? null)
         } catch (err) {
             console.error('Failed to turn on light:', err)
-        } finally {
-            setIsLoading(false)
+            setExpectedOverrideId(undefined) // Clear loading on error
+        }
+    }
+
+    const handleTurnOffLight = async () => {
+        try {
+            if (currentOverrideId) {
+                await alarmApi.apiAlarmStateRemoveOverrideDelete({removeAlarmOverrideRequest: {overrideGuid: currentOverrideId }})
+                setExpectedOverrideId(null)
+            }
+        } catch (err) {
+            console.error('Failed to turn off light override:', err)
+            setExpectedOverrideId(undefined) // Clear loading on error
         }
     }
 
     const handleSettings = () => {
-        activeActivitySetter(Activities.settings)
+        navigateTo(Activities.settings)
     }
 
     const handleDurationAdjust = () => {
@@ -33,15 +61,20 @@ export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivity
         setDuration(durations[nextIndex])
     }
 
+    const lightIconName = currentOverrideId ? Icons.Lights.LIGHTS_OFF : Icons.Lights.LIGHTS_ON
+    const buttonAction = currentOverrideId ? handleTurnOffLight : handleTurnOnLight
+
     return (
         <div className="light-control-component">
             <div className="control-container">
                 <button 
                     className="light-on-button"
-                    onClick={handleTurnOnLight}
+                    onClick={buttonAction}
                     disabled={isLoading}
                 >
-                    <div className="button-icon">💡</div>
+                    <div className="button-icon">
+                        <Icon name={lightIconName} size={64} />
+                    </div>
                 </button>
 
                 <div className="right-buttons">
@@ -49,7 +82,9 @@ export const LightControlComponent: React.FC<IActivityProps> = ({ activeActivity
                         className="settings-button"
                         onClick={handleSettings}
                     >
-                        <div className="button-icon">⚙️</div>
+                        <div className="button-icon">
+                            <Icon name={Icons.SETTINGS} size={48} />
+                        </div>
                     </button>
 
                     <button 

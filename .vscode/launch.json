@@ -11,9 +11,9 @@
       "cwd": "${workspaceFolder}/backend",
       "stopAtEntry": false,
       "serverReadyAction": {
-        "action": "openExternally", 
-        "pattern": "\\bNow listening on:\\s+https?://\\[::\\]:(\\d+)",
-        "uriFormat": "http://localhost:%s/api/status/live"
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/api/status/live"
       },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -48,6 +48,7 @@ services:
     volumes:
       - ./shared:/app/shared
       - models-data:/app/models
+      - /sys/class/backlight:/sys/class/backlight
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000

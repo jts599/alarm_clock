@@ -9,6 +9,7 @@ namespace AlarmClock.Backend.Configuration
     public class RunConfiguration
     {
         public bool StubLifx { get; set; }
+        public bool StubBrightness { get; set; }
         public int TimescaleMultiplier { get; set; }
 
         public string StartTimeIso8601 { get; set; }

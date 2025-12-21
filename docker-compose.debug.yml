@@ -25,6 +25,7 @@ services:
       - .:/workspace
       - ./backend:/app/backend
       - ./shared:/app/shared
+      - /sys/class/backlight:/sys/class/backlight
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000

@@ -13,6 +13,37 @@
   overflow: hidden;
 }
 
+/* Theme variations based on background type */
+.settings-activity.bg-default {
+  /* Dark background (nighttime city) - light text on dark */
+  --text-color: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  --component-bg: rgba(0, 0, 0, 0.5);
+  --component-border: rgba(255, 255, 255, 0.15);
+  --component-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  --input-bg: rgba(0, 0, 0, 0.3);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --button-bg: rgba(255, 255, 255, 0.1);
+  --button-hover: rgba(255, 255, 255, 0.2);
+}
+
+.settings-activity.bg-custom {
+  /* Light background (daytime building) - dark text on light */
+  --text-color: #1a1a1a;
+  --text-primary: #1a1a1a;
+  --text-secondary: rgba(26, 26, 26, 0.7);
+  --text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+  --component-bg: rgba(255, 255, 255, 0.25);
+  --component-border: rgba(0, 0, 0, 0.15);
+  --component-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --input-bg: rgba(255, 255, 255, 0.3);
+  --input-border: rgba(0, 0, 0, 0.2);
+  --button-bg: rgba(255, 255, 255, 0.15);
+  --button-hover: rgba(255, 255, 255, 0.35);
+}
+
 .settings-header {
   display: flex;
   align-items: center;
@@ -38,10 +69,13 @@
 }
 
 .setting-section {
-  background: var(--bg-transparent);
+  background: var(--component-bg);
+  border: 1px solid var(--component-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   margin-bottom: var(--spacing-lg);
+  box-shadow: var(--component-shadow);
+  backdrop-filter: blur(10px);
 }
 
 .setting-section.time-picker {
@@ -101,14 +135,17 @@
 
 .cancel-button,
 .save-button {
-  background: var(--bg-transparent);
-  border: 1px solid var(--border-primary);
+  background: var(--component-bg);
+  border: 1px solid var(--component-border);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   cursor: pointer;
   padding: var(--spacing-md) var(--spacing-xl);
   font-family: var(--font-family-primary);
   font-size: var(--font-size-xl);
+  box-shadow: var(--component-shadow);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
   font-weight: var(--font-weight-medium);
   display: flex;
   align-items: center;
@@ -120,9 +157,8 @@
 
 .cancel-button:hover,
 .save-button:hover {
-  background: var(--hover-overlay);
+  background: var(--button-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cancel-button:active,

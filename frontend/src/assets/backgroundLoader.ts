@@ -10,6 +10,11 @@
 
 import defaultBackground from './background.jpg';
 
+export enum BackgroundType {
+    DEFAULT = 'default',
+    CUSTOM = 'custom'
+}
+
 // Dynamically import custom background if it exists
 // Using import.meta.glob to let Vite know about potential custom backgrounds
 const backgrounds = import.meta.glob<{ default: string }>('./background-custom.{jpg,jpeg,png,webp}', { 
@@ -20,7 +25,11 @@ const backgrounds = import.meta.glob<{ default: string }>('./background-custom.{
 // Get the first custom background if it exists
 const customBackground = Object.values(backgrounds)[0];
 
+export const configuredBackgroundType = customBackground ? BackgroundType.CUSTOM : BackgroundType.DEFAULT;
+
 // Export the appropriate background
-const backgroundImage = customBackground || defaultBackground;
+const backgroundImage = configuredBackgroundType === BackgroundType.DEFAULT
+  ? defaultBackground
+  : customBackground!;
 
 export default backgroundImage;

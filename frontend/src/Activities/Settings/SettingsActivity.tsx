@@ -8,12 +8,13 @@ import dayjs, { Dayjs } from 'dayjs'
 import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker/DaysOfWeekPicker'
 import DurationInputs from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
-import backgroundImage from '../../assets/backgroundLoader'
+import backgroundImage, { configuredBackgroundType } from '../../assets/backgroundLoader'
 import './SettingsActivity.css'
 import { Icon, Icons } from '../../Components/Icon'
 
 export const SettingsActivity: React.FC = () => {
   const { navigateTo } = useViewController()
+  const bgClass = `settings-activity bg-${configuredBackgroundType}`
   const [alarmTime, setAlarmTime] = useState<Dayjs | null>(dayjs().hour(7).minute(0))
   const [selectedDays, setSelectedDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
   const [transitionLength, setTransitionLength] = useState<number>(30)
@@ -174,7 +175,7 @@ export const SettingsActivity: React.FC = () => {
   })
 
   return (
-    <div className="settings-activity" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div className={bgClass} style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="settings-header">
       </div>
       

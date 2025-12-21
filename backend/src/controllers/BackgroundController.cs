@@ -4,11 +4,26 @@ using System.IO;
 
 namespace Backend.Controllers
 {
+    /// <summary>
+    /// Controller for serving custom background images.
+    /// Supports device-specific backgrounds that are mounted via Docker volumes or placed in the project root.
+    /// </summary>
+    /// <remarks>
+    /// The custom background is expected to be named "background-custom.jpg" and can be placed at:
+    /// - /app/background-custom.jpg (Docker production environment)
+    /// - ../background-custom.jpg (Local development, relative to backend directory)
+    /// 
+    /// This allows each device to have a unique background without committing it to source control.
+    /// The background is served through the API to avoid build-time detection issues with Vite's static analysis.
+    /// </remarks>
     [ApiController]
     [Route("api/[controller]")]
     public class BackgroundController : ControllerBase
     {
-        // Try multiple locations: Docker production path, then relative to project root
+        /// <summary>
+        /// Ordered list of potential locations for the custom background image.
+        /// The first existing file will be used.
+        /// </summary>
         private static readonly string[] CustomBackgroundPaths = new[]
         {
             "/app/background-custom.jpg",                    // Docker production
@@ -16,7 +31,11 @@ namespace Backend.Controllers
             Path.Combine(Directory.GetCurrentDirectory(), "..", "background-custom.jpg") // Absolute from current dir
         };
 
-        private string? GetCustomBackgroundPath()
+        /// <summary>
+        /// Searches for the custom background image in known locations.
+        /// </summary>
+        /// <returns>The full path to the custom background if found; otherwise, an empty string.</returns>
+        private string GetCustomBackgroundPath()
         {
             foreach (var path in CustomBackgroundPaths)
             {
@@ -26,14 +45,26 @@ namespace Backend.Controllers
                     return resolvedPath;
                 }
             }
-            return null;
+            return string.Empty;
         }
 
+        /// <summary>
+        /// Serves the custom background image as a JPEG file.
+        /// </summary>
+        /// <returns>
+        /// The custom background image file if it exists;
+        /// 404 Not Found if no custom background is configured;
+        /// 500 Internal Server Error if the file cannot be read.
+        /// </returns>
+        /// <response code="200">Returns the custom background image as image/jpeg</response>
+        /// <response code="404">No custom background is configured</response>
+        /// <response code="500">Error reading the custom background file</response>
         [HttpGet("custom")]
+        [Produces("image/jpeg", "application/json")]
         public IActionResult GetCustomBackground()
         {
             var customBackgroundPath = GetCustomBackgroundPath();
-            if (customBackgroundPath == null)
+            if (string.IsNullOrEmpty(customBackgroundPath))
             {
                 return NotFound(new { message = "Custom background not configured" });
             }
@@ -49,7 +80,15 @@ namespace Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Checks whether a custom background image is available.
+        /// </summary>
+        /// <returns>
+        /// A JSON object indicating whether a custom background exists and the API path to retrieve it.
+        /// </returns>
+        /// <response code="200">Returns existence status and path</response>
         [HttpGet("custom/exists")]
+        [Produces("application/json")]
         public IActionResult CheckCustomBackgroundExists()
         {
             var customBackgroundPath = GetCustomBackgroundPath();

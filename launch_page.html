@@ -126,7 +126,7 @@
 
         async function checkBackend() {
             try {
-                const response = await fetch('http://localhost:5000/api/health', {
+                const response = await fetch('http://localhost:5000/api/status/health', {
                     method: 'GET',
                     cache: 'no-cache'
                 });

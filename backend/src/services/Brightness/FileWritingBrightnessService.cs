@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace AlarmClock.Backend.Services.Brightness
 {
@@ -29,6 +30,8 @@ namespace AlarmClock.Backend.Services.Brightness
         /// <value>The absolute path to the max brightness file (e.g., /sys/class/backlight/*/max_brightness).</value>
         protected abstract string MaxBrightnessFilePath { get; }
 
+        protected abstract ILogger _logger { get; }
+
         /// <summary>
         /// Reads the current brightness value from the brightness file.
         /// </summary>
@@ -54,6 +57,7 @@ namespace AlarmClock.Backend.Services.Brightness
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error reading brightness");
                 throw new InvalidOperationException($"Failed to read brightness from {BrightnessFilePath}", ex);
             }
         }
@@ -84,6 +88,7 @@ namespace AlarmClock.Backend.Services.Brightness
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error reading max brightness");
                 throw new InvalidOperationException($"Failed to read max brightness from {MaxBrightnessFilePath}", ex);
             }
         }
@@ -100,7 +105,10 @@ namespace AlarmClock.Backend.Services.Brightness
         {
             try
             {
+                _logger.LogInformation("SetBrightness called with value: {Brightness}", brightness);
+
                 int maxBrightness = GetMaxBrightness();
+                _logger.LogInformation("Max brightness is: {MaxBrightness}", maxBrightness);
 
                 if (brightness < 0)
                 {
@@ -118,10 +126,21 @@ namespace AlarmClock.Backend.Services.Brightness
                     throw new FileNotFoundException($"Brightness file not found: {BrightnessFilePath}");
                 }
 
-                File.WriteAllText(BrightnessFilePath, brightness.ToString());
+                _logger.LogInformation("Writing brightness {Brightness} to {Path}", brightness, BrightnessFilePath);
+
+                // Use FileMode.Open instead of FileMode.Create to avoid truncation
+                // Some sysfs files (like backlight brightness) don't support truncation
+                using (var stream = new FileStream(BrightnessFilePath, FileMode.Open, FileAccess.Write))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write(brightness.ToString());
+                }
+
+                _logger.LogInformation("Successfully wrote brightness {Brightness}", brightness);
             }
             catch (Exception ex) when (ex is not ArgumentOutOfRangeException)
             {
+                _logger.LogError(ex, "Error writing brightness value {Brightness} to {Path}", brightness, BrightnessFilePath);
                 throw new InvalidOperationException($"Failed to write brightness to {BrightnessFilePath}", ex);
             }
         }

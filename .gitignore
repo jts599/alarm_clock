@@ -642,3 +642,6 @@ temp/
 *.rar
 *.tar
 *.zip
+
+# Custom background images
+background-custom.jpg

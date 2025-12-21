@@ -1,0 +1,17 @@
+meta {
+  name: Set Brightness
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/brightness
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "brightness": 75
+  }
+}

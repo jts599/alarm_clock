@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace AlarmClock.Backend.Services.Brightness
 {
@@ -21,13 +22,16 @@ namespace AlarmClock.Backend.Services.Brightness
         /// </summary>
         private readonly string _backlightPath;
 
+        protected override ILogger _logger { get; }
+
         /// <summary>
         /// Initializes a new instance of the RaspberryPiBrightnessService class.
         /// Automatically discovers the first available backlight device.
         /// </summary>
         /// <exception cref="DirectoryNotFoundException">Thrown when /sys/class/backlight does not exist or contains no devices.</exception>
-        public RaspberryPiBrightnessService()
+        public RaspberryPiBrightnessService(ILogger<RaspberryPiBrightnessService> logger)
         {
+            _logger = logger;
             // Find the first available backlight device
             const string backlightBaseDir = "/sys/class/backlight";
 

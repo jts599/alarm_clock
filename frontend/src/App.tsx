@@ -3,6 +3,7 @@ import MainActivity from './Activities/Main/MainActivity'
 import SettingsActivity from './Activities/Settings/SettingsActivity'
 import ScreenSaverActivity from './Activities/ScreenSaver/ScreenSaverActivity'
 import { ViewProvider, useViewController, Activities } from './contexts/ViewContext'
+import { setDimBrightness } from './Clients/BrightnessClient'
 
 // Keep the interface for backward compatibility with existing Activities
 export interface IActivityProps {
@@ -14,6 +15,11 @@ const INACTIVITY_TIMEOUT = 30 * 1000 // 30 seconds in milliseconds
 function AppContent() {
     const { currentView, navigateTo } = useViewController()
     const inactivityTimerRef = useRef<number | null>(null)
+
+    const dimAndNavigateToScreensaver = () => {
+        setDimBrightness()
+        navigateTo(Activities.screensaver)
+    }
 
     const resetInactivityTimer = () => {
         // Clear existing timer
@@ -28,9 +34,11 @@ function AppContent() {
 
         // Set new timer
         inactivityTimerRef.current = window.setTimeout(() => {
-            navigateTo(Activities.screensaver)
+            dimAndNavigateToScreensaver()
         }, INACTIVITY_TIMEOUT)
     }
+
+    
 
     useEffect(() => {
         // Reset timer when view changes

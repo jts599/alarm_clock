@@ -39,6 +39,8 @@ services:
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /opt/alarm-clock/custom-background.jpg:/usr/share/nginx/html/assets/background-custom.jpg:ro
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:latest

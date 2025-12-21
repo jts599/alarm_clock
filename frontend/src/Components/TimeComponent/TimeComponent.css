@@ -1,10 +1,13 @@
 @import '../../shared.css';
 
 .time-component {
-    background: var(--bg-transparent);
+    /* Inherit theming from parent (.time-section) */
+    background: transparent;
+    border: none;
+    box-shadow: none;
     border-radius: var(--radius-xl);
     padding: var(--spacing-2xl) var(--spacing-5xl);
-    color: var(--text-primary);
+    color: inherit;
     font-family: var(--font-family-primary);
     display: flex;
     align-items: center;
@@ -22,14 +25,14 @@
     font-weight: var(--font-weight-ultra-light);
     line-height: var(--line-height-tight);
     letter-spacing: var(--letter-spacing-tight);
-    color: var(--text-primary);
+    color: inherit;
 }
 
 .time-period {
     font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-light);
-    color: var(--text-secondary);
-    opacity: var(--opacity-medium);
+    font-weight: var(--font-weight-medium);
+    color: inherit;
+    opacity: 1;
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wider);
     margin-bottom: var(--spacing-sm);

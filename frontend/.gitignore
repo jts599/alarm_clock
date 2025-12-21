@@ -6,3 +6,9 @@ dist/
 
 # Auto-generated icon registry
 src/Components/Icon/iconRegistry.ts
+
+# Custom background image (device-specific)
+src/assets/background-custom.jpg
+src/assets/background-custom.jpeg
+src/assets/background-custom.png
+src/assets/background-custom.webp

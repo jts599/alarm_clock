@@ -6,7 +6,6 @@
   height: 100%;
   width: 100%;
   position: relative;
-  background-image: url('https://images.pexels.com/photos/1612351/pexels-photo-1612351.jpeg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -14,12 +13,90 @@
   overflow: hidden;
 }
 
+/* Theme variations based on background type */
+.main-activity.bg-default {
+  /* Dark background (nighttime city) - light text on dark */
+  --text-color: #ffffff;
+  --text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  --component-bg: rgba(0, 0, 0, 0.4);
+  --component-border: rgba(255, 255, 255, 0.1);
+  --component-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --time-bg: rgba(0, 0, 0, 0.3);
+  --time-border: rgba(255, 255, 255, 0.15);
+}
+
+.main-activity.bg-custom {
+  /* Light background (daytime building) - dark text on light */
+  --text-color: #1a1a1a;
+  --text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8), 
+                 0 0 8px rgba(255, 255, 255, 0.6);
+  --component-bg: rgba(255, 255, 255, 0.25);
+  --component-border: rgba(0, 0, 0, 0.15);
+  --component-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --time-bg: rgba(255, 255, 255, 0.2);
+  --time-border: rgba(0, 0, 0, 0.2);
+}
+
+/* Both themes use same size */
+.main-activity.bg-custom .time-digits,
+.main-activity.bg-default .time-digits {
+  font-size: 140px;
+}
+
+.main-activity.bg-custom .time-period,
+.main-activity.bg-default .time-period {
+  font-size: 36px;
+}
+
+/* Dark theme: bottom left positioning */
+.main-activity.bg-default .time-section {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  left: var(--spacing-xl);
+  top: auto;
+  right: auto;
+  transform: none;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: none;
+  backdrop-filter: none;
+  color: var(--text-color);
+}
+
+/* Light theme: right center positioning */
+.main-activity.bg-custom .time-section {
+  position: absolute;
+  top: 35%;
+  right: var(--spacing-xl);
+  bottom: auto;
+  left: auto;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: none;
+  backdrop-filter: none;
+  color: var(--text-color);
+}
+
 .time-section {
   position: absolute;
-  top: 25%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 35%;
+  right: var(--spacing-xl);
+  transform: translateY(-50%);
   z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: none;
+  backdrop-filter: none;
+  color: var(--text-color);
 }
 
 .components-grid {
@@ -38,6 +115,17 @@
 
 .components-grid > * {
   pointer-events: auto; /* Re-enable clicks on components */
+  color: var(--text-color);
+}
+
+/* Only add boxes to specific components */
+.light-control-container {
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-md);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 /* Position components in corners */
@@ -56,10 +144,17 @@
 }
 
 .next-event-container {
-  grid-column: 1;
-  grid-row: 3;
-  align-self: end;
-  justify-self: start;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  align-self: start;
+  justify-self: stretch;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.next-event-container > * {
+  pointer-events: auto;
 }
 
 .light-control-container {

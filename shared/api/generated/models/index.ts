@@ -9,5 +9,6 @@ export * from './EventType';
 export * from './LightOverrideState';
 export * from './ProblemDetails';
 export * from './RemoveAlarmOverrideRequest';
+export * from './SetBrightnessRequest';
 export * from './UserSettings';
 export * from './WeatherLocationResponse';

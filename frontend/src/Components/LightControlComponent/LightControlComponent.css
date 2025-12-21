@@ -21,7 +21,7 @@
 .light-on-button {
     flex: 1.5;
     background: transparent;
-    border: 1px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 8px;
     color: white;
     cursor: pointer;
@@ -32,6 +32,7 @@
     gap: 8px;
     font-family: inherit;
     transition: all 0.2s ease;
+    backdrop-filter: blur(12px);
 }
 
 .light-on-button:hover:not(:disabled) {
@@ -73,11 +74,12 @@
 .settings-button,
 .duration-button {
     background: transparent;
-    border: 1px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 8px;
     color: white;
     cursor: pointer;
     font-family: inherit;
+    backdrop-filter: blur(12px);
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;

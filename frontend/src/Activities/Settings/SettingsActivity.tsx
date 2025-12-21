@@ -7,18 +7,23 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
 import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker/DaysOfWeekPicker'
 import DurationInputs from '../../Components/SettingsControls/DurationInputs/DurationInputs'
+import { Numpad } from '../../Components/SettingsControls/Numpad/Numpad'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
+import backgroundImage, { configuredBackgroundType } from '../../assets/backgroundLoader'
 import './SettingsActivity.css'
 import { Icon, Icons } from '../../Components/Icon'
+import { NumpadTarget } from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 
 export const SettingsActivity: React.FC = () => {
   const { navigateTo } = useViewController()
+  const bgClass = `settings-activity bg-${configuredBackgroundType}`
   const [alarmTime, setAlarmTime] = useState<Dayjs | null>(dayjs().hour(7).minute(0))
   const [selectedDays, setSelectedDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
   const [transitionLength, setTransitionLength] = useState<number>(30)
   const [daylightTime, setDaylightTime] = useState<number>(15)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [activeNumpad, setActiveNumpad] = useState<NumpadTarget>(null)
   
   const settingsClient = GetSettingsClient()
 
@@ -30,14 +35,15 @@ export const SettingsActivity: React.FC = () => {
         const settings = await settingsClient.getUserSettings()
         
         // Convert minutes since midnight to dayjs time
-        const totalMinutes = settings.AlarmTimeInMinutesSinceMidnight
-        const hours = Math.floor(totalMinutes / 60)
-        const minutes = totalMinutes % 60
-        setAlarmTime(dayjs().hour(hours).minute(minutes))
+        const totalMinutes = settings.AlarmTimeInMinutesSinceMidnight;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        setAlarmTime(dayjs().hour(hours).minute(minutes));
         
-        setSelectedDays(settings.enabledDaysOfWeek)
-        setTransitionLength(settings.transitionMinutes)
-        setDaylightTime(settings.turnOffAfterMinutes)
+        setSelectedDays(settings.enabledDaysOfWeek);
+        setTransitionLength(settings.transitionMinutes);
+        setDaylightTime(settings.turnOffAfterMinutes);
+        
       } catch (error) {
         console.error('Failed to load settings:', error)
         // Keep default values if loading fails
@@ -107,10 +113,50 @@ export const SettingsActivity: React.FC = () => {
     }
   }
 
-  // Create a dark theme for Material-UI components
-  const darkTheme = createTheme({
+  // Create themes for Material-UI components
+  const baseTheme = {
+    typography: {
+      fontFamily: 'Comfortaa, Comic Sans MS, Segoe UI, Roboto, sans-serif',
+      fontSize: 16,
+    },
+    components: {
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: 'transparent',
+            border: 'none',
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'transparent !important',
+            backgroundImage: 'none !important',
+            border: 'none !important',
+            boxShadow: 'none !important',
+          },
+        },
+      },
+      MuiTimeClock: {
+        styleOverrides: {
+          arrowSwitcher: {
+            top: '0px !important',
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            fontFamily: 'Comfortaa, Comic Sans MS, Segoe UI, Roboto, sans-serif',
+          },
+        },
+      },
+    },
+  }
+
+  const darkThemeOverrides = {
     palette: {
-      mode: 'dark',
       primary: {
         main: '#ffffff',
       },
@@ -122,10 +168,6 @@ export const SettingsActivity: React.FC = () => {
         primary: '#ffffff',
         secondary: 'rgba(255, 255, 255, 0.7)',
       },
-    },
-    typography: {
-      fontFamily: 'Comfortaa, Comic Sans MS, Segoe UI, Roboto, sans-serif',
-      fontSize: 16,
     },
     components: {
       MuiTextField: {
@@ -145,34 +187,140 @@ export const SettingsActivity: React.FC = () => {
           },
         },
       },
-      MuiDialog: {
+      MuiTimeClock: {
         styleOverrides: {
-          paper: {
-            backgroundColor: 'transparent',
-            border: 'none',
+          arrowSwitcher: {
+            top: '0px !important',
+            color: '#ffffff !important',
           },
         },
       },
-      MuiPaper: {
+      MuiIconButton: {
         styleOverrides: {
           root: {
-            backgroundColor: 'transparent !important',
-            backgroundImage: 'none !important',
+            '&:not(.Mui-disabled)': {
+              color: '#ffffff !important',
+            },
+            '&.Mui-disabled': {
+              color: 'rgba(255, 255, 255, 0.3) !important',
+            },
           },
         },
       },
-      MuiTypography: {
+      MuiClockNumber: {
         styleOverrides: {
           root: {
-            fontFamily: 'Comfortaa, Comic Sans MS, Segoe UI, Roboto, sans-serif',
+            color: '#ffffff !important',
+          },
+        },
+      },
+      MuiClockPointer: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#ffffff !important',
+          },
+          thumb: {
+            backgroundColor: '#ffffff !important',
+            borderColor: '#ffffff !important',
+          },
+        },
+      },
+      MuiClock: {
+        styleOverrides: {
+          pin: {
+            backgroundColor: '#ffffff !important',
+          },
+        },
+      },
+      
+    },
+  }
+
+  const lightThemeOverrides = {
+    palette: {
+      primary: {
+        main: '#1a1a1a',
+      },
+      background: {
+        default: 'transparent',
+        paper: 'transparent',
+      },
+      text: {
+        primary: '#1a1a1a',
+        secondary: 'rgba(26, 26, 26, 0.7)',
+      },
+    },
+    components: {
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'rgba(26, 26, 26, 0.3)',
+              },
+              '&:hover fieldset': {
+                borderColor: 'rgba(26, 26, 26, 0.5)',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#1a1a1a',
+              },
+            },
+          },
+        },
+      },
+      MuiTimeClock: {
+        styleOverrides: {
+          arrowSwitcher: {
+            top: '0px !important',
+            color: '#1a1a1a !important',
+          },
+        },
+      },
+      MuiClockNumber: {
+        styleOverrides: {
+          root: {
+            color: '#1a1a1a !important',
+          },
+        },
+      },
+      MuiClockPointer: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#1a1a1a !important',
+          },
+          thumb: {
+            backgroundColor: '#1a1a1a !important',
+            borderColor: '#1a1a1a !important',
+          },
+        },
+      },
+      MuiClock: {
+        styleOverrides: {
+          pin: {
+            backgroundColor: '#1a1a1a !important',
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:not(.Mui-disabled)': {
+              color: '#1a1a1a !important',
+            },
+            '&.Mui-disabled': {
+              color: 'rgba(26, 26, 26, 0.3) !important',
+            },
           },
         },
       },
     },
-  })
+  }
+
+  const themeOverrides = configuredBackgroundType === 'custom' ? lightThemeOverrides : darkThemeOverrides
+  const activeTheme = createTheme({ ...baseTheme, ...themeOverrides })
 
   return (
-    <div className="settings-activity">
+    <div className={bgClass} style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="settings-header">
       </div>
       
@@ -191,7 +339,7 @@ export const SettingsActivity: React.FC = () => {
           <>
             <div className="setting-section time-picker">
               <h2 className="centered-title">Alarm Time</h2>
-              <ThemeProvider theme={darkTheme}>
+              <ThemeProvider theme={activeTheme}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <div style={{ transform: 'scale(1.5)', transformOrigin: 'center top' }}>
                     <StaticTimePicker
@@ -215,6 +363,8 @@ export const SettingsActivity: React.FC = () => {
                 daylightTime={daylightTime}
                 onTransitionLengthChange={handleTransitionLengthChange}
                 onDaylightTimeChange={handleDaylightTimeChange}
+                activeNumpad={activeNumpad}
+                setActiveNumpad={setActiveNumpad}
               />
               
               <div className="days-section">
@@ -246,8 +396,38 @@ export const SettingsActivity: React.FC = () => {
           <span className="button-text">{isSaving ? 'Saving...' : 'Save'}</span>
         </button>
       </div>
+
+      {activeNumpad === 'transition' && (
+        <Numpad
+          value={transitionLength}
+          onConfirm={(value) => {
+            setTransitionLength(value)
+            setActiveNumpad(null)
+          }}
+          onCancel={() => setActiveNumpad(null)}
+          min={1}
+          max={120}
+          label="Transition Length"
+          description="How long the lights take to gradually brighten from off to full brightness"
+        />
+      )}
+
+      {activeNumpad === 'daylight' && (
+        <Numpad
+          value={daylightTime}
+          onConfirm={(value) => {
+            setDaylightTime(value)
+            setActiveNumpad(null)
+          }}
+          onCancel={() => setActiveNumpad(null)}
+          min={1}
+          max={180}
+          label="Daylight Time"
+          description="How long the lights stay at full brightness before starting to dim"
+        />
+      )}
     </div>
-  )
+  );
 }
 
-export default SettingsActivity
+export default SettingsActivity;

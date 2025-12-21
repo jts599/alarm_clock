@@ -10,6 +10,8 @@
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.2s ease-out;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -28,12 +30,13 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   max-width: 400px;
   width: 90%;
-  max-height: 90vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease-out;
   box-sizing: border-box;
-  overflow: visible;
+  overflow-y: auto;
+  position: relative;
 }
 
 @keyframes slideUp {
@@ -56,13 +59,13 @@
 .numpad-label {
   display: block;
   font-size: 16px;
-  color: var(--text-secondary, #999);
+  color: #999 !important;
   margin-bottom: 12px;
 }
 
 .numpad-description {
   font-size: 14px;
-  color: var(--text-secondary, #999);
+  color: #999 !important;
   margin: 0 0 12px 0;
   line-height: 1.4;
   text-align: center;
@@ -72,7 +75,7 @@
 .numpad-display {
   font-size: clamp(32px, 8vw, 48px);
   font-weight: bold;
-  color: var(--text-primary, #fff);
+  color: #fff !important;
   min-height: clamp(45px, 10vw, 60px);
   display: flex;
   align-items: center;
@@ -85,7 +88,7 @@
 
 .numpad-range {
   font-size: 14px;
-  color: var(--text-secondary, #999);
+  color: #999 !important;
 }
 
 .numpad-grid {
@@ -103,7 +106,7 @@
   aspect-ratio: 1;
   font-size: clamp(16px, 3.5vw, 24px);
   font-weight: 600;
-  color: var(--text-primary, #fff);
+  color: #fff !important;
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: clamp(8px, 2vw, 12px);
@@ -172,7 +175,7 @@
 
 .numpad-cancel {
   background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary, #fff);
+  color: #fff !important;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -183,7 +186,7 @@
 
 .numpad-confirm {
   background: var(--primary-color, #4a90e2);
-  color: white;
+  color: white !important;
   border: 2px solid transparent;
 }
 

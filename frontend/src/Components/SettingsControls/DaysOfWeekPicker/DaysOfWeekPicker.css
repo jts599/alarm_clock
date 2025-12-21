@@ -36,14 +36,15 @@
 }
 
 .day-button.selected {
-  border-color: var(--border-primary);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: #1a1a1a;
+  border-width: 2px;
+  background: rgba(255, 255, 255, 0.5);
   color: var(--text-primary);
 }
 
 .day-button.selected:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: var(--border-primary);
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #1a1a1a;
 }
 
 .day-button:active {

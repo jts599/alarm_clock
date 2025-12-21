@@ -1,10 +1,13 @@
 @import '../../shared.css';
 
 .weather-component {
-    background: var(--bg-transparent);
+    /* Inherit theming from parent (.components-grid > *) */
+    background: transparent;
+    border: none;
+    box-shadow: none;
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
-    color: var(--text-primary);
+    color: inherit;
     min-width: 180px;
     max-width: 220px;
     font-family: var(--font-family-primary);
@@ -49,7 +52,7 @@
 .weather-condition {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-normal);
-    color: var(--text-primary);
+    color: inherit;
 }
 
 .temperature-range {
@@ -60,7 +63,7 @@
 }
 
 .high-temp {
-    color: var(--text-primary);
+    color: inherit;
 }
 
 .temp-separator {

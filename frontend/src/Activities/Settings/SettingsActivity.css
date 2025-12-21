@@ -66,6 +66,7 @@
   color: var(--text-primary);
   display: flex;
   gap: var(--spacing-xl);
+  align-items: flex-start;
 }
 
 .setting-section {
@@ -76,11 +77,15 @@
   margin-bottom: var(--spacing-lg);
   box-shadow: var(--component-shadow);
   backdrop-filter: blur(10px);
+  min-height: fit-content;
 }
 
 .setting-section.time-picker {
-  width: 33.33%;
+  width: 40.00%;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
 }
 
 .setting-section.light-settings {
@@ -167,9 +172,6 @@
   transform: translateY(0);
 }
 
-.cancel-button {
-  border-color: rgba(255, 255, 255, 0.5);
-}
 
 .cancel-button:hover {
   border-color: var(--border-primary);

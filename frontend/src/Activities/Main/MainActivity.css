@@ -37,18 +37,26 @@
   --time-border: rgba(0, 0, 0, 0.2);
 }
 
+.main-activity.bg-custom .time-digits {
+  font-size: 140px;
+}
+
+.main-activity.bg-custom .time-period {
+  font-size: 36px;
+}
+
 .time-section {
   position: absolute;
-  top: 25%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 35%;
+  right: var(--spacing-xl);
+  transform: translateY(-50%);
   z-index: 10;
-  background: var(--time-bg);
-  border: 1px solid var(--time-border);
+  background: transparent;
+  border: none;
   border-radius: 16px;
   padding: var(--spacing-xl);
-  box-shadow: var(--component-shadow);
-  backdrop-filter: blur(10px);
+  box-shadow: none;
+  backdrop-filter: none;
   color: var(--text-color);
 }
 
@@ -68,13 +76,17 @@
 
 .components-grid > * {
   pointer-events: auto; /* Re-enable clicks on components */
-  background: var(--component-bg);
-  border: 1px solid var(--component-border);
-  border-radius: 12px;
-  padding: var(--spacing-lg);
-  box-shadow: var(--component-shadow);
-  backdrop-filter: blur(8px);
   color: var(--text-color);
+}
+
+/* Only add boxes to specific components */
+.light-control-container {
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-md);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 /* Position components in corners */
@@ -93,10 +105,17 @@
 }
 
 .next-event-container {
-  grid-column: 1;
-  grid-row: 3;
-  align-self: end;
-  justify-self: start;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  align-self: start;
+  justify-self: stretch;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.next-event-container > * {
+  pointer-events: auto;
 }
 
 .light-control-container {

@@ -38,29 +38,25 @@ export const CurrentWeatherDisplay: React.FC<ICurrentWeatherDisplayProps> = (pro
 export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
     const { iconName, precipProbability, currentTemperature, temperatureHigh, temperatureLow } = props;
     return (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch' }}>
+            
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end'}}>
-            {/*Stack*/}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                {/*Side by side - Icon and current temp*/}
-                
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                    <Icon name={iconName} size={48} />
-                    <PrecipDisplay precipProbability={precipProbability} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0', alignItems: 'center' }}>
+                <div style={{marginBottom:'-5px'}}>
+                    <Icon name={iconName} size={32}  />
                 </div>
+                <PrecipDisplay precipProbability={precipProbability} />
+            </div>
 
-                <div style={{ fontSize: '2.25rem', fontWeight: 'bold' }}>{currentTemperature}°</div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{paddingTop: '3px'}}>H:{temperatureHigh}°</span>
-                    <span style={{paddingTop: '3px'}}>L:{temperatureLow}°</span>
+            
+            <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'end', justifyContent: 'center', marginLeft: '8px' }}>
+                <div style={{justifyItems: 'end'}}>
+                    <div>{temperatureHigh}</div>
+                    <div>{temperatureLow}</div>
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: '14px', lineHeight: '1'}}>
-                    {/*Side by side - High/Low*/}
-                    
-                    
-                    
+            <div style={{ fontSize: '3rem'}}>
+                {currentTemperature}
             </div>
         </div>
         
@@ -69,12 +65,12 @@ export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
 
 export const PrecipDisplay: React.FC<{ precipProbability: number }> = ({ precipProbability }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', paddingRight: '0.5rem', lineHeight: '1'}}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', lineHeight: '1'}}>
             {/*Side by side - Precipitation icon and probability*/}
             <div>
                 <Icon name={Icons.Weather.RAINDROP} size={12} />
             </div>
-            <div style={{paddingTop: '3px'}}>
+            <div style={{paddingTop: '3px', fontSize: '0.75rem'}}>
                 {precipProbability}%
             </div>
         </div>

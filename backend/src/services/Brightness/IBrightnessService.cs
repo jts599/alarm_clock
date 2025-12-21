@@ -11,14 +11,14 @@ namespace Backend.Services.Brightness
         /// </summary>
         /// <returns>The current brightness value (typically 0 to max brightness).</returns>
         /// <exception cref="InvalidOperationException">Thrown when brightness cannot be read.</exception>
-        int GetBrightness();
+        internal int GetBrightness();
 
         /// <summary>
         /// Gets the maximum brightness level supported by the screen.
         /// </summary>
         /// <returns>The maximum brightness value supported by the hardware.</returns>
         /// <exception cref="InvalidOperationException">Thrown when max brightness cannot be read.</exception>
-        int GetMaxBrightness();
+        internal int GetMaxBrightness();
 
         /// <summary>
         /// Sets the brightness level of the screen.
@@ -26,6 +26,7 @@ namespace Backend.Services.Brightness
         /// <param name="brightness">The brightness value to set (must be between 0 and max brightness).</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when brightness is negative or exceeds max brightness.</exception>
         /// <exception cref="InvalidOperationException">Thrown when brightness cannot be set.</exception>
-        void SetBrightness(int brightness);
+        internal void SetBrightness(int brightness);
     }
 }
+

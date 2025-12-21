@@ -21,7 +21,7 @@
 .light-on-button {
     flex: 1.5;
     background: transparent;
-    border: 5px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 8px;
     color: white;
     cursor: pointer;
@@ -74,7 +74,7 @@
 .settings-button,
 .duration-button {
     background: transparent;
-    border: 5px solid #ffffff;
+    border: 2px solid #ffffff;
     border-radius: 8px;
     color: white;
     cursor: pointer;

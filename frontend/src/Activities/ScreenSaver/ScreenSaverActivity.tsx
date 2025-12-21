@@ -3,10 +3,12 @@ import './ScreenSaverActivity.css'
 import { useViewController, Activities } from '../../contexts'
 import { useCurrentTime } from '../../hooks/useStateSummary'
 import { isARealError } from '../../Clients/StateClient'
+import { setAppropriateBrightness } from '../../Clients/BrightnessClient'
 
 export const ScreenSaverActivity: React.FC = () => {
   const { navigateTo } = useViewController()
   const handleBackClick = () => {
+    setAppropriateBrightness()
     navigateTo(Activities.main)
   }
 

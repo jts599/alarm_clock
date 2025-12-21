@@ -141,7 +141,7 @@ export const SettingsActivity: React.FC = () => {
       MuiTimeClock: {
         styleOverrides: {
           arrowSwitcher: {
-            top: 0,
+            top: '0px !important',
           },
         },
       },
@@ -187,6 +187,26 @@ export const SettingsActivity: React.FC = () => {
           },
         },
       },
+      MuiTimeClock: {
+        styleOverrides: {
+          arrowSwitcher: {
+            top: '0px !important',
+            color: '#ffffff !important',
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:not(.Mui-disabled)': {
+              color: '#ffffff !important',
+            },
+            '&.Mui-disabled': {
+              color: 'rgba(255, 255, 255, 0.3) !important',
+            },
+          },
+        },
+      },
       MuiClockNumber: {
         styleOverrides: {
           root: {
@@ -212,6 +232,7 @@ export const SettingsActivity: React.FC = () => {
           },
         },
       },
+      
     },
   }
 
@@ -247,6 +268,14 @@ export const SettingsActivity: React.FC = () => {
           },
         },
       },
+      MuiTimeClock: {
+        styleOverrides: {
+          arrowSwitcher: {
+            top: '0px !important',
+            color: '#1a1a1a !important',
+          },
+        },
+      },
       MuiClockNumber: {
         styleOverrides: {
           root: {
@@ -269,6 +298,18 @@ export const SettingsActivity: React.FC = () => {
         styleOverrides: {
           pin: {
             backgroundColor: '#1a1a1a !important',
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:not(.Mui-disabled)': {
+              color: '#1a1a1a !important',
+            },
+            '&.Mui-disabled': {
+              color: 'rgba(26, 26, 26, 0.3) !important',
+            },
           },
         },
       },
@@ -386,7 +427,7 @@ export const SettingsActivity: React.FC = () => {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default SettingsActivity
+export default SettingsActivity;

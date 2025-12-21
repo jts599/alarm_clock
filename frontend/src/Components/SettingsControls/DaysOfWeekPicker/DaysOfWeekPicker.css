@@ -35,16 +35,32 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.day-button.selected {
-  border-color: #1a1a1a;
-  border-width: 2px;
-  background: rgba(255, 255, 255, 0.5);
+/* Dark theme (bg-default) - light borders */
+.bg-default .day-button.selected {
+  border-color: #ffffff;
+  border-width: 3px;
+  background: transparent;
   color: var(--text-primary);
 }
 
-.day-button.selected:hover {
-  background: rgba(255, 255, 255, 0.6);
+.bg-default .day-button.selected:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #ffffff;
+  border-width: 3px;
+}
+
+/* Light theme (bg-custom) - dark borders */
+.bg-custom .day-button.selected {
   border-color: #1a1a1a;
+  border-width: 3px;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.bg-custom .day-button.selected:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #1a1a1a;
+  border-width: 3px;
 }
 
 .day-button:active {

@@ -37,12 +37,51 @@
   --time-border: rgba(0, 0, 0, 0.2);
 }
 
-.main-activity.bg-custom .time-digits {
+/* Both themes use same size */
+.main-activity.bg-custom .time-digits,
+.main-activity.bg-default .time-digits {
   font-size: 140px;
 }
 
-.main-activity.bg-custom .time-period {
+.main-activity.bg-custom .time-period,
+.main-activity.bg-default .time-period {
   font-size: 36px;
+}
+
+/* Dark theme: bottom left positioning */
+.main-activity.bg-default .time-section {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  left: var(--spacing-xl);
+  top: auto;
+  right: auto;
+  transform: none;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: none;
+  backdrop-filter: none;
+  color: var(--text-color);
+}
+
+/* Light theme: right center positioning */
+.main-activity.bg-custom .time-section {
+  position: absolute;
+  top: 35%;
+  right: var(--spacing-xl);
+  bottom: auto;
+  left: auto;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: none;
+  backdrop-filter: none;
+  color: var(--text-color);
 }
 
 .time-section {

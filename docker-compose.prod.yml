@@ -43,6 +43,7 @@ services:
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:latest
     container_name: alarm-clock-backend
+    privileged: true
     ports:
       - "5000:5000"
     volumes:

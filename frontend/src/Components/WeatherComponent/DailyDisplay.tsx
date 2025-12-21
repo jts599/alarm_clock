@@ -39,9 +39,7 @@ export const CurrentWeatherDisplay: React.FC<ICurrentWeatherDisplayProps> = (pro
 export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
     const { iconName, precipProbability, currentTemperature, temperatureHigh, temperatureLow } = props;
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch' }}>
-            
-
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', justifyItems: 'flex-end' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0', alignItems: 'center', marginRight: '8px' }}>
                 <div style={{marginBottom:'-5px'}}>
                     <Icon name={iconName} size={32}  />
@@ -52,13 +50,13 @@ export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
             <div style={{ fontSize: '3rem'}}>
                 {currentTemperature}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'start', justifyContent: 'center' }}>
-                <div style={{justifyItems: 'start', marginTop:'-4px'}}>
+            <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'end', justifyContent: 'center' }}>
+                <div style={{justifyItems: 'start', alignItems:'flex-end', fontSize: '0.9rem'}}>
                     <div>{temperatureHigh}</div>
                     <div>{temperatureLow}</div>
                 </div>
             </div>
-            
+
         </div>
         
     )

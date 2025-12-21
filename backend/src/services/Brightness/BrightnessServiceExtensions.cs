@@ -1,6 +1,6 @@
 using System;
 
-namespace Backend.Services.Brightness
+namespace AlarmClock.Backend.Services.Brightness
 {
     /// <summary>
     /// Extension methods for IBrightnessService that provide normalized brightness control (0-100%).

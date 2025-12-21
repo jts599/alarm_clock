@@ -1,4 +1,4 @@
-namespace Backend.Services.Brightness
+namespace AlarmClock.Backend.Services.Brightness
 {
     /// <summary>
     /// Interface for controlling screen brightness on the Raspberry Pi.

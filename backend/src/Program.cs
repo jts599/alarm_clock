@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using AlarmClock.Backend.Services;
+using SVS = AlarmClock.Backend.Services;
 using AlarmClock.Backend.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,56 +49,55 @@ var runConfig = builder.Configuration.GetSection("RunConfiguration").Get<RunConf
 // Register LIFX service conditionally based on configuration
 if (runConfig?.StubLifx == true)
 {
-    builder.Services.AddSingleton<ILifxService, StubLifxService>();
+    builder.Services.AddSingleton<SVS.ILifxService, SVS.StubLifxService>();
 }
 else
 {
-    builder.Services.AddSingleton<ILifxService, LifxService>();
+    builder.Services.AddSingleton<SVS.ILifxService, SVS.LifxService>();
 }
 
 // Register Brightness service conditionally based on configuration
 if (runConfig?.StubBrightness == true)
 {
-    builder.Services.AddSingleton<IBrightnessService, MockBrightnessService>();
+    builder.Services.AddSingleton<SVS.Brightness.IBrightnessService, SVS.Brightness.MockBrightnessService>();
 }
 else
 {
-    builder.Services.AddSingleton<IBrightnessService, RaspberryPiBrightnessService>();
+    builder.Services.AddSingleton<SVS.Brightness.IBrightnessService, SVS.Brightness.RaspberryPiBrightnessService>();
 }
 
 // Register ConfigurableColorPickingServiceConstructionParameters to be created via DI
-builder.Services.AddTransient<ConfigurableColorPickingServiceConstructionParameters>();
+builder.Services.AddTransient<SVS.ConfigurableColorPickingServiceConstructionParameters>();
 
 // Register ConfigurableColorPickingService as the base service and resolve its
 // construction parameters from DI (so they come from AlarmTimeConfigurationService).
-builder.Services.AddTransient<ConfigurableColorPickingService>(provider =>
+builder.Services.AddTransient<SVS.ConfigurableColorPickingService>(provider =>
 {
-    var parameters = provider.GetRequiredService<ConfigurableColorPickingServiceConstructionParameters>();
-    return new ConfigurableColorPickingService(parameters);
+    var parameters = provider.GetRequiredService<SVS.ConfigurableColorPickingServiceConstructionParameters>();
+    return new SVS.ConfigurableColorPickingService(parameters);
 });
 
 // Register OverrideableColorPickingService with ConfigurableColorPickingService as the base
-builder.Services.AddTransient<OverrideableColorPickingService>(provider =>
+builder.Services.AddTransient<SVS.OverrideableColorPickingService>(provider =>
 {
-    var baseColorPicker = provider.GetRequiredService<ConfigurableColorPickingService>();
-    return new OverrideableColorPickingService(baseColorPicker);
+    var baseColorPicker = provider.GetRequiredService<SVS.ConfigurableColorPickingService>();
+    return new SVS.OverrideableColorPickingService(baseColorPicker);
 });
 
 // Register the main ICompositeColorPickingService interface to use OverrideableColorPickingService
-builder.Services.AddTransient<ICompositeColorPickingService>(provider =>
-    provider.GetRequiredService<OverrideableColorPickingService>());
+builder.Services.AddTransient<SVS.ICompositeColorPickingService>(provider =>
+    provider.GetRequiredService<SVS.OverrideableColorPickingService>());
 
 // Keep IColorPickingService registration for backward compatibility if needed
-builder.Services.AddTransient<IColorPickingService>(provider =>
-    provider.GetRequiredService<OverrideableColorPickingService>());
-
+builder.Services.AddTransient<SVS.IColorPickingService>(provider =>
+    provider.GetRequiredService<SVS.OverrideableColorPickingService>());
 // Register LightStateService as both the interface and the hosted service
-builder.Services.AddSingleton<LightStateService>();
-builder.Services.AddSingleton<ILightStateService>(provider => provider.GetService<LightStateService>());
-builder.Services.AddHostedService<LightStateService>(provider => provider.GetService<LightStateService>());
+builder.Services.AddSingleton<SVS.LightStateService>();
+builder.Services.AddSingleton<SVS.ILightStateService>(provider => provider.GetService<SVS.LightStateService>());
+builder.Services.AddHostedService<SVS.LightStateService>(provider => provider.GetService<SVS.LightStateService>());
 
 // Register state summary service (singleton) so controllers can get a cheap snapshot of state
-builder.Services.AddSingleton<IStateSummaryService, StateSummaryService>();
+builder.Services.AddSingleton<SVS.IStateSummaryService, SVS.StateSummaryService>();
 
 // Add CORS policy for development
 builder.Services.AddCors(options =>

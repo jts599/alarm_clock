@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Backend.Services.Brightness;
+using AlarmClock.Backend.Services.Brightness;
 using System;
 
 namespace Backend.Controllers

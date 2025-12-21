@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Backend.Services.Brightness
+namespace AlarmClock.Backend.Services.Brightness
 {
     /// <summary>
     /// Abstract base class for brightness control via file system writes.

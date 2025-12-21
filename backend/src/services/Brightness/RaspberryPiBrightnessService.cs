@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Backend.Services.Brightness
+namespace AlarmClock.Backend.Services.Brightness
 {
     /// <summary>
     /// Concrete implementation of brightness control for Raspberry Pi hardware.

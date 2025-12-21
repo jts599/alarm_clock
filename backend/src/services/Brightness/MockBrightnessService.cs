@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace Backend.Services.Brightness
+namespace AlarmClock.Backend.Services.Brightness
 {
     /// <summary>
     /// Mock implementation of IBrightnessService for development and testing.

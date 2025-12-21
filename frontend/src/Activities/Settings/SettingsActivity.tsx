@@ -9,14 +9,17 @@ import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker
 import DurationInputs from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 import { Numpad } from '../../Components/SettingsControls/Numpad/Numpad'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
-import backgroundImage, { configuredBackgroundType } from '../../assets/backgroundLoader'
+import defaultBackground from '../../assets/background.jpg'
+import { getBackgroundImage, BackgroundType } from '../../assets/backgroundLoader'
 import './SettingsActivity.css'
 import { Icon, Icons } from '../../Components/Icon'
 import { NumpadTarget } from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 
 export const SettingsActivity: React.FC = () => {
   const { navigateTo } = useViewController()
-  const bgClass = `settings-activity bg-${configuredBackgroundType}`
+  const [backgroundImage, setBackgroundImage] = useState<string>(defaultBackground)
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>(BackgroundType.DEFAULT)
+  const bgClass = `settings-activity bg-${backgroundType}`
   const [alarmTime, setAlarmTime] = useState<Dayjs | null>(dayjs().hour(7).minute(0))
   const [selectedDays, setSelectedDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
   const [transitionLength, setTransitionLength] = useState<number>(30)
@@ -26,6 +29,14 @@ export const SettingsActivity: React.FC = () => {
   const [activeNumpad, setActiveNumpad] = useState<NumpadTarget>(null)
   
   const settingsClient = GetSettingsClient()
+
+  // Detect background at runtime via backend API
+  useEffect(() => {
+    getBackgroundImage().then(({ type, image }) => {
+      setBackgroundType(type)
+      setBackgroundImage(image)
+    })
+  }, [])
 
   // Load settings from the server when component mounts
   useEffect(() => {
@@ -316,7 +327,7 @@ export const SettingsActivity: React.FC = () => {
     },
   }
 
-  const themeOverrides = configuredBackgroundType === 'custom' ? lightThemeOverrides : darkThemeOverrides
+  const themeOverrides = backgroundType === BackgroundType.CUSTOM ? lightThemeOverrides : darkThemeOverrides
   const activeTheme = createTheme({ ...baseTheme, ...themeOverrides })
 
   return (

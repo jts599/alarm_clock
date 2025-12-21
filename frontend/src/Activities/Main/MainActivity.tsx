@@ -1,14 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import WeatherComponent from '../../Components/WeatherComponent'
 import NextEventComponent from '../../Components/NextEventComponent'
 import LightStatusComponent from '../../Components/LightStatusComponent'
 import TimeComponent from '../../Components/TimeComponent'
 import LightControlComponent from '../../Components/LightControlComponent'
-import backgroundImage, { configuredBackgroundType } from '../../assets/backgroundLoader'
+import defaultBackground from '../../assets/background.jpg'
+import { getBackgroundImage, BackgroundType } from '../../assets/backgroundLoader'
 import './MainActivity.css'
 
 export const MainActivity: React.FC = () => {
-  const bgClass = `main-activity bg-${configuredBackgroundType}`
+  const [backgroundImage, setBackgroundImage] = useState<string>(defaultBackground)
+  const [backgroundType, setBackgroundType] = useState<BackgroundType>(BackgroundType.DEFAULT)
+  
+  useEffect(() => {
+    // Detect background at runtime via backend API
+    getBackgroundImage().then(({ type, image }) => {
+      setBackgroundType(type)
+      setBackgroundImage(image)
+    })
+  }, [])
+  
+  const bgClass = `main-activity bg-${backgroundType}`
   
   return (
     <div className={bgClass} style={{ backgroundImage: `url(${backgroundImage})` }}>

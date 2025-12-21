@@ -39,8 +39,6 @@ services:
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-    volumes:
-      - /opt/alarm-clock/custom-background.jpg:/usr/share/nginx/html/assets/background-custom.jpg:ro
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:latest
@@ -51,6 +49,7 @@ services:
       - ./shared:/app/shared
       - models-data:/app/models
       - /sys/class/backlight:/sys/class/backlight
+      - /opt/alarm-clock/background-custom.jpg:/app/background-custom.jpg:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000

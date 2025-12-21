@@ -2,117 +2,81 @@ import React from 'react';
 import { IDailyForecast, IHourlyForecast } from '../../Clients/Weather/ForecastFetchClient';
 import { Icon, Icons } from '../Icon';
 
-export enum DailyDisplayMode {
-    StandaloneForecast,
-    AsPartOfWeeklyForecast
-}
-
-export interface ISingleDayDisplayProps {
+export interface ICurrentWeatherDisplayProps {
     singleDayForecast: IDailyForecast
-    displayMode: DailyDisplayMode
+    currentHourlyForecast: IHourlyForecast
 }
 
-interface ISingleDayForecastProps {
+interface ICurrentWeatherProps {
     iconName: string
     precipProbability: number
+    currentTemperature: number
     temperatureHigh: number
     temperatureLow: number
-    dayOfWeek?: string
-    dateString?: string
 }
 
 
 
-export const SingleDayDisplay: React.FC<ISingleDayDisplayProps> = (props) => {
-    const { singleDayForecast, displayMode } = props;
-    const { icon, precipProbability, temperatureHigh, temperatureLow, date } = singleDayForecast;
+export const CurrentWeatherDisplay: React.FC<ICurrentWeatherDisplayProps> = (props) => {
+    const { singleDayForecast, currentHourlyForecast } = props;
+    const { precipProbability, temperatureHigh, temperatureLow } = singleDayForecast;
+    const {icon, temperature} = currentHourlyForecast;
     const tempHighRounded = Math.round(temperatureHigh);
     const tempLowRounded = Math.round(temperatureLow);
     const precipProbabilityRounded = Math.round(precipProbability);
-    const dateString = date.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' });
-    const dayOfWeek = date.toLocaleDateString(undefined, { weekday: 'short' });
+    const currentTemperatureRounded = Math.round(temperature);
 
-    if (displayMode === DailyDisplayMode.StandaloneForecast) {
-        return (<StandaloneForecast 
-            iconName={icon} 
-            precipProbability={ precipProbabilityRounded} 
-            temperatureHigh={tempHighRounded} 
-            temperatureLow={tempLowRounded} 
-            dateString={dateString} 
-            dayOfWeek={dayOfWeek} 
-            />)
-    } else if (displayMode === DailyDisplayMode.AsPartOfWeeklyForecast) {
-        return (<SingleDayForecastAsPartOfWeekly 
-            iconName={icon} 
-            precipProbability={precipProbabilityRounded} 
-            temperatureHigh={tempHighRounded} 
-            temperatureLow={tempLowRounded} 
-            dateString={dateString} 
-            dayOfWeek={dayOfWeek} 
-            />)
-    }
-    return (<></>)
+    return (<StandaloneForecast 
+        iconName={icon} 
+        precipProbability={ precipProbabilityRounded} 
+        temperatureHigh={tempHighRounded} 
+        temperatureLow={tempLowRounded} 
+        currentTemperature={currentTemperatureRounded}
+    />)
 }
 
-export const StandaloneForecast: React.FC<ISingleDayForecastProps> = (props) => {
-    const { iconName, precipProbability, temperatureHigh, temperatureLow, dayOfWeek, dateString } = props;
+export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
+    const { iconName, precipProbability, currentTemperature, temperatureHigh, temperatureLow } = props;
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
-                {/*Side by side*/}
-                <div>
-                    <Icon name={iconName} size={64} />
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end'}}>
+            {/*Stack*/}
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                {/*Side by side - Icon and current temp*/}
+                
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                    <Icon name={iconName} size={48} />
+                    <PrecipDisplay precipProbability={precipProbability} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {/*Stack*/}
-                    <div>
-                        {temperatureHigh}° / {temperatureLow}°
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.25rem' }}>
-                        {/*Side by side*/}
-                        <div>
-                            <Icon name={Icons.Weather.RAINDROP} size={20} />
-                        </div>
-                        <div>{precipProbability}%</div>
-                    </div>
+
+                <div style={{ fontSize: '2.25rem', fontWeight: 'bold' }}>{currentTemperature}°</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{paddingTop: '3px'}}>H:{temperatureHigh}°</span>
+                    <span style={{paddingTop: '3px'}}>L:{temperatureLow}°</span>
                 </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: '14px', lineHeight: '1'}}>
+                    {/*Side by side - High/Low*/}
+                    
+                    
+                    
             </div>
         </div>
         
     )
 }
 
-/**
- * This will need to be updated when used in weekly forecast to be more compact.
- * @param props 
- * @returns 
- */
-export const SingleDayForecastAsPartOfWeekly: React.FC<ISingleDayForecastProps> = (props) => {
-    const { iconName, precipProbability, temperatureHigh, temperatureLow, dayOfWeek, dateString } = props;
+export const PrecipDisplay: React.FC<{ precipProbability: number }> = ({ precipProbability }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', paddingRight: '0.5rem', lineHeight: '1'}}>
+            {/*Side by side - Precipitation icon and probability*/}
             <div>
-                {dayOfWeek}, {dateString}
+                <Icon name={Icons.Weather.RAINDROP} size={12} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
-                {/*Side by side*/}
-                <div>
-                    <Icon name={iconName} size={48} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {/*Stack*/}
-                    <div>
-                        {temperatureHigh}° / {temperatureLow}°
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.25rem' }}>
-                        {/*Side by side*/}
-                        <div>
-                            <Icon name={Icons.Weather.RAINDROPS} size={8} />
-                        </div>
-                        <div>{precipProbability}%</div>
-                    </div>
-                </div>
+            <div style={{paddingTop: '3px'}}>
+                {precipProbability}%
             </div>
         </div>
-    )
+    );
 }

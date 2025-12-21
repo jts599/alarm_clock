@@ -32,6 +32,23 @@ export interface IHourlyForecast {
 }
 
 /**
+ * Gets the current hourly forecast based on the current time.
+ * @param hourlyForecasts List of hourly forecasts in chronological order.
+ * @returns The last forecast before the current time, or null if none found.
+ */
+export function getCurrentForecast(hourlyForecasts: IHourlyForecast[]): IHourlyForecast | null {
+    const now = new Date();
+    for (let i = 0; i < hourlyForecasts.length; i++) {
+        const forecast = hourlyForecasts[i];
+        const nextForecast = hourlyForecasts[i + 1];
+        if (forecast.time <= now && nextForecast && nextForecast.time > now) {
+            return forecast;
+        }
+    }
+    return null;
+}
+
+/**
  * Fetches the daily weather forecast for the given longitude and latitude.
  * @param longLat 
  * @returns 

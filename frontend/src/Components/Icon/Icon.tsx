@@ -21,15 +21,22 @@ export const Icon: React.FC<IconProps> = ({
   color = 'currentColor',
   onClick 
 }) => {
-  // Handle namespaced icons (e.g., 'weather.sunny')
+  // Handle namespaced icons with arbitrary depth (e.g., 'weather.day.sunny')
   const getIconComponent = (iconName: string): React.ComponentType<any> | null => {
     if (iconName.includes('.')) {
-      const [namespace, icon] = iconName.split('.')
-      const namespaceRegistry = iconRegistry[namespace as keyof typeof iconRegistry]
-      if (namespaceRegistry && typeof namespaceRegistry === 'object' && !isReactComponent(namespaceRegistry)) {
-        const iconComponent = (namespaceRegistry as any)[icon]
-        return isReactComponent(iconComponent) ? iconComponent : null
+      const parts = iconName.split('.')
+      let current: any = iconRegistry
+      
+      // Navigate through the nested structure
+      for (const part of parts) {
+        if (current && typeof current === 'object' && part in current) {
+          current = current[part]
+        } else {
+          return null
+        }
       }
+      
+      return isReactComponent(current) ? current : null
     }
     
     // Handle root level icons
@@ -51,7 +58,7 @@ export const Icon: React.FC<IconProps> = ({
       width={sizeStyle}
       height={sizeStyle}
       className={className}
-      style={{ color }}
+      style={{ color, display: 'block' }}
       onClick={onClick}
     />
   )

@@ -8,13 +8,14 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /opt/alarm-clock/custom-background.jpg:/app/src/assets/background-custom.jpg:ro
     environment:
       - NODE_ENV=development
     depends_on:
       - backend
 
   backend:
-    command: [ "/bin/sh", "-c", "while sleep 1000; do :; done" ]
+    command: ["/bin/sh", "-c", "while sleep 1000; do :; done"]
     build:
       context: ./backend
       dockerfile: Dockerfile.debug

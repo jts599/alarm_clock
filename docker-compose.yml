@@ -38,6 +38,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /opt/alarm-clock/custom-background.jpg:/usr/share/nginx/html/assets/background-custom.jpg:ro
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}

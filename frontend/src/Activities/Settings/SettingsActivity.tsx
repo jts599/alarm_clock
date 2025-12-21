@@ -8,6 +8,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import DaysOfWeekPicker from '../../Components/SettingsControls/DaysOfWeekPicker/DaysOfWeekPicker'
 import DurationInputs from '../../Components/SettingsControls/DurationInputs/DurationInputs'
 import { GetSettingsClient, IUserSettings } from '../../Clients/SettingsClient'
+import backgroundImage from '../../assets/backgroundLoader'
 import './SettingsActivity.css'
 import { Icon, Icons } from '../../Components/Icon'
 
@@ -30,14 +31,15 @@ export const SettingsActivity: React.FC = () => {
         const settings = await settingsClient.getUserSettings()
         
         // Convert minutes since midnight to dayjs time
-        const totalMinutes = settings.AlarmTimeInMinutesSinceMidnight
-        const hours = Math.floor(totalMinutes / 60)
-        const minutes = totalMinutes % 60
-        setAlarmTime(dayjs().hour(hours).minute(minutes))
+        const totalMinutes = settings.AlarmTimeInMinutesSinceMidnight;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        setAlarmTime(dayjs().hour(hours).minute(minutes));
         
-        setSelectedDays(settings.enabledDaysOfWeek)
-        setTransitionLength(settings.transitionMinutes)
-        setDaylightTime(settings.turnOffAfterMinutes)
+        setSelectedDays(settings.enabledDaysOfWeek);
+        setTransitionLength(settings.transitionMinutes);
+        setDaylightTime(settings.turnOffAfterMinutes);
+        
       } catch (error) {
         console.error('Failed to load settings:', error)
         // Keep default values if loading fails
@@ -172,7 +174,7 @@ export const SettingsActivity: React.FC = () => {
   })
 
   return (
-    <div className="settings-activity">
+    <div className="settings-activity" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className="settings-header">
       </div>
       

@@ -4,11 +4,12 @@ import NextEventComponent from '../../Components/NextEventComponent'
 import LightStatusComponent from '../../Components/LightStatusComponent'
 import TimeComponent from '../../Components/TimeComponent'
 import LightControlComponent from '../../Components/LightControlComponent'
+import backgroundImage from '../../assets/backgroundLoader'
 import './MainActivity.css'
 
 export const MainActivity: React.FC = () => {
   return (
-    <div className="main-activity">
+    <div className="main-activity" style={{ backgroundImage: `url(${backgroundImage})` }}>
       {/* Main time display - center of screen */}
       <div className="time-section">
         <TimeComponent />

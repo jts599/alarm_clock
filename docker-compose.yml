@@ -1,26 +1,6 @@
 version: "3.8"
 
 services:
-  # Model downloader - runs once to ensure models exist
-  model-init:
-    image: curlimages/curl:latest
-    volumes:
-      - models-data:/models
-    command: >
-      sh -c "
-        if [ ! -f /models/tinyllama-1.1b-chat.onnx ]; then
-          echo 'Downloading TinyLlama model...';
-          curl -L -o /models/tinyllama-1.1b-chat.onnx 
-            'https://huggingface.co/microsoft/TinyLlama-1.1B-Chat-v1.0-onnx/resolve/main/model.onnx' ||
-          curl -L -o /models/tinyllama-1.1b-chat.onnx 
-            'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0/resolve/main/pytorch_model.bin';
-          echo 'Model downloaded successfully';
-        else
-          echo 'Model already exists, skipping download';
-        fi
-      "
-    restart: "no" # Only run once
-
   frontend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:${IMAGE_TAG:-latest}
     ports:
@@ -38,17 +18,19 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /opt/alarm-clock/custom-background.jpg:/usr/share/nginx/html/assets/background-custom.jpg:ro
+      - /opt/alarm-clock/background-custom.jpg:/usr/share/nginx/html/assets/background-custom.jpg:ro
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:${IMAGE_TAG:-latest}
     network_mode: host
+    privileged: true
     volumes:
       - ./shared:/app/shared
       - models-data:/app/models # Persistent models volume
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /sys/class/backlight:/sys/class/backlight
+      - /opt/alarm-clock/background-custom.jpg:/app/background-custom.jpg:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000

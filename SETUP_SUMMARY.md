@@ -26,17 +26,13 @@
 
 1. **`docker-compose.yml`**
 
-   - Base configuration with Watchtower
+   - Default configuration with host networking for LIFX support
    - Uses environment variables for flexibility
-
-2. **`docker-compose.prod.yml`**
-
-   - Production configuration for `main` branch
-   - Uses `:latest` tag
+   - Switch between dev/prod with `IMAGE_TAG` env var (`:latest` or `:dev`)
    - Ports 3000 (frontend) and 5000 (backend)
 
-3. **`docker-compose.dev.yml`**
-   - Development configuration for `dev` branch
+2. **`docker-compose.dev.yml`**
+   - Alternative dev configuration for running alongside production
    - Uses `:dev` tag
    - Ports 3001 (frontend) and 5001 (backend)
    - Stub services enabled by default

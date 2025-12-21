@@ -1,9 +1,14 @@
 import React from 'react'
 import { iconRegistry } from './iconRegistry'
 
+export interface ISize {
+  width: number | string
+  height: number | string
+}
+
 export interface IconProps {
   name: string // Now accepts both 'iconName' and 'namespace.iconName'
-  size?: number | string
+  size?: number | string | ISize
   className?: string
   color?: string
   onClick?: () => void
@@ -21,15 +26,22 @@ export const Icon: React.FC<IconProps> = ({
   color = 'currentColor',
   onClick 
 }) => {
-  // Handle namespaced icons (e.g., 'weather.sunny')
+  // Handle namespaced icons with arbitrary depth (e.g., 'weather.day.sunny')
   const getIconComponent = (iconName: string): React.ComponentType<any> | null => {
     if (iconName.includes('.')) {
-      const [namespace, icon] = iconName.split('.')
-      const namespaceRegistry = iconRegistry[namespace as keyof typeof iconRegistry]
-      if (namespaceRegistry && typeof namespaceRegistry === 'object' && !isReactComponent(namespaceRegistry)) {
-        const iconComponent = (namespaceRegistry as any)[icon]
-        return isReactComponent(iconComponent) ? iconComponent : null
+      const parts = iconName.split('.')
+      let current: any = iconRegistry
+      
+      // Navigate through the nested structure
+      for (const part of parts) {
+        if (current && typeof current === 'object' && part in current) {
+          current = current[part]
+        } else {
+          return null
+        }
       }
+      
+      return isReactComponent(current) ? current : null
     }
     
     // Handle root level icons
@@ -44,17 +56,28 @@ export const Icon: React.FC<IconProps> = ({
     return null
   }
 
+  const calculatedSize = calculateSize(size)
   const sizeStyle = typeof size === 'number' ? `${size}px` : size
 
   return (
     <IconComponent
-      width={sizeStyle}
-      height={sizeStyle}
+      width={calculatedSize.width}
+      height={calculatedSize.height}
       className={className}
-      style={{ color }}
+      style={{ color, display: 'block' }}
       onClick={onClick}
     />
   )
+}
+
+function calculateSize(size: number | string | ISize): ISize {
+  if (typeof size === 'number') {
+    return { width: size, height: size }
+  } else if (typeof size === 'string') {
+    return { width: size, height: size }
+  } else {
+    return size
+  }
 }
 
 export default Icon

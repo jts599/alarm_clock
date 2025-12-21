@@ -2,7 +2,8 @@ import React from 'react'
 import './WeatherComponent.css'
 import { isARealError } from '../../Clients/StateClient'
 import { useWeatherForecast } from '../../hooks/useWeatherForecast'
-import { SingleDayDisplay, DailyDisplayMode } from './DailyDisplay'
+import { CurrentWeatherDisplay } from './DailyDisplay'
+import { getCurrentForecast } from '../../Clients/Weather/ForecastFetchClient'
 
 export const WeatherComponent: React.FC = () => {
     const { data: forecast, isLoading, isError, error } = useWeatherForecast()
@@ -21,14 +22,15 @@ export const WeatherComponent: React.FC = () => {
     }
 
     const todaysForecast = forecast.dailyForecasts[0]
+    const nowWeather = getCurrentForecast(forecast.hourlyForecasts)
 
-    if (!todaysForecast) {
+    if (!todaysForecast || !nowWeather) {
         return <></>
     }
 
     return (
         <div className="weather-component">
-            <SingleDayDisplay singleDayForecast={todaysForecast} displayMode={DailyDisplayMode.StandaloneForecast} />
+            <CurrentWeatherDisplay singleDayForecast={todaysForecast} currentHourlyForecast={nowWeather} />
         </div>
     )
 }

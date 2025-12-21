@@ -46,11 +46,14 @@ One sentence describing what this project does.
 ## Quick Start
 
 ```bash
-# Development
-docker-compose up
+# Development (uses :dev image tag)
+IMAGE_TAG=dev docker-compose up
 
-# Production
-docker-compose -f docker-compose.prod.yml up
+# Production (uses :latest image tag)
+IMAGE_TAG=latest docker-compose up
+
+# Or run dev on separate ports
+docker-compose -f docker-compose.dev.yml up
 ```
 ````
 

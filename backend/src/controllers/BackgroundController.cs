@@ -28,7 +28,6 @@ namespace Backend.Controllers
         {
             "/app/background-custom.jpg",                    // Docker production
             "../background-custom.jpg",                      // Local development (relative to backend/)
-            Path.Combine(Directory.GetCurrentDirectory(), "..", "background-custom.jpg") // Absolute from current dir
         };
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace Backend.Controllers
         public IActionResult CheckCustomBackgroundExists()
         {
             var customBackgroundPath = GetCustomBackgroundPath();
-            var exists = customBackgroundPath != null;
+            var exists = !string.IsNullOrEmpty(customBackgroundPath);
             return Ok(new { exists, path = exists ? "/api/background/custom" : null });
         }
     }

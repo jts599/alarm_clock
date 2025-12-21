@@ -274,15 +274,15 @@ mkdir -p models shared logs
 #### Production Setup
 
 ```bash
-cd /opt/alarm-clock-prod
+cd /opt/alarm-clock
 
-# Copy production compose file
-# On dev machine:
-scp docker-compose.prod.yml pi@raspberrypi.local:/opt/alarm-clock-prod/docker-compose.yml
+# Pull the repository (includes docker-compose.yml)
+git clone https://github.com/jts599/alarm_clock.git .
 
 # On Pi, create .env
 cat > .env << 'EOF'
 DOCKER_USERNAME=your-dockerhub-username
+IMAGE_TAG=latest
 WEATHER_LONGITUDE=-74.0060
 WEATHER_LATITUDE=40.7128
 STUB_LIFX=false
@@ -290,7 +290,7 @@ FAST_TIMESCALE=false
 EOF
 
 # Create systemd service
-sudo nano /etc/systemd/system/alarm-clock-prod.service
+sudo nano /etc/systemd/system/alarm-clock.service
 ```
 
 Add:
@@ -305,7 +305,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/alarm-clock-prod
+WorkingDirectory=/opt/alarm-clock
 ExecStart=/usr/bin/docker compose up -d
 ExecStop=/usr/bin/docker compose down
 TimeoutStartSec=0
@@ -318,8 +318,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable alarm-clock-prod.service
-sudo systemctl start alarm-clock-prod.service
+sudo systemctl enable alarm-clock.service
+sudo systemctl start alarm-clock.service
 ```
 
 #### Dev Setup
@@ -377,10 +377,10 @@ sudo systemctl start alarm-clock-dev.service
 
 Use two different Raspberry Pis:
 
-- **Pi 1**: Production (uses `docker-compose.prod.yml`)
-- **Pi 2**: Development (uses `docker-compose.dev.yml`)
+- **Pi 1**: Production (uses `docker-compose.yml` with `IMAGE_TAG=latest`)
+- **Pi 2**: Development (uses `docker-compose.yml` with `IMAGE_TAG=dev` or `docker-compose.dev.yml` for different ports)
 
-Follow the same setup as Option 1, but only install one environment per Pi.
+Follow the same setup as Option 1, but set the appropriate `IMAGE_TAG` in each Pi's `.env` file.
 
 ---
 

@@ -6,8 +6,6 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      model-init:
-        condition: service_completed_successfully
       backend:
         condition: service_started
     environment:
@@ -37,9 +35,6 @@ services:
       - TZ=${TZ:-UTC}
       - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
       - Llm__EnableLlm=true
-    depends_on:
-      model-init:
-        condition: service_completed_successfully
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"

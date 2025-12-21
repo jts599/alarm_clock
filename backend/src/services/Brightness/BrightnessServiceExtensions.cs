@@ -54,6 +54,14 @@ namespace AlarmClock.Backend.Services.Brightness
 
             int max = service.GetMaxBrightness();
             int brightness = (int)Math.Round((double)percent / 100 * max);
+            if (brightness <= 0)
+            {
+                brightness = 1;
+            }
+            else if (brightness >= max)
+            {
+                brightness = max;
+            }
 
             service.SetBrightness(brightness);
         }

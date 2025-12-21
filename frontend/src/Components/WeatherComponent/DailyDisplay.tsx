@@ -1,6 +1,7 @@
 import React from 'react';
 import { IDailyForecast, IHourlyForecast } from '../../Clients/Weather/ForecastFetchClient';
 import { Icon, Icons } from '../Icon';
+import { ISize } from '../Icon/Icon';
 
 export interface ICurrentWeatherDisplayProps {
     singleDayForecast: IDailyForecast
@@ -41,23 +42,23 @@ export const StandaloneForecast: React.FC<ICurrentWeatherProps> = (props) => {
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch' }}>
             
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0', alignItems: 'center', marginRight: '8px' }}>
                 <div style={{marginBottom:'-5px'}}>
                     <Icon name={iconName} size={32}  />
                 </div>
                 <PrecipDisplay precipProbability={precipProbability} />
             </div>
-
             
-            <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'end', justifyContent: 'center', marginLeft: '8px' }}>
-                <div style={{justifyItems: 'end'}}>
+            <div style={{ fontSize: '3rem'}}>
+                {currentTemperature}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column',alignItems: 'start', justifyContent: 'center' }}>
+                <div style={{justifyItems: 'start', marginTop:'-4px'}}>
                     <div>{temperatureHigh}</div>
                     <div>{temperatureLow}</div>
                 </div>
             </div>
-            <div style={{ fontSize: '3rem'}}>
-                {currentTemperature}
-            </div>
+            
         </div>
         
     )

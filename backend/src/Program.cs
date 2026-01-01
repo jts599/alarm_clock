@@ -26,8 +26,6 @@ builder.Services.Configure<WeatherConfiguration>(
     builder.Configuration.GetSection("Weather"));
 builder.Services.Configure<RunConfiguration>(
     builder.Configuration.GetSection("RunConfiguration"));
-builder.Services.Configure<LlmConfiguration>(
-    builder.Configuration.GetSection("Llm"));
 // Bind the AlarmTimeConfiguration section (from AlarmTimeConfiguration.json)
 builder.Services.Configure<AlarmTimeConfiguration>(
     builder.Configuration.GetSection("AlarmTimeConfiguration"));

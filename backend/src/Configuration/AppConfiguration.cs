@@ -15,14 +15,6 @@ namespace AlarmClock.Backend.Configuration
         public string StartTimeIso8601 { get; set; }
     }
 
-    public class LlmConfiguration
-    {
-        public string ModelPath { get; set; } = "";
-        public int MaxTokens { get; set; } = 100;
-        public float Temperature { get; set; } = 0.1f;
-        public bool EnableLlm { get; set; } = true;
-    }
-
     // Configuration that can be updated at runtime and persisted to a separate JSON file
     public class AlarmTimeConfiguration
     {

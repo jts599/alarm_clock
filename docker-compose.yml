@@ -24,7 +24,6 @@ services:
     privileged: true
     volumes:
       - ./shared:/app/shared
-      - models-data:/app/models # Persistent models volume
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /sys/class/backlight:/sys/class/backlight
@@ -33,8 +32,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
       - TZ=${TZ:-UTC}
-      - Llm__ModelPath=/app/models/tinyllama-1.1b-chat.onnx
-      - Llm__EnableLlm=true
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
@@ -56,14 +53,6 @@ services:
       # Include stopped containers
       - WATCHTOWER_INCLUDE_STOPPED=true
     command: --interval 300 --cleanup
-
-volumes:
-  models-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /opt/alarm-clock/models # Persistent location on Pi
 
 networks:
   default:

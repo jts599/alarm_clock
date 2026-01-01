@@ -8,7 +8,7 @@ services:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:dev
     container_name: alarm-clock-frontend-dev
     ports:
-      - "3001:80" # Different port for dev
+      - "3000:80"
     depends_on:
       backend:
         condition: service_started
@@ -27,7 +27,7 @@ services:
     container_name: alarm-clock-backend-dev
     privileged: true
     ports:
-      - "5001:5000" # Different port for dev
+      - "5000:5000"
     volumes:
       - ./shared:/app/shared
       - /etc/localtime:/etc/localtime:ro

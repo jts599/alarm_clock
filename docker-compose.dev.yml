@@ -6,7 +6,7 @@ version: "3.8"
 services:
   frontend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-frontend:dev
-    container_name: alarm-clock-frontend-dev
+    container_name: alarm-clock-frontend
     ports:
       - "3000:80"
     depends_on:
@@ -24,10 +24,9 @@ services:
 
   backend:
     image: ${DOCKER_USERNAME:-jts599}/alarm-clock-backend:dev
-    container_name: alarm-clock-backend-dev
+    container_name: alarm-clock-backend
     privileged: true
-    ports:
-      - "5000:5000"
+    network_mode: host
     volumes:
       - ./shared:/app/shared
       - /etc/localtime:/etc/localtime:ro
@@ -40,15 +39,15 @@ services:
       - TZ=${TZ:-UTC}
       - Weather__Longitude=${WEATHER_LONGITUDE:--74.0060}
       - Weather__Latitude=${WEATHER_LATITUDE:-40.7128}
-      - RunConfiguration__StubLifx=${STUB_LIFX:-true}
-      - RunConfiguration__FastTimescale=${FAST_TIMESCALE:-true}
+      - RunConfiguration__StubLifx=${STUB_LIFX:-false}
+      - RunConfiguration__FastTimescale=${FAST_TIMESCALE:-false}
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
   watchtower:
     image: containrrr/watchtower:latest
-    container_name: watchtower-dev
+    container_name: watchtower
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

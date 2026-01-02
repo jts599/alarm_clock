@@ -34,13 +34,12 @@ services:
       - /sys/class/backlight:/sys/class/backlight
       - /opt/alarm-clock/background-custom.jpg:/app/background-custom.jpg:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5000
       - TZ=${TZ:-UTC}
       - Weather__Longitude=${WEATHER_LONGITUDE:--74.0060}
       - Weather__Latitude=${WEATHER_LATITUDE:-40.7128}
       - RunConfiguration__StubLifx=${STUB_LIFX:-false}
-      - RunConfiguration__FastTimescale=${FAST_TIMESCALE:-false}
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"

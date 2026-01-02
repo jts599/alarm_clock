@@ -24,7 +24,7 @@ export class RealSettingsClient implements ISettingsClient {
 
     constructor() {
         const config = new Configuration({
-            basePath: 'http://localhost:5000'
+            basePath: ''
         })
         this.api = new AlarmSettingsApi(config)
     }

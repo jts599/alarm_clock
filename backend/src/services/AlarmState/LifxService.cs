@@ -141,11 +141,14 @@ namespace AlarmClock.Backend.Services
                     return true;
                 }
 
-                var tasks = Bulbs.Select(bulb =>
-                    client.SetDevicePowerStateAsync(bulb, powerOn)
-                );
-
-                await Task.WhenAll(tasks);
+                // LifxNet's UDP client is not safe for concurrent use: it shares a
+                // non-thread-safe completion dictionary with its receive loop, so
+                // firing commands at multiple bulbs at once (Task.WhenAll) can race
+                // and throw. Send them one at a time while holding ClientLock.
+                foreach (var bulb in Bulbs.ToList())
+                {
+                    await client.SetDevicePowerStateAsync(bulb, powerOn);
+                }
 
                 return true;
             }
@@ -192,11 +195,17 @@ namespace AlarmClock.Backend.Services
                 {
                     return true;
                 }
-                Bulbs.ToList().ForEach(async bulb =>
+
+                // NOTE: this used to be Bulbs.ToList().ForEach(async bulb => ...).
+                // ForEach takes an Action<T>, so the async lambda compiled to an
+                // "async void" that was never awaited: the method returned before the
+                // sends completed, ran them concurrently, released ClientLock early,
+                // and any exception escaped as an unhandled exception that crashed the
+                // process. Await the calls sequentially instead.
+                foreach (var bulb in Bulbs.ToList())
                 {
-                    //I am afraid of using Task.WhenAll here because LifxNet might not support multiple concurrent commands well
                     await client.SetColorAsync(bulb, color, kelvin, TimeSpan.FromSeconds(transitionTime));
-                });
+                }
                 return true;
             }
             catch (Exception ex)
